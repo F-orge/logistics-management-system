@@ -12,7 +12,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  lint:
+  rust:
     runs-on: [self-hosted,linux,x64]
     steps:
     - uses: actions/checkout@v4
@@ -21,29 +21,10 @@ jobs:
       with:
         toolchain: stable
         override: true
-    - name: Install clippy
-      run: rustup component add clippy
-    - name: Run clippy
+    - name: Lint with Clippy
       run: cargo clippy --verbose
-  build:
-    runs-on: [self-hosted,linux,x64]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-    - name: Build
+    - name: Build with Cargo
       run: cargo build --verbose
-  test:
-    runs-on: [self-hosted,linux,x64]
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-    - name: Test
+    - name: Test with Cargo
       run: cargo test --verbose
+    
