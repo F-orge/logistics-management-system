@@ -11,19 +11,19 @@ env:
 
 jobs:
 	lint:
-		runs-on: [self-hosted,linux]
+		runs-on: [self-hosted,linux,x64]
 		steps:
 			- uses: actions/checkout@v2
 			- name: Install Rust
-			  uses: actions-rs/toolchain@v1
-			  with:
-				toolchain: stable
+				uses: actions-rs/toolchain@v1
+				with:
+					toolchain: stable
 			- name: Install Clippy
-			  run: cargo install clippy
+				run: cargo install clippy
 			- name: Run Clippy
-			  run: cargo clippy --all-targets --all-features -- -D warnings
+				run: cargo clippy --all-targets --all-features -- -D warnings
 	build:
-		runs-on: [self-hosted,linux]
+		runs-on: [self-hosted,linux,x64]
 		steps:
 			- uses: actions/checkout@v2
 			- name: Install Rust
