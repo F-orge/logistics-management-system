@@ -36,5 +36,14 @@ jobs:
         override: true
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
+  test:
+    runs-on: [self-hosted,linux,x64]
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+    - name: Test
       run: cargo test --verbose
