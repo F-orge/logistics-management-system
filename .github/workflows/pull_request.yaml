@@ -31,8 +31,7 @@ jobs:
     runs-on: [self-hosted,linux,x64]
     steps:
     - uses: actions/checkout@v4
-    - name: Install Deno
-      run: curl -fsSL https://deno.land/x/install/install.sh | sh
+    - uses: denoland/setup-deno@v2
     - name: Lint with Deno
       run: deno lint
     - name: Test with Deno
