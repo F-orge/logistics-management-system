@@ -4,3 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+garde = { version = "0.20.0", features = ["derive", "serde"] }
+serde = { version = "1.0.215", features = ["derive"] }
+tokio = { version = "1.41.1", features = ["full"] }
