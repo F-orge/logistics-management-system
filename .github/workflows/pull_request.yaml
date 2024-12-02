@@ -39,5 +39,6 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Install dependencies with Bun
         run: bun install
+      - uses: actions/setup-node@v4
       - name: Test using vitest
         run: npx vitest run --dom
