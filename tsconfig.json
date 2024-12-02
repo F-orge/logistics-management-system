@@ -10,7 +10,7 @@
     "allowJs": true,
     "rootDir": ".",
     "types": [
-      "vite/client",
+      "vite/client"
     ],
     // Bundler mode
     "moduleResolution": "bundler",

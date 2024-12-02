@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
+  },
+  "lint": {
+    "exclude": [
+      "dist",
+      "node_modules"
+    ],
+    "rules": {
+      "tags": ["recommended"],
+      "exclude": ["ban-types"]
+    }
+  }
+}

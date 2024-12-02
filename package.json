@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "vitest run --dom"
+    "test": "vitest run --dom",
+    "local-ci": "deno fmt && deno lint --fix && vitest run --dom"
   },
   "devDependencies": {
     "@solidjs/testing-library": "^0.8.10",

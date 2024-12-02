@@ -1,6 +1,5 @@
 import { type Component, Show } from "solid-js";
 
-// deno-lint-ignore ban-types
 const NotFoundPage: Component<{}> = (
   _props,
 ) => {
