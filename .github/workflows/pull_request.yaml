@@ -40,4 +40,4 @@ jobs:
       - name: Install dependencies with Bun
         run: bun install
       - name: Test using vitest
-        run: bun run test run
+        run: bun vitest run
