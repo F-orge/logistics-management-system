@@ -36,9 +36,10 @@ jobs:
         run: deno lint
       - name: Format with Deno
         run: deno fmt
-      - uses: oven-sh/setup-bun@v2
-      - name: Install dependencies with Bun
-        run: bun install
       - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+      - name: Install dependencies
+        run: npm ci
       - name: Test using vitest
         run: npm test
