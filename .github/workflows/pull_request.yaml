@@ -27,7 +27,7 @@ jobs:
       run: cargo build --verbose
     - name: Test with Cargo
       run: cargo test --verbose
-  deno:
+  typescript:
     runs-on: [self-hosted,linux,x64]
     steps:
     - uses: actions/checkout@v4
