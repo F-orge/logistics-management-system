@@ -32,9 +32,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
-      - name: Format with Deno
-        run: deno fmt
       - name: Lint with Deno
         run: deno lint
-      - name: Test with Deno
-        run: deno test
+      - name: Format with Deno
+        run: deno fmt
+      - uses: oven-sh/setup-bun@v2
+      - name: Install dependencies with Bun
+        run: bun install
+      - name: Test using vitest
+        run: bun run test run
