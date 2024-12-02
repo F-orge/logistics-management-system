@@ -9,7 +9,10 @@
     "jsxImportSource": "solid-js",
     "allowJs": true,
     "rootDir": ".",
-
+    "types": [
+      "vite/client",
+      "@testing-library/jest-dom"
+    ],
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
