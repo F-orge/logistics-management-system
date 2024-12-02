@@ -2,10 +2,10 @@ name: Rust pull request
 
 on:
   push:
-    branches: 
+    branches:
       - main
   pull_request:
-    branches:    
+    branches:
       - main
 
 env:
@@ -13,27 +13,28 @@ env:
 
 jobs:
   rust:
-    runs-on: [self-hosted,linux,x64]
+    runs-on: [self-hosted, linux, x64]
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        override: true
-    - name: Lint with Clippy
-      run: cargo clippy --verbose
-    - name: Build with Cargo
-      run: cargo build --verbose
-    - name: Test with Cargo
-      run: cargo test --verbose
+      - uses: actions/checkout@v4
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Lint with Clippy
+        run: cargo clippy --verbose
+      - name: Build with Cargo
+        run: cargo build --verbose
+      - name: Test with Cargo
+        run: cargo test --verbose
   typescript:
-    runs-on: [self-hosted,linux,x64]
+    runs-on: [self-hosted, linux, x64]
     steps:
-    - uses: actions/checkout@v4
-    - uses: denoland/setup-deno@v2
-    - name: Lint with Deno
-      run: deno lint
-    - name: Test with Deno
-      run: deno test
-    
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+      - name: Format with Deno
+        run: deno fmt
+      - name: Lint with Deno
+        run: deno lint
+      - name: Test with Deno
+        run: deno test
