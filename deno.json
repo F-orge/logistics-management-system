@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "lib": [
+      "deno.window",
+      "dom"
+    ],
     "jsx": "preserve",
     "jsxImportSource": "solid-js"
   },
