@@ -1,37 +1,51 @@
-import { type Component } from "solid-js";
-import { Route, Router } from "@solidjs/router";
-import NotFoundPage from "./routes/not-found.tsx";
-import HomePage from "./routes/index.tsx";
-import ClientLoginPage from "./routes/client/login.tsx";
-import AdminLoginPage from "./routes/admin/login.tsx";
-import ClientRegisterPage from "./routes/client/register.tsx";
-import AdminDashboardLayout from "./routes/admin.tsx";
-import ShipmentCargoPage from "./routes/admin/shipments/cargo.tsx";
-import ShipmentTransportPage from "./routes/admin/shipments/transport.tsx";
-import ShipmentPage from "./routes/admin/shipments/index.tsx";
-import WarehousePage from "./routes/admin/warehouse/index.tsx";
-import ProfilePage from "./routes/admin/management/profile.tsx";
-import AssignmentPage from "./routes/admin/management/assignment.tsx";
+import { lazy, Match, Suspense, Switch, type Component } from "solid-js";
+import { Navigate, Route, Router } from "@solidjs/router";
+import {
+	ColorModeProvider,
+	ColorModeScript,
+	createLocalStorageManager,
+} from "@kobalte/core";
+
+import NotFoundPage from "./not-found.tsx";
+import { Toaster } from "~/components/ui/toast.tsx";
+
+/*-- Marketing Website --*/
+const MarketingHomePage = lazy(
+	() => import("./marketing-management/index.tsx"),
+);
+const MarketingAboutPage = lazy(
+	() => import("./marketing-management/about.tsx"),
+);
+const MarketingServicesPage = lazy(
+	() => import("./marketing-management/services.tsx"),
+);
 
 const App: Component<{}> = (_props) => {
-  return (
-    <Router>
-      <Route path="" component={HomePage} />
-      <Route path="/login" component={ClientLoginPage} />
-      <Route path="/register" component={ClientRegisterPage} />
-      <Route path="/admin/login" component={AdminLoginPage} />
-      <Route path={"/admin/"} component={AdminDashboardLayout}>
-        <Route path="/profile" component={ProfilePage} />
-        <Route path="/warehouse" component={WarehousePage} />
-        <Route path="/management" component={AdminLoginPage} />
-        <Route path="/management/assignment" component={AssignmentPage} />
-        <Route path="/shipment" component={ShipmentPage} />
-        <Route path="/shipment/transport" component={ShipmentTransportPage} />
-        <Route path="/shipment/cargo/:id" component={ShipmentCargoPage} />
-      </Route>
-      <Route path={"*"} component={NotFoundPage} />
-    </Router>
-  );
+	const storageManager = createLocalStorageManager("rsbuild-ui-theme");
+
+	return (
+		<Router
+			root={(props) => (
+				<>
+					<ColorModeScript storageType={storageManager.type} />
+					<ColorModeProvider storageManager={storageManager}>
+						<Suspense>{props.children}</Suspense>
+					</ColorModeProvider>
+					<Toaster />
+				</>
+			)}
+		>
+			<Switch>
+				<Match when={window.location.hostname === "www.localhost"}>
+					<Route path="/" component={MarketingHomePage} />
+					<Route path={"/about"} component={MarketingAboutPage} />
+					<Route path={"/services"} component={MarketingServicesPage} />
+				</Match>
+			</Switch>
+			<Route path={"*"} component={() => <Navigate href={"not-found"} />} />
+			<Route path={"/not-found"} component={NotFoundPage} />
+		</Router>
+	);
 };
 
 export default App;
