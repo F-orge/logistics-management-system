@@ -1,13 +1,13 @@
 import { useColorMode } from "@kobalte/core";
 import { createEffect, createSignal, For, type Component } from "solid-js";
-import { Button } from "~/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
 	DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import Input from "~/components/ui/input";
+} from "../components/ui/dropdown-menu";
+import Input from "../components/ui/input";
 import {
 	FacebookIcon,
 	Instagram,
@@ -20,7 +20,7 @@ import {
 	Sun,
 } from "lucide-solid";
 import { A } from "@solidjs/router";
-import { showToast } from "~/components/ui/toast";
+import { showToast } from "../components/ui/toast";
 
 const COUNTRIES = [
 	"Philippines",
@@ -308,13 +308,13 @@ const MarketingHomePage: Component<{}> = (props) => {
 					</ul>
 				</section>
 				<section class="py-12 rounded-md px-4 w-full flex flex-col gap-5 bg-foreground overflow-x-hidden text-accent relative">
-					<h3 class="text-center heading-3">Ship to over 20+ countries</h3>
+					<h2 class="text-center heading-2">Ship to over 20+ countries</h2>
 					<div class="w-full inline-flex flex-nowrap">
 						<For each={[...new Array(8)]}>
 							{(_, index) => (
 								<ul class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
 									<For each={COUNTRIES}>
-										{(country) => <li class="muted large">{country}</li>}
+										{(country) => <li class="small">{country}</li>}
 									</For>
 								</ul>
 							)}

@@ -5,9 +5,10 @@ import {
 	ColorModeScript,
 	createLocalStorageManager,
 } from "@kobalte/core";
+import { Toaster } from "./components/ui/toast.tsx";
 
-import NotFoundPage from "./not-found.tsx";
-import { Toaster } from "~/components/ui/toast.tsx";
+/*-- Global Routes --*/
+const NotFoundPage = lazy(() => import("./not-found.tsx"));
 
 /*-- Marketing Website --*/
 const MarketingHomePage = lazy(
@@ -18,6 +19,19 @@ const MarketingAboutPage = lazy(
 );
 const MarketingServicesPage = lazy(
 	() => import("./marketing-management/services.tsx"),
+);
+
+/*-- Employee Management --*/
+const EmployeeManagementLoginPage = lazy(
+	() => import("./employee-management/login.tsx"),
+);
+
+const EmployeeManagementDashboardPage = lazy(
+	() => import("./employee-management/dashboard/index.tsx"),
+);
+
+const EmployeeManagementDashboardLayout = lazy(
+	() => import("./employee-management/dashboard/layout.tsx"),
 );
 
 const App: Component<{}> = (_props) => {
@@ -36,10 +50,26 @@ const App: Component<{}> = (_props) => {
 			)}
 		>
 			<Switch>
-				<Match when={window.location.hostname === "www.localhost"}>
+				<Match
+					when={
+						window.location.hostname ===
+						(import.meta.env.PUBLIC_MARKETING_HOST_NAME as string)
+					}
+				>
 					<Route path="/" component={MarketingHomePage} />
 					<Route path={"/about"} component={MarketingAboutPage} />
 					<Route path={"/services"} component={MarketingServicesPage} />
+				</Match>
+				<Match
+					when={
+						window.location.hostname ===
+						(import.meta.env.PUBLIC_EMPLOYEE_HOST_NAME as string)
+					}
+				>
+					<Route path="/" component={EmployeeManagementDashboardLayout}>
+						<Route path={"/"} component={EmployeeManagementDashboardPage} />
+					</Route>
+					<Route path={"/login"} component={EmployeeManagementLoginPage} />
 				</Match>
 			</Switch>
 			<Route path={"*"} component={() => <Navigate href={"not-found"} />} />

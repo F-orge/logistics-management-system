@@ -9,9 +9,7 @@
     "jsxImportSource": "solid-js",
     "allowJs": true,
     "rootDir": ".",
-    "types": [
-      "vite/client"
-    ],
+    "types": ["vite/client"],
     // Bundler mode
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -29,9 +27,7 @@
     "noPropertyAccessFromIndexSignature": false,
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "./src/*"
-      ]
+      "~/*": ["./src/frontend/*"]
     }
   }
 }

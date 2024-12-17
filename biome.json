@@ -23,7 +23,8 @@
 			"complexity": {
 				"noBannedTypes": "off"
 			}
-		}
+		},
+		"ignore": ["src/frontend/components/ui"]
 	},
 	"javascript": {
 		"formatter": {

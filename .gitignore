@@ -2,3 +2,5 @@
 node_modules
 .vite
 coverage
+dist
+.env.production
