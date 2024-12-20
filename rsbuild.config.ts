@@ -7,34 +7,34 @@ import tailwindcss from "tailwindcss";
 import path from "node:path";
 
 export default defineConfig({
-  plugins: [
-    pluginSolid(),
-    pluginBabel({
-      include: /\.(?:jsx|tsx)$/,
-    }),
-    pluginImageCompress(),
-  ],
-  source: {
-    entry: {
-      index: "./src/frontend/entry-client.tsx",
-    },
-  },
-  tools: {
-    postcss: {
-      postcssOptions: {
-        plugins: [tailwindcss()],
-      },
-    },
-  },
-  output: {
-    minify: true,
-  },
-  resolve: {
-    alias: {
-      "~": path.resolve(__dirname, "./src/frontend"),
-    },
-  },
-  dev: {
-    writeToDisk: true,
-  },
+	plugins: [
+		pluginSolid(),
+		pluginBabel({
+			include: /\.(?:jsx|tsx)$/,
+		}),
+		pluginImageCompress(),
+	],
+	source: {
+		entry: {
+			index: "./src/views/entry-client.tsx",
+		},
+	},
+	tools: {
+		postcss: {
+			postcssOptions: {
+				plugins: [tailwindcss()],
+			},
+		},
+	},
+	output: {
+		minify: true,
+	},
+	resolve: {
+		alias: {
+			"~": path.resolve(__dirname, "./src/frontend"),
+		},
+	},
+	dev: {
+		writeToDisk: true,
+	},
 });

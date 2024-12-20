@@ -11,7 +11,8 @@
 	},
 	"formatter": {
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"ignore": ["dist"]
 	},
 	"organizeImports": {
 		"enabled": true
@@ -24,7 +25,7 @@
 				"noBannedTypes": "off"
 			}
 		},
-		"ignore": ["src/frontend/components/ui"]
+		"ignore": ["src/views/components/ui", "dist", "coverage"]
 	},
 	"javascript": {
 		"formatter": {
