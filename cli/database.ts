@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import { type CompiledQuery, Kysely, PostgresDialect } from "kysely";
+import type { DB } from "kysely-codegen";
 import pg from "pg";
 
 export const database = new Command("database");
@@ -8,25 +9,19 @@ database
   .command("seed")
   .description("Seed the database with some data")
   .addCommand(
-    new Command("list")
-      .description("List all the seeds")
-      .action(() => {
-        console.log("Listing seeds");
-      }),
+    new Command("list").description("List all the seeds").action(() => {
+      console.log("Listing seeds");
+    }),
   )
   .addCommand(
-    new Command("run")
-      .description("Run the seeds")
-      .action(() => {
-        console.log("Running seeds");
-      }),
+    new Command("run").description("Run the seeds").action(() => {
+      console.log("Running seeds");
+    }),
   )
   .addCommand(
-    new Command("add")
-      .description("Add a new seed file")
-      .action(() => {
-        console.log("Adding a new seed file");
-      }),
+    new Command("add").description("Add a new seed file").action(() => {
+      console.log("Adding a new seed file");
+    }),
   );
 
 database
@@ -38,12 +33,22 @@ database
       .option(
         "-s, --source <source>",
         "Source of the migrations",
-        "database/migrations",
+        "database/migrations/sql",
       )
-      .action(async ({ source }: { source: string }) => {
-        await Bun
-          .$`sqlx migrate info --database-url ${process.env.DATABASE_URL} --source=${source}`;
-      }),
+      .option(
+        "--database-url <databaseUrl>",
+        "Database URL",
+        process.env.DATABASE_URL,
+      )
+      .action(
+        async ({
+          source,
+          databaseUrl,
+        }: { source: string; databaseUrl: string }) => {
+          await Bun
+            .$`sqlx migrate info --database-url ${databaseUrl} --source=${source}`;
+        },
+      ),
   )
   .addCommand(
     new Command("add")
@@ -54,18 +59,22 @@ database
         "Source of the migrations",
         "database/migrations",
       )
-      .action(async ({
-        name,
-        source,
-      }: {
-        name: string;
-        source: string;
-      }) => {
-        const fileName = `${source}/${
-          new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14)
-        }_${name}.ts`;
+      .action(
+        async ({
+          name,
+          source,
+        }: {
+          name: string;
+          source: string;
+        }) => {
+          const fileName = `${source}/${
+            new Date()
+              .toISOString()
+              .replace(/[-:.TZ]/g, "")
+              .slice(0, 14)
+          }_${name}.ts`;
 
-        const content = `
+          const content = `
           import { type Kysely, type CompiledQuery, sql } from "kysely";
           
           export function up(db: Kysely<any>):CompiledQuery[] {
@@ -98,11 +107,13 @@ database
             ]
           }
         `;
-        Bun.write(fileName, content);
-        await Bun.$`bunx biome format ${fileName} --fix`.quiet();
-        console.log(`Adding migration ${fileName}`);
-      }),
-  ).addCommand(
+          Bun.write(fileName, content);
+          await Bun.$`bunx biome format ${fileName} --fix`.quiet();
+          console.log(`Adding migration ${fileName}`);
+        },
+      ),
+  )
+  .addCommand(
     new Command("run")
       .description("Run all pending migrations")
       .option(
@@ -110,32 +121,35 @@ database
         "Source of the migrations",
         "database/migrations",
       )
-      .option(
-        "-c, --compile",
-        "Compile the migrations before running",
-        false,
-      )
+      .option("-c, --compile", "Compile the migrations before running", false)
       .option(
         "--database-url <databaseUrl>",
         "Database URL",
         process.env.DATABASE_URL,
       )
-      .action(async ({
-        source,
-        compile,
-        databaseUrl,
-      }: {
-        source: string;
-        compile: boolean;
-        databaseUrl: string;
-      }) => {
-        if (compile) {
+      .option("--env-file <envFile>", "Environment file", ".env.development")
+      .action(
+        async ({
+          source,
+          compile,
+          databaseUrl,
+          envFile,
+        }: {
+          source: string;
+          compile: boolean;
+          databaseUrl: string;
+          envFile: string;
+        }) => {
+          if (compile) {
+            await Bun
+              .$`bun run cli/index.ts database migrate compile --source ${source}`;
+          }
           await Bun
-            .$`bun run cli/index.ts database migrate compile --source ${source}`;
-        }
-        await Bun
-          .$`sqlx migrate run --database-url ${databaseUrl} --source ${source}/sql`;
-      }),
+            .$`sqlx migrate run --database-url ${databaseUrl} --source ${source}/sql`;
+          await Bun
+            .$`bun kysely-codegen --dialect postgres --env-file ${envFile}`;
+        },
+      ),
   )
   .addCommand(
     new Command("rollback")
@@ -145,24 +159,22 @@ database
         "Source of the migrations",
         "database/migrations",
       )
-      .option(
-        "-c, --compile",
-        "Compile the migrations before running",
-        false,
-      )
+      .option("-c, --compile", "Compile the migrations before running", false)
       .option(
         "--database-url <databaseUrl>",
         "Database URL",
         process.env.DATABASE_URL,
       )
       .action(
-        async (
-          { source, databaseUrl, compile }: {
-            source: string;
-            databaseUrl: string;
-            compile: boolean;
-          },
-        ) => {
+        async ({
+          source,
+          databaseUrl,
+          compile,
+        }: {
+          source: string;
+          databaseUrl: string;
+          compile: boolean;
+        }) => {
           if (compile) {
             await Bun
               .$`bun run cli/index.ts database migrate compile --source ${source}`
@@ -170,6 +182,7 @@ database
           }
           await Bun
             .$`sqlx migrate revert --database-url ${databaseUrl} --source ${source}/sql`;
+          await Bun.$`bun kysely-codegen`;
         },
       ),
   )
@@ -192,13 +205,15 @@ database
         "database/migrations/sql",
       )
       .action(
-        async (
-          { source, databaseUrl, output }: {
-            source: string;
-            databaseUrl: string;
-            output: string;
-          },
-        ) => {
+        async ({
+          source,
+          databaseUrl,
+          output,
+        }: {
+          source: string;
+          databaseUrl: string;
+          output: string;
+        }) => {
           const dialect = new PostgresDialect({
             pool: new pg.Pool({
               connectionString: databaseUrl,
@@ -212,7 +227,10 @@ database
           const completed = [];
 
           for await (const file of files.scan(source)) {
-            const { up, down }: {
+            const {
+              up,
+              down,
+            }: {
               // biome-ignore lint/suspicious/noExplicitAny: allow any type for migrations
               up: (db: Kysely<any>) => CompiledQuery[];
               // biome-ignore lint/suspicious/noExplicitAny: allow any type for migrations
@@ -253,30 +271,113 @@ database
   .command("query")
   .description("Query management")
   .addCommand(
-    new Command("list")
-      .description("List all queries")
-      .action(() => {
-        console.log("Listing queries");
+    new Command("list").description("List all queries")
+      .option(
+        "-s, --source <source>",
+        "Source of the queries",
+        "database/queries",
+      )
+      .action(async () => {
+        const tsFiles = new Bun.Glob("**/*.ts");
+        const sqlFiles = new Bun.Glob("**/*.sql");
+        const queries: {
+          definition: string;
+          compiled: string;
+        }[] = [];
+
+        for await (const file of tsFiles.scan("database/queries")) {
+          if (
+            !await Bun.file(
+              `database/queries/compiled/${file.replace(".ts", ".sql")}`,
+            ).exists()
+          ) {
+            continue;
+          }
+          queries.push({
+            definition: file,
+            compiled: file.replace(".ts", ".sql"),
+          });
+        }
+
+        console.table(queries);
       }),
   )
   .addCommand(
     new Command("add")
       .description("Add a new query")
-      .action(() => {
-        console.log("Adding a new query");
+      .requiredOption("-n, --name <name>", "Name of the query")
+      .action(async ({ name }: { name: string }) => {
+        const fileName = `database/queries/${name}.ts`;
+        const content = `
+          import { type Kysely, type CompiledQuery, sql } from "kysely";
+          import type { DB } from "kysely-codegen";
+
+          export default function(db: Kysely<DB>,options:{}):CompiledQuery {
+            return sql\`\`.compile(db);
+          };
+        `;
+        Bun.write(fileName, content);
+        await Bun.$`bunx biome format ${fileName} --fix`.quiet();
+        console.log(`Adding query ${fileName}`);
       }),
   )
   .addCommand(
     new Command("compile")
       .description("Compile all queries to a .sql file")
-      .action(() => {
-        console.log("Compiling queries");
-      }),
+      .option(
+        "-s, --source <source>",
+        "Source of the migrations",
+        "database/queries",
+      )
+      .option(
+        "--database-url <databaseUrl>",
+        "Database URL",
+        process.env.DATABASE_URL,
+      )
+      .option(
+        "--output <output>",
+        "Output directory",
+        "database/queries/compiled",
+      )
+      .action(
+        async ({
+          source,
+          databaseUrl,
+          output,
+        }: {
+          source: string;
+          databaseUrl: string;
+          output: string;
+        }) => {
+          const dialect = new PostgresDialect({
+            pool: new pg.Pool({
+              connectionString: databaseUrl,
+            }),
+          });
+
+          const db = new Kysely<DB>({ dialect });
+
+          // Get all queries
+          const files = new Bun.Glob("**/*.ts");
+
+          for await (const file of files.scan(source)) {
+            const query: (db: Kysely<DB>, options: {}) => CompiledQuery = (
+              await import(`${source}/${file}`)
+            ).default;
+            const compiled = query(db, {}).sql;
+
+            // create a .sql file for each query
+            const comment =
+              `-- DO NOT EDIT. AUTO GENERATED. File name: ${file} --\n\n`;
+            const fileName = file.replace(".ts", ".sql");
+
+            Bun.write(`${output}/${fileName}`, `${comment}${compiled}`);
+          }
+        },
+      ),
   )
   .addCommand(
-    new Command("run")
-      .description("Run a query")
-      .action(() => {
-        console.log("Running a query");
-      }),
+    new Command("run").description("Run a query").action(() => {
+      console.log("Running a query");
+    }),
   );

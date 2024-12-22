@@ -14,14 +14,10 @@ export function up(db: Kysely<any>): CompiledQuery[] {
 			)
 			.addColumn("email", "varchar(255)", (col) => col.notNull().unique())
 			.addColumn("password", "varchar(128)", (col) => col.notNull())
-			.addColumn(
-				"role",
-				"varchar(255)",
-				(col) =>
-					col.notNull().check(
-						sql`role IN ('super_admin', 'admin', 'employee', 'client')`,
-					),
-			)
+			.addColumn("role", "varchar(255)", (col) =>
+				col
+					.notNull()
+					.check(sql`role IN ('super_admin', 'admin', 'employee', 'client')`))
 			.addColumn(
 				"created_at",
 				"timestamp",

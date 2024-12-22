@@ -1,0 +1,13 @@
+syntax = "3";
+package user;
+
+
+message User {
+  string id = 1;
+  string name = 2;
+  string email = 3;
+  string password = 4;
+  string role = 5; // admin, employee, client
+  string created_at = 6;
+  string updated_at = 7;
+}
