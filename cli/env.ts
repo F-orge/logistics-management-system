@@ -77,11 +77,17 @@ export const env = new Command("env")
         const lines = content.split("\n");
         const variables = lines.map((line) => {
           const [name, value] = line.split("=");
+
+          if (!name) return;
+
+          if (name.startsWith("#")) return;
+
           if (name.startsWith("PUBLIC_")) {
             return { name: name, value };
           }
+
           return { name, value: "********" };
-        });
+        }).filter(Boolean);
         console.table(variables);
       }),
   );

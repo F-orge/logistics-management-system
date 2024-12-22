@@ -25,7 +25,12 @@
 				"noBannedTypes": "off"
 			}
 		},
-		"ignore": ["src/views/components/ui", "dist", "coverage"]
+		"ignore": [
+			"src/views/components/ui",
+			"database/migrations",
+			"dist",
+			"coverage"
+		]
 	},
 	"javascript": {
 		"formatter": {

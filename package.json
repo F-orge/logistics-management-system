@@ -20,8 +20,12 @@
 		"@testing-library/user-event": "^14.5.2",
 		"@types/bun": "^1.1.14",
 		"@types/node": "^22.10.2",
+		"@types/pg": "^8.11.10",
 		"@vitest/coverage-v8": "2.1.7",
 		"happy-dom": "^15.11.7",
+		"kysely": "^0.27.5",
+		"kysely-codegen": "^0.17.0",
+		"pg": "^8.13.1",
 		"vitest": "^2.1.7"
 	},
 	"peerDependencies": {
