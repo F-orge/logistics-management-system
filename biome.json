@@ -29,7 +29,8 @@
 			"src/views/components/ui",
 			"database/migrations",
 			"dist",
-			"coverage"
+			"coverage",
+			"src/models/typescript"
 		]
 	},
 	"javascript": {

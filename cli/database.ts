@@ -248,15 +248,18 @@ database
         "Database URL",
         process.env.DATABASE_URL,
       )
+      .option("--env-file <envFile>", "Environment file", ".env.development")
       .action(
         async ({
           source,
           databaseUrl,
           compile,
+          envFile,
         }: {
           source: string;
           databaseUrl: string;
           compile: boolean;
+          envFile: string;
         }) => {
           if (compile) {
             await Bun
@@ -265,7 +268,8 @@ database
           }
           await Bun
             .$`sqlx migrate revert --database-url ${databaseUrl} --source ${source}/sql`;
-          await Bun.$`bun kysely-codegen`;
+          await Bun
+            .$`bun kysely-codegen --dialect postgres --env-file ${envFile}`;
         },
       ),
   )

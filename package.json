@@ -38,6 +38,8 @@
 		"@corvu/otp-field": "^0.1.4",
 		"@corvu/resizable": "^0.2.3",
 		"@kobalte/core": "^0.13.7",
+		"@protobuf-ts/grpcweb-transport": "^2.9.4",
+		"@protobuf-ts/plugin": "^2.9.4",
 		"@solid-primitives/refs": "^1.0.8",
 		"@solidjs/router": "^0.15.1",
 		"chart.js": "^4.4.7",

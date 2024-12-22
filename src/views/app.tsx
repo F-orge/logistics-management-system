@@ -6,6 +6,7 @@ import {
 	createLocalStorageManager,
 } from "@kobalte/core";
 import { Toaster } from "./components/ui/toast.tsx";
+import StatusPage from "./status.tsx";
 
 /*-- Global Routes --*/
 const NotFoundPage = lazy(() => import("./not-found.tsx"));
@@ -70,6 +71,14 @@ const App: Component<{}> = (_props) => {
 						<Route path={"/"} component={EmployeeManagementDashboardPage} />
 					</Route>
 					<Route path={"/login"} component={EmployeeManagementLoginPage} />
+				</Match>
+				<Match
+					when={
+						window.location.hostname ===
+						(import.meta.env.PUBLIC_STATUS_HOST_NAME as string)
+					}
+				>
+					<Route path={"/"} component={StatusPage} />
 				</Match>
 			</Switch>
 			<Route path={"*"} component={() => <Navigate href={"not-found"} />} />
