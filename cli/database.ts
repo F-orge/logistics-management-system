@@ -9,19 +9,102 @@ database
   .command("seed")
   .description("Seed the database with some data")
   .addCommand(
-    new Command("list").description("List all the seeds").action(() => {
-      console.log("Listing seeds");
-    }),
+    new Command("list").description("List all the seeds")
+      .option(
+        "-s, --source <source>",
+        "Source of the seeds",
+        "database/seeds",
+      )
+      .action(async ({ source }: { source: string }) => {
+        const files = new Bun.Glob("**/*.ts");
+        const seeds: string[] = [];
+        for await (const file of files.scan(source)) {
+          seeds.push(file);
+        }
+        console.table(seeds);
+      }),
   )
   .addCommand(
-    new Command("run").description("Run the seeds").action(() => {
-      console.log("Running seeds");
-    }),
+    new Command("run").description("Run the seeds")
+      .option(
+        "--database-url <databaseUrl>",
+        "Database URL",
+        process.env.DATABASE_URL,
+      )
+      .option(
+        "-s, --source <source>",
+        "Source of the seeds",
+        "database/seeds",
+      )
+      .action(async ({
+        databaseUrl,
+        source,
+      }: {
+        databaseUrl: string;
+        source: string;
+      }) => {
+        const dialect = new PostgresDialect({
+          pool: new pg.Pool({
+            connectionString: databaseUrl,
+          }),
+        });
+
+        const db = new Kysely<DB>({ dialect });
+
+        console.log("Running seeds");
+
+        const files = Array.from(new Bun.Glob("**/*.ts").scanSync(source))
+          .sort();
+
+        for (const file of files) {
+          const seed: (db: Kysely<DB>) => Promise<void> =
+            (await import(`${source}/${file}`)).default;
+          try {
+            await seed(db);
+          } catch (e) {
+            console.log(`Error running seed ${file}`);
+          }
+        }
+        await db.destroy();
+      }),
   )
   .addCommand(
-    new Command("add").description("Add a new seed file").action(() => {
-      console.log("Adding a new seed file");
-    }),
+    new Command("add").description("Add a new seed file")
+      .requiredOption("-n, --name <name>", "Name of the seed")
+      .option(
+        "-s, --source <source>",
+        "Source of the seeds",
+        "database/seeds",
+      )
+      .action(async ({
+        name,
+        source,
+      }: {
+        name: string;
+        source: string;
+      }) => {
+        const fileName = `${source}/${
+          new Date()
+            .toISOString()
+            .replace(/[-:.TZ]/g, "")
+            .slice(0, 14)
+        }_${name}.ts`;
+
+        const content = `
+          import { type Kysely, sql } from "kysely";
+          import type { DB } from "kysely-codegen";
+          
+          export default async function(db:Kysely<DB>): Promise<void> {
+            // Write your seed here
+          }
+        `;
+
+        Bun.write(fileName, content);
+
+        console.log(`Adding seed ${fileName}`);
+
+        await Bun.$`bunx biome format ${fileName} --fix`.quiet();
+      }),
   );
 
 database
