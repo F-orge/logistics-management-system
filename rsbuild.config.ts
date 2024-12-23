@@ -28,6 +28,9 @@ export default defineConfig({
 	},
 	output: {
 		minify: true,
+		distPath: {
+			root: "./target/release/frontend-build",
+		},
 	},
 	resolve: {
 		alias: {

@@ -12,6 +12,7 @@ use tower_http::{
     limit::RequestBodyLimitLayer,
     request_id::{MakeRequestUuid, SetRequestIdLayer},
     sensitive_headers::{SetSensitiveHeadersLayer, SetSensitiveResponseHeadersLayer},
+    services::{ServeDir, ServeFile},
     timeout::TimeoutLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
     LatencyUnit,
@@ -60,6 +61,13 @@ async fn main() {
 
     let headers = Arc::new([header::AUTHORIZATION, header::COOKIE, header::SET_COOKIE]);
 
+    let file_service = match cfg!(debug_assertions) {
+        true => ServeDir::new("./target/release/frontend-build")
+            .not_found_service(ServeFile::new("./target/release/frontedn-build/index.html")),
+        false => ServeDir::new("./frontend-build")
+            .not_found_service(ServeFile::new("./frontend-build/index.html")),
+    };
+
     // GRPC server
     let grpc_server = Server::builder()
         .add_service(health_check_service())
@@ -69,6 +77,7 @@ async fn main() {
     // App routes
     let app: Router = Router::new()
         .nest("/grpc", grpc_server)
+        .fallback_service(file_service)
         .layer(CatchPanicLayer::new())
         .layer(DecompressionLayer::new())
         .layer(CompressionLayer::new())

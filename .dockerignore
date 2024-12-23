@@ -1,0 +1,8 @@
+/target
+node_modules
+.vite
+coverage
+dist
+.env.production
+.data
+doc_build
