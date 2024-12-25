@@ -1,5 +1,6 @@
 fn main() {
     tonic_build::configure()
-        .compile_protos(&["proto/health_check.proto"], &["proto/health_check"])
+        .out_dir("src/models")
+        .compile_protos(&["proto/health_check.proto","proto/employee_management.proto"], &["proto/"])
         .unwrap();
 }

@@ -1,7 +1,6 @@
 use std::{sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
-use models::health::health_check_service;
 use tokio::net::TcpListener;
 use tonic::transport::Server;
 use tower_http::{
@@ -22,6 +21,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 mod controllers;
 mod models;
+mod utils;
 
 #[tokio::main]
 async fn main() {
@@ -69,14 +69,14 @@ async fn main() {
     };
 
     // GRPC server
+    /* 
     let grpc_server = Server::builder()
-        .add_service(health_check_service())
         .into_service()
         .into_axum_router();
+    */
 
     // App routes
     let app: Router = Router::new()
-        .nest("/grpc", grpc_server)
         .fallback_service(file_service)
         .layer(CatchPanicLayer::new())
         .layer(DecompressionLayer::new())
