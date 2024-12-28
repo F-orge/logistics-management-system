@@ -3,329 +3,322 @@ syntax = "proto3";
 package employee_management;
 
 enum Role {
-    SUPER_ADMIN = 0;
-    ADMIN = 1;
-    EMPLOYEE = 2;
-    CLIENT = 3;
+  SUPER_ADMIN = 0;
+  ADMIN = 1;
+  EMPLOYEE = 2;
+  CLIENT = 3;
 }
 
 message User {
-    string id = 1;
-    string email = 2;
-    Role role = 3;
-    string created_at = 4;
-    string updated_at = 5;
+  string id = 1;
+  string email = 2;
+  Role role = 3;
+  string created_at = 4;
+  string updated_at = 5;
 }
 
 message InsertUserRequest {
-    string email = 1;
-    string password = 2;
-    Role role = 3;
+  string email = 1;
+  string password = 2;
+  Role role = 3;
 }
 
 message GetUserRequest {
-    string id = 1; // optional
-    string email = 2; // optional
-    Role role = 3; // optional
+  string id = 1;    // optional
+  string email = 2; // optional
+  Role role = 3;    // optional
 }
 
 message UpdateUserEmailRequest {
-    string id = 1;
-    string current_email = 2;
-    string new_email = 3;
+  string id = 1;
+  string current_email = 2;
+  string new_email = 3;
 }
 
-message UpdateUserPasswordRequest{
-    string id = 1;
-    string current_password = 2;
-    string new_password = 3;
+message UpdateUserPasswordRequest {
+  string id = 1;
+  string current_password = 2;
+  string new_password = 3;
 }
 
 message UpdateUserRoleRequest {
-    string id = 1;
-    Role role = 2;
+  string id = 1;
+  Role role = 2;
 }
 
-message DeleteUserRequest {
-    string id = 1;
-}
+message DeleteUserRequest { string id = 1; }
 
 message Empty {}
 
 service UserService {
-    rpc InsertUser(InsertUserRequest) returns (User) {}
-    rpc GetUser(GetUserRequest) returns (User) {}
-    rpc UpdateUserEmail(UpdateUserEmailRequest) returns (User) {}
-    rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (User) {}
-    rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
-    rpc DeleteUser(DeleteUserRequest) returns (Empty) {}
+  rpc InsertUser(InsertUserRequest) returns (User) {}
+  rpc GetUser(GetUserRequest) returns (User) {}
+  rpc UpdateUserEmail(UpdateUserEmailRequest) returns (User) {}
+  rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (User) {}
+  rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
+  rpc DeleteUser(DeleteUserRequest) returns (Empty) {}
 }
 
 // -- File --
 message File {
-    string id = 1;
-    string name = 2;
-    string path = 3;
-    User owner = 4;
-    string created_at = 5;
-    string updated_at = 6;
+  string id = 1;
+  string name = 2;
+  string path = 3;
+  User owner = 4;
+  string created_at = 5;
+  string updated_at = 6;
 }
 
 message InsertFileRequest {
-    string name = 1;
-    string path = 2;
-    string owner_id = 3;
+  string name = 1;
+  string path = 2;
+  string owner_id = 3;
 }
 
 message GetFileRequest {
-    string id = 1; // optional
-    string name = 2; // optional
-    string path = 3; // optional
-    string owner_id = 4; // optional
+  string id = 1;       // optional
+  string name = 2;     // optional
+  string path = 3;     // optional
+  string owner_id = 4; // optional
 }
 
 message UpdateFileNameRequest {
-    string id = 1;
-    string new_name = 2;
+  string id = 1;
+  string new_name = 2;
 }
 
 message UpdateFilePathRequest {
-    string id = 1;
-    string new_path = 2;
+  string id = 1;
+  string new_path = 2;
 }
 
 message UpdateFileOwnerRequest {
-    string id = 1;
-    string new_owner_id = 2;
+  string id = 1;
+  string new_owner_id = 2;
 }
 
-message DeleteFileRequest {
-    string id = 1;
-}
+message DeleteFileRequest { string id = 1; }
 
 service FileService {
-    rpc InsertFile(InsertFileRequest) returns (File) {}
-    rpc GetFile(GetFileRequest) returns (File) {}
-    rpc UpdateFileName(UpdateFileNameRequest) returns (File) {}
-    rpc UpdateFilePath(UpdateFilePathRequest) returns (File) {}
-    rpc UpdateFileOwner(UpdateFileOwnerRequest) returns (File) {}
-    rpc DeleteFile(DeleteFileRequest) returns (Empty) {}
+  rpc InsertFile(InsertFileRequest) returns (File) {}
+  rpc GetFile(GetFileRequest) returns (File) {}
+  rpc UpdateFileName(UpdateFileNameRequest) returns (File) {}
+  rpc UpdateFilePath(UpdateFilePathRequest) returns (File) {}
+  rpc UpdateFileOwner(UpdateFileOwnerRequest) returns (File) {}
+  rpc DeleteFile(DeleteFileRequest) returns (Empty) {}
 }
 
 // -- Employee --
 
 enum ContractType {
-    FULLTIME = 0;
-    PARTTIME = 1;
+  FULLTIME = 0;
+  PARTTIME = 1;
 }
 enum Sex {
-    MALE = 0;
-    FEMALE = 1;
+  MALE = 0;
+  FEMALE = 1;
 }
 
 message Employee {
-    string id = 1;
-    User user = 2;
-    string first_name = 3;
-    string middle_name = 4;
-    string last_name = 5;
-    Sex sex = 6;
-    string address = 7;
-    string position = 8;
-    string contact_number = 9;
-    ContractType contract_type = 10; // "fulltime, parttime"
-    string birthday = 11;
-    string created_at = 12;
-    string updated_at = 13;
+  string id = 1;
+  User user = 2;
+  string first_name = 3;
+  string middle_name = 4;
+  string last_name = 5;
+  Sex sex = 6;
+  string address = 7;
+  string position = 8;
+  string contact_number = 9;
+  ContractType contract_type = 10; // "fulltime, parttime"
+  string birthday = 11;
+  string created_at = 12;
+  string updated_at = 13;
 }
 
 message InsertEmployeeRequest {
-    string user_id = 1;
-    string first_name = 2;
-    string middle_name = 3;
-    string last_name = 4;
-    Sex sex = 5;
-    string address = 6;
-    string position = 7;
-    string contact_number = 8;
-    ContractType contract_type = 9;
-    string birthday = 10;
+  string user_id = 1;
+  string first_name = 2;
+  string middle_name = 3;
+  string last_name = 4;
+  Sex sex = 5;
+  string address = 6;
+  string position = 7;
+  string contact_number = 8;
+  ContractType contract_type = 9;
+  string birthday = 10;
 }
 
 message GetEmployeeRequest {
-    string id = 1; // optional
-    string user_id = 2; // optional
-    string name = 3; // optional
-    string position = 4; // optional
-    string contact_number = 5; // optional
-    string birthday = 6; // optional
-    ContractType contract_type = 7; // optional
+  string id = 1;                  // optional
+  string user_id = 2;             // optional
+  string name = 3;                // optional
+  string position = 4;            // optional
+  string contact_number = 5;      // optional
+  string birthday = 6;            // optional
+  ContractType contract_type = 7; // optional
 }
 
 message UpdateEmployeeNameRequest {
-    string id = 1;
-    string new_first_name = 2;
-    string new_middle_name = 3;
-    string new_last_name = 4;
+  string id = 1;
+  string new_first_name = 2;
+  string new_middle_name = 3;
+  string new_last_name = 4;
 }
 
 message UpdateEmployeePositionRequest {
-    string id = 1;
-    string new_position = 2;
+  string id = 1;
+  string new_position = 2;
 }
 
 message UpdateEmployeeSexRequest {
-    string id = 1;
-    Sex sex = 2;
+  string id = 1;
+  Sex sex = 2;
 }
 
 message UpdateEmployeeContactNumberRequest {
-    string id = 1;
-    string new_contact_number = 2;
+  string id = 1;
+  string new_contact_number = 2;
 }
 
 message UpdateEmployeeBirthdayRequest {
-    string id = 1;
-    string new_birthday = 2;
+  string id = 1;
+  string new_birthday = 2;
 }
 
 message UpdateEmployeeContractTypeRequest {
-    string id = 1;
-    ContractType contract_type = 2;
+  string id = 1;
+  ContractType contract_type = 2;
 }
 
-message DeleteEmployeeRequest {
-    string id = 1;
-}
+message DeleteEmployeeRequest { string id = 1; }
 
 service EmployeeService {
-    rpc InsertEmployee(InsertEmployeeRequest) returns (Employee) {}
-    rpc GetEmployee(GetEmployeeRequest) returns (Employee) {}
-    rpc UpdateEmployeeName(UpdateEmployeeNameRequest) returns (Employee) {}
-    rpc UpdateEmployeePosition(UpdateEmployeePositionRequest) returns (Employee) {}
-    rpc UpdateEmployeeSex(UpdateEmployeeSexRequest) returns (Employee) {}
-    rpc UpdateEmployeeContactNumber(UpdateEmployeeContactNumberRequest) returns (Employee) {}
-    rpc UpdateEmployeeBirthday(UpdateEmployeeBirthdayRequest) returns (Employee) {}
-    rpc UpdateEmployeeContractType(UpdateEmployeeContractTypeRequest) returns (Employee) {}
-    rpc DeleteEmployee(DeleteEmployeeRequest) returns (Empty) {}
+  rpc InsertEmployee(InsertEmployeeRequest) returns (Employee) {}
+  rpc GetEmployee(GetEmployeeRequest) returns (Employee) {}
+  rpc UpdateEmployeeName(UpdateEmployeeNameRequest) returns (Employee) {}
+  rpc UpdateEmployeePosition(UpdateEmployeePositionRequest) returns (Employee) {
+  }
+  rpc UpdateEmployeeSex(UpdateEmployeeSexRequest) returns (Employee) {}
+  rpc UpdateEmployeeContactNumber(UpdateEmployeeContactNumberRequest)
+      returns (Employee) {}
+  rpc UpdateEmployeeBirthday(UpdateEmployeeBirthdayRequest) returns (Employee) {
+  }
+  rpc UpdateEmployeeContractType(UpdateEmployeeContractTypeRequest)
+      returns (Employee) {}
+  rpc DeleteEmployee(DeleteEmployeeRequest) returns (Empty) {}
 }
 
 // -- Task --
 
 enum TaskStatus {
-    UNASSIGNED = 0;
-    IN_PROGRESS = 1;
-    REVIEW = 2;
-    DONE = 3;
+  UNASSIGNED = 0;
+  IN_PROGRESS = 1;
+  REVIEW = 2;
+  DONE = 3;
 }
 
 message Task {
-    string id = 1;
-    string title = 2;
-    string description = 3;
-    TaskStatus status = 4;
-    Employee issued_by_user = 5;
-    repeated Employee assigned_to = 6;
-    repeated TaskComment comments = 7;
-    string deadline = 8;
-    string created_at = 9;
-    string updated_at = 10;
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  TaskStatus status = 4;
+  Employee issued_by_user = 5;
+  repeated Employee assigned_to = 6;
+  repeated TaskComment comments = 7;
+  string deadline = 8;
+  string created_at = 9;
+  string updated_at = 10;
 }
 
 message InsertTaskRequest {
-    string title = 1;
-    string description = 2;
-    TaskStatus status = 3;
-    string issued_by_user = 4;
-    string deadline = 5;
+  string title = 1;
+  string description = 2;
+  TaskStatus status = 3;
+  string issued_by_user = 4;
+  string deadline = 5;
 }
 
 message GetTaskRequest {
-    string id = 1; // optional
-    string title = 2; // optional
-    TaskStatus status = 3; // optional
-    string issued_by_user = 4; // optional
-    string deadline = 5; // optional
+  string id = 1;             // optional
+  string title = 2;          // optional
+  TaskStatus status = 3;     // optional
+  string issued_by_user = 4; // optional
+  string deadline = 5;       // optional
 }
 
 message UpdateTaskTitleRequest {
-    string id = 1;
-    string new_title = 2;
+  string id = 1;
+  string new_title = 2;
 }
 
 message UpdateTaskDescriptionRequest {
-    string id = 1;
-    string new_description = 2;
+  string id = 1;
+  string new_description = 2;
 }
 
 message UpdateTaskStatusRequest {
-    string id = 1;
-    TaskStatus status = 2;
+  string id = 1;
+  TaskStatus status = 2;
 }
 
 message UpdateTaskIssuedByUserRequest {
-    string id = 1;
-    string new_issued_by_user = 2;
+  string id = 1;
+  string new_issued_by_user = 2;
 }
 
 message UpdateTaskDeadlineRequest {
-    string id = 1;
-    string new_deadline = 2;
+  string id = 1;
+  string new_deadline = 2;
 }
 
-message DeleteTaskRequest {
-    string id = 1;
-}
+message DeleteTaskRequest { string id = 1; }
 
 service TaskService {
-    rpc InsertTask(InsertTaskRequest) returns (Task) {}
-    rpc GetTask(GetTaskRequest) returns (Task) {}
-    rpc UpdateTaskTitle(UpdateTaskTitleRequest) returns (Task) {}
-    rpc UpdateTaskDescription(UpdateTaskDescriptionRequest) returns (Task) {}
-    rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (Task) {}
-    rpc UpdateTaskIssuedByUser(UpdateTaskIssuedByUserRequest) returns (Task) {}
-    rpc UpdateTaskDeadline(UpdateTaskDeadlineRequest) returns (Task) {}
-    rpc DeleteTask(DeleteTaskRequest) returns (Empty) {}
+  rpc InsertTask(InsertTaskRequest) returns (Task) {}
+  rpc GetTask(GetTaskRequest) returns (Task) {}
+  rpc UpdateTaskTitle(UpdateTaskTitleRequest) returns (Task) {}
+  rpc UpdateTaskDescription(UpdateTaskDescriptionRequest) returns (Task) {}
+  rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (Task) {}
+  rpc UpdateTaskIssuedByUser(UpdateTaskIssuedByUserRequest) returns (Task) {}
+  rpc UpdateTaskDeadline(UpdateTaskDeadlineRequest) returns (Task) {}
+  rpc DeleteTask(DeleteTaskRequest) returns (Empty) {}
 }
 
 // -- Task Comment --
 
 message TaskComment {
-    string id = 1;
-    Task task = 2;
-    Employee employee = 3;
-    string comment = 4;
-    File attachment = 5;
-    string created_at = 6;
-    string updated_at = 7;
-}   
+  string id = 1;
+  Task task = 2;
+  Employee employee = 3;
+  string comment = 4;
+  File attachment = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
 
 message InsertTaskCommentRequest {
-    string task_id = 1;
-    string user_id = 2;
-    string comment = 3;
+  string task_id = 1;
+  string user_id = 2;
+  string comment = 3;
 }
 
 message GetTaskCommentRequest {
-    string id = 1; // optional
-    string task_id = 2; // optional
-    string user_id = 3; // optional
+  string id = 1;      // optional
+  string task_id = 2; // optional
+  string user_id = 3; // optional
 }
 
 message UpdateTaskCommentRequest {
-    string id = 1;
-    string user_id = 2;
-    string new_comment = 3;
+  string id = 1;
+  string user_id = 2;
+  string new_comment = 3;
 }
 
-message DeleteTaskCommentRequest {
-    string id = 1;
-}
+message DeleteTaskCommentRequest { string id = 1; }
 
 service TaskCommentService {
-    rpc InsertTaskComment(InsertTaskCommentRequest) returns (TaskComment) {}
-    rpc GetTaskComment(GetTaskCommentRequest) returns (TaskComment) {}
-    rpc UpdateTaskComment(UpdateTaskCommentRequest) returns (TaskComment) {}
-    rpc DeleteTaskComment(DeleteTaskCommentRequest) returns (Empty) {}
+  rpc InsertTaskComment(InsertTaskCommentRequest) returns (TaskComment) {}
+  rpc GetTaskComment(GetTaskCommentRequest) returns (TaskComment) {}
+  rpc UpdateTaskComment(UpdateTaskCommentRequest) returns (TaskComment) {}
+  rpc DeleteTaskComment(DeleteTaskCommentRequest) returns (Empty) {}
 }
-
