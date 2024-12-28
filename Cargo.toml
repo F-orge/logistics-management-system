@@ -3,6 +3,9 @@ name = "etmar-logistics"
 version = "0.1.0"
 edition = "2021"
 
+[workspace]
+members = ['migration']
+
 [dependencies]
 axum = "0.7.9"
 dotenv = "0.15.0"
@@ -10,13 +13,38 @@ garde = { version = "0.20.0", features = ["derive", "serde"] }
 hyper-util = "0.1.10"
 prost = "0.13.4"
 serde = { version = "1.0.215", features = ["derive"] }
-sqlx = { version = "0.8.2", features = ["runtime-tokio", "tls-native-tls", "postgres", "derive", "macros", "migrate", "uuid", "chrono", "json"] }
+sqlx = { version = "0.8.2", features = [
+  "runtime-tokio",
+  "tls-native-tls",
+  "postgres",
+  "derive",
+  "macros",
+  "migrate",
+  "uuid",
+  "chrono",
+  "json",
+] }
 tokio = { version = "1.41.1", features = ["full"] }
 tokio-stream = "0.1.17"
 tonic = "0.12.3"
 tonic-web = "0.12.3"
+<<<<<<< HEAD
 tower = "0.5.2"
 tower-http = { version = "0.6.2", features = ["catch-panic", "compression-gzip", "cors", "decompression-gzip", "fs", "limit", "request-id", "sensitive-headers", "timeout", "trace"] }
+=======
+tower-http = { version = "0.6.2", features = [
+  "catch-panic",
+  "compression-gzip",
+  "cors",
+  "decompression-gzip",
+  "fs",
+  "limit",
+  "request-id",
+  "sensitive-headers",
+  "timeout",
+  "trace",
+] }
+>>>>>>> 46e0e57 (remerging)
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
 
