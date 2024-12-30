@@ -23,15 +23,23 @@ pub struct InsertUserRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserRequest {
-    /// optional
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "2")]
-    pub email: ::prost::alloc::string::String,
-    /// optional
-    #[prost(enumeration = "Role", tag = "3")]
-    pub role: i32,
+    #[prost(oneof = "get_user_request::Identifier", tags = "1, 2, 3")]
+    pub identifier: ::core::option::Option<get_user_request::Identifier>,
+}
+/// Nested message and enum types in `GetUserRequest`.
+pub mod get_user_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        /// optional
+        #[prost(string, tag = "1")]
+        Id(::prost::alloc::string::String),
+        /// optional
+        #[prost(string, tag = "2")]
+        Email(::prost::alloc::string::String),
+        /// optional
+        #[prost(enumeration = "super::Role", tag = "3")]
+        Role(i32),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateUserEmailRequest {
@@ -655,6 +663,30 @@ pub mod user_service_client {
             req.extensions_mut()
                 .insert(GrpcMethod::new("employee_management.UserService", "GetUser"));
             self.inner.unary(req, path, codec).await
+        }
+        pub async fn get_users(
+            &mut self,
+            request: impl tonic::IntoRequest<super::GetUserRequest>,
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::User>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/employee_management.UserService/GetUsers",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("employee_management.UserService", "GetUsers"));
+            self.inner.server_streaming(req, path, codec).await
         }
         pub async fn update_user_email(
             &mut self,
@@ -1811,6 +1843,16 @@ pub mod user_service_server {
             &self,
             request: tonic::Request<super::GetUserRequest>,
         ) -> std::result::Result<tonic::Response<super::User>, tonic::Status>;
+        /// Server streaming response type for the GetUsers method.
+        type GetUsersStream: tonic::codegen::tokio_stream::Stream<
+                Item = std::result::Result<super::User, tonic::Status>,
+            >
+            + std::marker::Send
+            + 'static;
+        async fn get_users(
+            &self,
+            request: tonic::Request<super::GetUserRequest>,
+        ) -> std::result::Result<tonic::Response<Self::GetUsersStream>, tonic::Status>;
         async fn update_user_email(
             &self,
             request: tonic::Request<super::UpdateUserEmailRequest>,
@@ -1990,6 +2032,52 @@ pub mod user_service_server {
                                 max_encoding_message_size,
                             );
                         let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/employee_management.UserService/GetUsers" => {
+                    #[allow(non_camel_case_types)]
+                    struct GetUsersSvc<T: UserService>(pub Arc<T>);
+                    impl<
+                        T: UserService,
+                    > tonic::server::ServerStreamingService<super::GetUserRequest>
+                    for GetUsersSvc<T> {
+                        type Response = super::User;
+                        type ResponseStream = T::GetUsersStream;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::GetUserRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as UserService>::get_users(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = GetUsersSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.server_streaming(method, req).await;
                         Ok(res)
                     };
                     Box::pin(fut)

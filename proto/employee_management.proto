@@ -24,9 +24,11 @@ message InsertUserRequest {
 }
 
 message GetUserRequest {
-  string id = 1;    // optional
-  string email = 2; // optional
-  Role role = 3;    // optional
+  oneof identifier {
+    string id = 1;    // optional
+    string email = 2; // optional
+    Role role = 3;    // optional
+  }
 }
 
 message UpdateUserEmailRequest {
@@ -53,6 +55,7 @@ message Empty {}
 service UserService {
   rpc InsertUser(InsertUserRequest) returns (User) {}
   rpc GetUser(GetUserRequest) returns (User) {}
+  rpc GetUsers(GetUserRequest) returns (stream User) {}
   rpc UpdateUserEmail(UpdateUserEmailRequest) returns (User) {}
   rpc UpdateUserPassword(UpdateUserPasswordRequest) returns (User) {}
   rpc UpdateUserRole(UpdateUserRoleRequest) returns (User) {}
