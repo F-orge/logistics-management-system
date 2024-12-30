@@ -130,11 +130,18 @@ impl GrpcUserService for UserService {
             Ok(mut stream) => {
                 let (tx, rx) = tokio::sync::mpsc::channel(4);
 
-                while let Some(item) = stream.try_next().await.unwrap() {
-                    let item: UserModel::ActiveModel = item.into();
-                    tx.send(Ok(item.try_into_model().unwrap().into()))
-                        .await
-                        .unwrap();
+                while let Ok(item) = stream.try_next().await {
+                    if let Some(item) = item {
+                        let item = match item.try_into_model() {
+                            Ok(value) => value.into(),
+                            Err(_err) => return Err(Status::internal("Internal server error")),
+                        };
+
+                        match tx.send(Ok(item)).await {
+                            Ok(_) => {}
+                            Err(_) => return Err(Status::internal("Internal server error")),
+                        }
+                    }
                 }
 
                 Ok(Response::new(rx.into()))
