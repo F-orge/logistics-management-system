@@ -1,3 +1,5 @@
+#![deny(clippy::unwrap_used)]
+
 use std::{sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
@@ -69,7 +71,7 @@ async fn main() {
     };
 
     // GRPC server
-    /* 
+    /*
     let grpc_server = Server::builder()
         .into_service()
         .into_axum_router();

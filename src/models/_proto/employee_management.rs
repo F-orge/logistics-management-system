@@ -100,39 +100,39 @@ pub struct InsertFileRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFileRequest {
-    /// optional
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "2")]
-    pub name: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "3")]
-    pub path: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "4")]
-    pub owner_id: ::prost::alloc::string::String,
+    #[prost(oneof = "get_file_request::Identifier", tags = "1, 2, 3")]
+    pub identifier: ::core::option::Option<get_file_request::Identifier>,
+}
+/// Nested message and enum types in `GetFileRequest`.
+pub mod get_file_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "1")]
+        Id(::prost::alloc::string::String),
+        #[prost(string, tag = "2")]
+        Name(::prost::alloc::string::String),
+        #[prost(string, tag = "3")]
+        Path(::prost::alloc::string::String),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateFileNameRequest {
+pub struct UpdateFileRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_name: ::prost::alloc::string::String,
+    #[prost(oneof = "update_file_request::Identifier", tags = "2, 3, 4")]
+    pub identifier: ::core::option::Option<update_file_request::Identifier>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateFilePathRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_path: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateFileOwnerRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_owner_id: ::prost::alloc::string::String,
+/// Nested message and enum types in `UpdateFileRequest`.
+pub mod update_file_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "2")]
+        Name(::prost::alloc::string::String),
+        #[prost(string, tag = "3")]
+        Path(::prost::alloc::string::String),
+        #[prost(string, tag = "4")]
+        OwnerId(::prost::alloc::string::String),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteFileRequest {
@@ -194,73 +194,54 @@ pub struct InsertEmployeeRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetEmployeeRequest {
-    /// optional
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "2")]
-    pub user_id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "3")]
-    pub name: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "4")]
-    pub position: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "5")]
-    pub contact_number: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "6")]
-    pub birthday: ::prost::alloc::string::String,
-    /// optional
-    #[prost(enumeration = "ContractType", tag = "7")]
-    pub contract_type: i32,
+    #[prost(oneof = "get_employee_request::Identifier", tags = "1, 2, 3, 4")]
+    pub identifier: ::core::option::Option<get_employee_request::Identifier>,
+}
+/// Nested message and enum types in `GetEmployeeRequest`.
+pub mod get_employee_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "1")]
+        Id(::prost::alloc::string::String),
+        #[prost(string, tag = "2")]
+        UserId(::prost::alloc::string::String),
+        #[prost(string, tag = "3")]
+        ContactNumber(::prost::alloc::string::String),
+        #[prost(enumeration = "super::ContractType", tag = "4")]
+        ContractType(i32),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateEmployeeNameRequest {
+pub struct UpdateEmployeeRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_first_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub new_middle_name: ::prost::alloc::string::String,
-    #[prost(string, tag = "4")]
-    pub new_last_name: ::prost::alloc::string::String,
+    #[prost(
+        oneof = "update_employee_request::Identifier",
+        tags = "2, 3, 4, 5, 6, 7, 8, 9"
+    )]
+    pub identifier: ::core::option::Option<update_employee_request::Identifier>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateEmployeePositionRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_position: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateEmployeeSexRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(enumeration = "Sex", tag = "2")]
-    pub sex: i32,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateEmployeeContactNumberRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_contact_number: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateEmployeeBirthdayRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_birthday: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateEmployeeContractTypeRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(enumeration = "ContractType", tag = "2")]
-    pub contract_type: i32,
+/// Nested message and enum types in `UpdateEmployeeRequest`.
+pub mod update_employee_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "2")]
+        NewFirstName(::prost::alloc::string::String),
+        #[prost(string, tag = "3")]
+        NewMiddleName(::prost::alloc::string::String),
+        #[prost(string, tag = "4")]
+        NewLastName(::prost::alloc::string::String),
+        #[prost(enumeration = "super::Sex", tag = "5")]
+        NewSex(i32),
+        #[prost(string, tag = "6")]
+        NewAddress(::prost::alloc::string::String),
+        #[prost(string, tag = "7")]
+        NewPosition(::prost::alloc::string::String),
+        #[prost(string, tag = "8")]
+        NewContactNumber(::prost::alloc::string::String),
+        #[prost(enumeration = "super::ContractType", tag = "9")]
+        NewContractType(i32),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteEmployeeRequest {
@@ -305,56 +286,47 @@ pub struct InsertTaskRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTaskRequest {
-    /// optional
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "2")]
-    pub title: ::prost::alloc::string::String,
-    /// optional
-    #[prost(enumeration = "TaskStatus", tag = "3")]
-    pub status: i32,
-    /// optional
-    #[prost(string, tag = "4")]
-    pub issued_by_user: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "5")]
-    pub deadline: ::prost::alloc::string::String,
+    #[prost(oneof = "get_task_request::Identifier", tags = "1, 2, 3, 4, 5")]
+    pub identifier: ::core::option::Option<get_task_request::Identifier>,
+}
+/// Nested message and enum types in `GetTaskRequest`.
+pub mod get_task_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "1")]
+        Id(::prost::alloc::string::String),
+        #[prost(string, tag = "2")]
+        Title(::prost::alloc::string::String),
+        #[prost(enumeration = "super::TaskStatus", tag = "3")]
+        Status(i32),
+        #[prost(string, tag = "4")]
+        IssuedByUser(::prost::alloc::string::String),
+        #[prost(string, tag = "5")]
+        Deadline(::prost::alloc::string::String),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateTaskTitleRequest {
+pub struct UpdateTaskRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_title: ::prost::alloc::string::String,
+    #[prost(oneof = "update_task_request::Identifier", tags = "2, 3, 4, 5, 6")]
+    pub identifier: ::core::option::Option<update_task_request::Identifier>,
 }
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateTaskDescriptionRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_description: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateTaskStatusRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(enumeration = "TaskStatus", tag = "2")]
-    pub status: i32,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateTaskIssuedByUserRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_issued_by_user: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct UpdateTaskDeadlineRequest {
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub new_deadline: ::prost::alloc::string::String,
+/// Nested message and enum types in `UpdateTaskRequest`.
+pub mod update_task_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "2")]
+        NewTitle(::prost::alloc::string::String),
+        #[prost(string, tag = "3")]
+        NewDescription(::prost::alloc::string::String),
+        #[prost(enumeration = "super::TaskStatus", tag = "4")]
+        NewStatus(i32),
+        #[prost(string, tag = "5")]
+        NewIssuedByUser(::prost::alloc::string::String),
+        #[prost(string, tag = "6")]
+        NewDeadline(::prost::alloc::string::String),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DeleteTaskRequest {
@@ -389,23 +361,26 @@ pub struct InsertTaskCommentRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTaskCommentRequest {
-    /// optional
-    #[prost(string, tag = "1")]
-    pub id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "2")]
-    pub task_id: ::prost::alloc::string::String,
-    /// optional
-    #[prost(string, tag = "3")]
-    pub user_id: ::prost::alloc::string::String,
+    #[prost(oneof = "get_task_comment_request::Identifier", tags = "1, 2, 3")]
+    pub identifier: ::core::option::Option<get_task_comment_request::Identifier>,
+}
+/// Nested message and enum types in `GetTaskCommentRequest`.
+pub mod get_task_comment_request {
+    #[derive(Clone, PartialEq, ::prost::Oneof)]
+    pub enum Identifier {
+        #[prost(string, tag = "1")]
+        Id(::prost::alloc::string::String),
+        #[prost(string, tag = "2")]
+        TaskId(::prost::alloc::string::String),
+        #[prost(string, tag = "3")]
+        UserId(::prost::alloc::string::String),
+    }
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateTaskCommentRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
-    pub user_id: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
     pub new_comment: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
@@ -920,9 +895,9 @@ pub mod file_service_client {
                 .insert(GrpcMethod::new("employee_management.FileService", "GetFile"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn update_file_name(
+        pub async fn update_file(
             &mut self,
-            request: impl tonic::IntoRequest<super::UpdateFileNameRequest>,
+            request: impl tonic::IntoRequest<super::UpdateFileRequest>,
         ) -> std::result::Result<tonic::Response<super::File>, tonic::Status> {
             self.inner
                 .ready()
@@ -934,58 +909,12 @@ pub mod file_service_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.FileService/UpdateFileName",
+                "/employee_management.FileService/UpdateFile",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("employee_management.FileService", "UpdateFileName"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_file_path(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateFilePathRequest>,
-        ) -> std::result::Result<tonic::Response<super::File>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.FileService/UpdateFilePath",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("employee_management.FileService", "UpdateFilePath"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_file_owner(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateFileOwnerRequest>,
-        ) -> std::result::Result<tonic::Response<super::File>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.FileService/UpdateFileOwner",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("employee_management.FileService", "UpdateFileOwner"),
+                    GrpcMethod::new("employee_management.FileService", "UpdateFile"),
                 );
             self.inner.unary(req, path, codec).await
         }
@@ -1154,9 +1083,9 @@ pub mod employee_service_client {
                 );
             self.inner.unary(req, path, codec).await
         }
-        pub async fn update_employee_name(
+        pub async fn update_employee(
             &mut self,
-            request: impl tonic::IntoRequest<super::UpdateEmployeeNameRequest>,
+            request: impl tonic::IntoRequest<super::UpdateEmployeeRequest>,
         ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
             self.inner
                 .ready()
@@ -1168,144 +1097,14 @@ pub mod employee_service_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.EmployeeService/UpdateEmployeeName",
+                "/employee_management.EmployeeService/UpdateEmployee",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
                     GrpcMethod::new(
                         "employee_management.EmployeeService",
-                        "UpdateEmployeeName",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_employee_position(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateEmployeePositionRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.EmployeeService/UpdateEmployeePosition",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.EmployeeService",
-                        "UpdateEmployeePosition",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_employee_sex(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateEmployeeSexRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.EmployeeService/UpdateEmployeeSex",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.EmployeeService",
-                        "UpdateEmployeeSex",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_employee_contact_number(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateEmployeeContactNumberRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.EmployeeService/UpdateEmployeeContactNumber",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.EmployeeService",
-                        "UpdateEmployeeContactNumber",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_employee_birthday(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateEmployeeBirthdayRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.EmployeeService/UpdateEmployeeBirthday",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.EmployeeService",
-                        "UpdateEmployeeBirthday",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_employee_contract_type(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateEmployeeContractTypeRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.EmployeeService/UpdateEmployeeContractType",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.EmployeeService",
-                        "UpdateEmployeeContractType",
+                        "UpdateEmployee",
                     ),
                 );
             self.inner.unary(req, path, codec).await
@@ -1473,9 +1272,9 @@ pub mod task_service_client {
                 .insert(GrpcMethod::new("employee_management.TaskService", "GetTask"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn update_task_title(
+        pub async fn update_task(
             &mut self,
-            request: impl tonic::IntoRequest<super::UpdateTaskTitleRequest>,
+            request: impl tonic::IntoRequest<super::UpdateTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
             self.inner
                 .ready()
@@ -1487,116 +1286,12 @@ pub mod task_service_client {
                 })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.TaskService/UpdateTaskTitle",
+                "/employee_management.TaskService/UpdateTask",
             );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(
-                    GrpcMethod::new("employee_management.TaskService", "UpdateTaskTitle"),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_task_description(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateTaskDescriptionRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.TaskService/UpdateTaskDescription",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.TaskService",
-                        "UpdateTaskDescription",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_task_status(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateTaskStatusRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.TaskService/UpdateTaskStatus",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.TaskService",
-                        "UpdateTaskStatus",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_task_issued_by_user(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateTaskIssuedByUserRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.TaskService/UpdateTaskIssuedByUser",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.TaskService",
-                        "UpdateTaskIssuedByUser",
-                    ),
-                );
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn update_task_deadline(
-            &mut self,
-            request: impl tonic::IntoRequest<super::UpdateTaskDeadlineRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.TaskService/UpdateTaskDeadline",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new(
-                        "employee_management.TaskService",
-                        "UpdateTaskDeadline",
-                    ),
+                    GrpcMethod::new("employee_management.TaskService", "UpdateTask"),
                 );
             self.inner.unary(req, path, codec).await
         }
@@ -2322,17 +2017,9 @@ pub mod file_service_server {
             &self,
             request: tonic::Request<super::GetFileRequest>,
         ) -> std::result::Result<tonic::Response<super::File>, tonic::Status>;
-        async fn update_file_name(
+        async fn update_file(
             &self,
-            request: tonic::Request<super::UpdateFileNameRequest>,
-        ) -> std::result::Result<tonic::Response<super::File>, tonic::Status>;
-        async fn update_file_path(
-            &self,
-            request: tonic::Request<super::UpdateFilePathRequest>,
-        ) -> std::result::Result<tonic::Response<super::File>, tonic::Status>;
-        async fn update_file_owner(
-            &self,
-            request: tonic::Request<super::UpdateFileOwnerRequest>,
+            request: tonic::Request<super::UpdateFileRequest>,
         ) -> std::result::Result<tonic::Response<super::File>, tonic::Status>;
         async fn delete_file(
             &self,
@@ -2505,13 +2192,13 @@ pub mod file_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/employee_management.FileService/UpdateFileName" => {
+                "/employee_management.FileService/UpdateFile" => {
                     #[allow(non_camel_case_types)]
-                    struct UpdateFileNameSvc<T: FileService>(pub Arc<T>);
+                    struct UpdateFileSvc<T: FileService>(pub Arc<T>);
                     impl<
                         T: FileService,
-                    > tonic::server::UnaryService<super::UpdateFileNameRequest>
-                    for UpdateFileNameSvc<T> {
+                    > tonic::server::UnaryService<super::UpdateFileRequest>
+                    for UpdateFileSvc<T> {
                         type Response = super::File;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2519,11 +2206,11 @@ pub mod file_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::UpdateFileNameRequest>,
+                            request: tonic::Request<super::UpdateFileRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as FileService>::update_file_name(&inner, request).await
+                                <T as FileService>::update_file(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -2534,97 +2221,7 @@ pub mod file_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = UpdateFileNameSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.FileService/UpdateFilePath" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateFilePathSvc<T: FileService>(pub Arc<T>);
-                    impl<
-                        T: FileService,
-                    > tonic::server::UnaryService<super::UpdateFilePathRequest>
-                    for UpdateFilePathSvc<T> {
-                        type Response = super::File;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateFilePathRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as FileService>::update_file_path(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateFilePathSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.FileService/UpdateFileOwner" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateFileOwnerSvc<T: FileService>(pub Arc<T>);
-                    impl<
-                        T: FileService,
-                    > tonic::server::UnaryService<super::UpdateFileOwnerRequest>
-                    for UpdateFileOwnerSvc<T> {
-                        type Response = super::File;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateFileOwnerRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as FileService>::update_file_owner(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateFileOwnerSvc(inner);
+                        let method = UpdateFileSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -2744,29 +2341,9 @@ pub mod employee_service_server {
             &self,
             request: tonic::Request<super::GetEmployeeRequest>,
         ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
-        async fn update_employee_name(
+        async fn update_employee(
             &self,
-            request: tonic::Request<super::UpdateEmployeeNameRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
-        async fn update_employee_position(
-            &self,
-            request: tonic::Request<super::UpdateEmployeePositionRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
-        async fn update_employee_sex(
-            &self,
-            request: tonic::Request<super::UpdateEmployeeSexRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
-        async fn update_employee_contact_number(
-            &self,
-            request: tonic::Request<super::UpdateEmployeeContactNumberRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
-        async fn update_employee_birthday(
-            &self,
-            request: tonic::Request<super::UpdateEmployeeBirthdayRequest>,
-        ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
-        async fn update_employee_contract_type(
-            &self,
-            request: tonic::Request<super::UpdateEmployeeContractTypeRequest>,
+            request: tonic::Request<super::UpdateEmployeeRequest>,
         ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status>;
         async fn delete_employee(
             &self,
@@ -2940,13 +2517,13 @@ pub mod employee_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/employee_management.EmployeeService/UpdateEmployeeName" => {
+                "/employee_management.EmployeeService/UpdateEmployee" => {
                     #[allow(non_camel_case_types)]
-                    struct UpdateEmployeeNameSvc<T: EmployeeService>(pub Arc<T>);
+                    struct UpdateEmployeeSvc<T: EmployeeService>(pub Arc<T>);
                     impl<
                         T: EmployeeService,
-                    > tonic::server::UnaryService<super::UpdateEmployeeNameRequest>
-                    for UpdateEmployeeNameSvc<T> {
+                    > tonic::server::UnaryService<super::UpdateEmployeeRequest>
+                    for UpdateEmployeeSvc<T> {
                         type Response = super::Employee;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -2954,14 +2531,11 @@ pub mod employee_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::UpdateEmployeeNameRequest>,
+                            request: tonic::Request<super::UpdateEmployeeRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as EmployeeService>::update_employee_name(
-                                        &inner,
-                                        request,
-                                    )
+                                <T as EmployeeService>::update_employee(&inner, request)
                                     .await
                             };
                             Box::pin(fut)
@@ -2973,257 +2547,7 @@ pub mod employee_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = UpdateEmployeeNameSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.EmployeeService/UpdateEmployeePosition" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateEmployeePositionSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<
-                        T: EmployeeService,
-                    > tonic::server::UnaryService<super::UpdateEmployeePositionRequest>
-                    for UpdateEmployeePositionSvc<T> {
-                        type Response = super::Employee;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateEmployeePositionRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as EmployeeService>::update_employee_position(
-                                        &inner,
-                                        request,
-                                    )
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateEmployeePositionSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.EmployeeService/UpdateEmployeeSex" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateEmployeeSexSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<
-                        T: EmployeeService,
-                    > tonic::server::UnaryService<super::UpdateEmployeeSexRequest>
-                    for UpdateEmployeeSexSvc<T> {
-                        type Response = super::Employee;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateEmployeeSexRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as EmployeeService>::update_employee_sex(&inner, request)
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateEmployeeSexSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.EmployeeService/UpdateEmployeeContactNumber" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateEmployeeContactNumberSvc<T: EmployeeService>(
-                        pub Arc<T>,
-                    );
-                    impl<
-                        T: EmployeeService,
-                    > tonic::server::UnaryService<
-                        super::UpdateEmployeeContactNumberRequest,
-                    > for UpdateEmployeeContactNumberSvc<T> {
-                        type Response = super::Employee;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<
-                                super::UpdateEmployeeContactNumberRequest,
-                            >,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as EmployeeService>::update_employee_contact_number(
-                                        &inner,
-                                        request,
-                                    )
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateEmployeeContactNumberSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.EmployeeService/UpdateEmployeeBirthday" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateEmployeeBirthdaySvc<T: EmployeeService>(pub Arc<T>);
-                    impl<
-                        T: EmployeeService,
-                    > tonic::server::UnaryService<super::UpdateEmployeeBirthdayRequest>
-                    for UpdateEmployeeBirthdaySvc<T> {
-                        type Response = super::Employee;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateEmployeeBirthdayRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as EmployeeService>::update_employee_birthday(
-                                        &inner,
-                                        request,
-                                    )
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateEmployeeBirthdaySvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.EmployeeService/UpdateEmployeeContractType" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateEmployeeContractTypeSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<
-                        T: EmployeeService,
-                    > tonic::server::UnaryService<
-                        super::UpdateEmployeeContractTypeRequest,
-                    > for UpdateEmployeeContractTypeSvc<T> {
-                        type Response = super::Employee;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<
-                                super::UpdateEmployeeContractTypeRequest,
-                            >,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as EmployeeService>::update_employee_contract_type(
-                                        &inner,
-                                        request,
-                                    )
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateEmployeeContractTypeSvc(inner);
+                        let method = UpdateEmployeeSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
@@ -3344,25 +2668,9 @@ pub mod task_service_server {
             &self,
             request: tonic::Request<super::GetTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status>;
-        async fn update_task_title(
+        async fn update_task(
             &self,
-            request: tonic::Request<super::UpdateTaskTitleRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status>;
-        async fn update_task_description(
-            &self,
-            request: tonic::Request<super::UpdateTaskDescriptionRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status>;
-        async fn update_task_status(
-            &self,
-            request: tonic::Request<super::UpdateTaskStatusRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status>;
-        async fn update_task_issued_by_user(
-            &self,
-            request: tonic::Request<super::UpdateTaskIssuedByUserRequest>,
-        ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status>;
-        async fn update_task_deadline(
-            &self,
-            request: tonic::Request<super::UpdateTaskDeadlineRequest>,
+            request: tonic::Request<super::UpdateTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status>;
         async fn delete_task(
             &self,
@@ -3535,13 +2843,13 @@ pub mod task_service_server {
                     };
                     Box::pin(fut)
                 }
-                "/employee_management.TaskService/UpdateTaskTitle" => {
+                "/employee_management.TaskService/UpdateTask" => {
                     #[allow(non_camel_case_types)]
-                    struct UpdateTaskTitleSvc<T: TaskService>(pub Arc<T>);
+                    struct UpdateTaskSvc<T: TaskService>(pub Arc<T>);
                     impl<
                         T: TaskService,
-                    > tonic::server::UnaryService<super::UpdateTaskTitleRequest>
-                    for UpdateTaskTitleSvc<T> {
+                    > tonic::server::UnaryService<super::UpdateTaskRequest>
+                    for UpdateTaskSvc<T> {
                         type Response = super::Task;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -3549,11 +2857,11 @@ pub mod task_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::UpdateTaskTitleRequest>,
+                            request: tonic::Request<super::UpdateTaskRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::update_task_title(&inner, request).await
+                                <T as TaskService>::update_task(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -3564,194 +2872,7 @@ pub mod task_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = UpdateTaskTitleSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.TaskService/UpdateTaskDescription" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateTaskDescriptionSvc<T: TaskService>(pub Arc<T>);
-                    impl<
-                        T: TaskService,
-                    > tonic::server::UnaryService<super::UpdateTaskDescriptionRequest>
-                    for UpdateTaskDescriptionSvc<T> {
-                        type Response = super::Task;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateTaskDescriptionRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as TaskService>::update_task_description(&inner, request)
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateTaskDescriptionSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.TaskService/UpdateTaskStatus" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateTaskStatusSvc<T: TaskService>(pub Arc<T>);
-                    impl<
-                        T: TaskService,
-                    > tonic::server::UnaryService<super::UpdateTaskStatusRequest>
-                    for UpdateTaskStatusSvc<T> {
-                        type Response = super::Task;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateTaskStatusRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as TaskService>::update_task_status(&inner, request)
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateTaskStatusSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.TaskService/UpdateTaskIssuedByUser" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateTaskIssuedByUserSvc<T: TaskService>(pub Arc<T>);
-                    impl<
-                        T: TaskService,
-                    > tonic::server::UnaryService<super::UpdateTaskIssuedByUserRequest>
-                    for UpdateTaskIssuedByUserSvc<T> {
-                        type Response = super::Task;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateTaskIssuedByUserRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as TaskService>::update_task_issued_by_user(
-                                        &inner,
-                                        request,
-                                    )
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateTaskIssuedByUserSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/employee_management.TaskService/UpdateTaskDeadline" => {
-                    #[allow(non_camel_case_types)]
-                    struct UpdateTaskDeadlineSvc<T: TaskService>(pub Arc<T>);
-                    impl<
-                        T: TaskService,
-                    > tonic::server::UnaryService<super::UpdateTaskDeadlineRequest>
-                    for UpdateTaskDeadlineSvc<T> {
-                        type Response = super::Task;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::UpdateTaskDeadlineRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as TaskService>::update_task_deadline(&inner, request)
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = UpdateTaskDeadlineSvc(inner);
+                        let method = UpdateTaskSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

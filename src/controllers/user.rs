@@ -6,15 +6,14 @@ use sea_orm::{
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
-use crate::models::{
-    employee_management::{
-        get_user_request::Identifier,
-        user_service_server::{UserService as GrpcUserService, UserServiceServer},
-        DeleteUserRequest, Empty, GetUserRequest, InsertUserRequest, Role, UpdateUserEmailRequest,
-        UpdateUserPasswordRequest, UpdateUserRoleRequest, User,
-    },
-    sea_orm_active_enums::RoleEnum,
+use crate::models::_proto::employee_management::{
+    get_user_request::Identifier,
+    user_service_server::{UserService as GrpcUserService, UserServiceServer},
+    DeleteUserRequest, Empty, GetUserRequest, InsertUserRequest, Role, UpdateUserEmailRequest,
+    UpdateUserPasswordRequest, UpdateUserRoleRequest, User,
 };
+
+use crate::models::sea_orm_active_enums::RoleEnum;
 
 use crate::models::user as UserModel;
 
@@ -277,7 +276,7 @@ impl GrpcUserService for UserService {
                 None => return Err(Status::not_found("User not found")),
             },
             Err(err) => match err {
-                DbErr::RecordNotFound(data) => return Err(Status::not_found("User not found")),
+                DbErr::RecordNotFound(_) => return Err(Status::not_found("User not found")),
                 _ => return Err(Status::internal("Internal server error")),
             },
         };
@@ -337,7 +336,7 @@ mod test {
     use tonic::transport::Server;
 
     use crate::{
-        models::employee_management::{user_service_client::UserServiceClient, Role},
+        models::_proto::employee_management::{user_service_client::UserServiceClient, Role},
         utils::test::start_server,
     };
 
@@ -348,8 +347,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 
@@ -375,8 +373,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 
@@ -409,8 +406,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 
@@ -443,8 +439,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 
@@ -477,8 +472,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 
@@ -511,8 +505,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 
@@ -544,8 +537,7 @@ mod test {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
 
-        let (handle, channel) =
-            start_server(Server::builder().add_service(UserService::new(&db))).await;
+        let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
 

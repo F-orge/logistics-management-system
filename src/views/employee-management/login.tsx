@@ -10,40 +10,29 @@ import {
 import { Button } from "../components/ui/button";
 import Input from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import {
+	TextField,
+	TextFieldInput,
+	TextFieldLabel,
+} from "~/components/ui/text-field";
+import { action, redirect } from "@solidjs/router";
+import { authService } from "~/entry-client";
+import { showToast } from "~/components/ui/toast";
+import { LoginForm, loginAction } from "~/features/authentication";
 
 const EmployeeManagementLoginPage: Component<{}> = (props) => {
 	return (
 		<main class="flex flex-col items-center justify-center h-screen gap-5">
-			<Card class="w-1/2 border-none">
-				<CardHeader>
-					<div class="flex flex-row items-center justify-between">
-						<div class="space-y-1.5">
-							<CardTitle>Employee Management</CardTitle>
-							<CardDescription>
-								Login to access employee management features
-							</CardDescription>
-						</div>
-						<img height={90} width={90} src="/etmar-logo.png" alt="" />
-					</div>
-				</CardHeader>
-				<form action="">
-					<CardContent class="flex flex-col gap-5">
-						<div>
-							<Label for="username">Email</Label>
-							<Input />
-						</div>
-						<div>
-							<Label for="username">Password</Label>
-							<Input />
-						</div>
-					</CardContent>
-					<CardFooter>
+			<div class="w-full max-w-2xl">
+				<h1>Etmar Logistics</h1>
+				<LoginForm action={loginAction}>
+					<div>
 						<Button type="submit" class="w-full">
 							Login
 						</Button>
-					</CardFooter>
-				</form>
-			</Card>
+					</div>
+				</LoginForm>
+			</div>
 		</main>
 	);
 };

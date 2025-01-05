@@ -2,6 +2,10 @@
 
 pub mod prelude;
 
-pub mod _proto;
+pub mod employee;
+pub mod file;
 pub mod sea_orm_active_enums;
+pub mod task;
+pub mod task_assignee;
+pub mod task_comment;
 pub mod user;

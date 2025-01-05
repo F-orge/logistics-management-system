@@ -79,25 +79,20 @@ message InsertFileRequest {
 }
 
 message GetFileRequest {
-  string id = 1;       // optional
-  string name = 2;     // optional
-  string path = 3;     // optional
-  string owner_id = 4; // optional
+  oneof identifier {
+    string id = 1;
+    string name = 2;
+    string path = 3;
+  }
 }
 
-message UpdateFileNameRequest {
+message UpdateFileRequest {
   string id = 1;
-  string new_name = 2;
-}
-
-message UpdateFilePathRequest {
-  string id = 1;
-  string new_path = 2;
-}
-
-message UpdateFileOwnerRequest {
-  string id = 1;
-  string new_owner_id = 2;
+  oneof identifier {
+    string name = 2;
+    string path = 3;
+    string owner_id = 4;
+  }
 }
 
 message DeleteFileRequest { string id = 1; }
@@ -105,9 +100,7 @@ message DeleteFileRequest { string id = 1; }
 service FileService {
   rpc InsertFile(InsertFileRequest) returns (File) {}
   rpc GetFile(GetFileRequest) returns (File) {}
-  rpc UpdateFileName(UpdateFileNameRequest) returns (File) {}
-  rpc UpdateFilePath(UpdateFilePathRequest) returns (File) {}
-  rpc UpdateFileOwner(UpdateFileOwnerRequest) returns (File) {}
+  rpc UpdateFile(UpdateFileRequest) returns (File) {}
   rpc DeleteFile(DeleteFileRequest) returns (Empty) {}
 }
 
@@ -117,6 +110,7 @@ enum ContractType {
   FULLTIME = 0;
   PARTTIME = 1;
 }
+
 enum Sex {
   MALE = 0;
   FEMALE = 1;
@@ -152,45 +146,26 @@ message InsertEmployeeRequest {
 }
 
 message GetEmployeeRequest {
-  string id = 1;                  // optional
-  string user_id = 2;             // optional
-  string name = 3;                // optional
-  string position = 4;            // optional
-  string contact_number = 5;      // optional
-  string birthday = 6;            // optional
-  ContractType contract_type = 7; // optional
+  oneof identifier {
+    string id = 1;
+    string user_id = 2;
+    string contact_number = 3;
+    ContractType contract_type = 4;
+  }
 }
 
-message UpdateEmployeeNameRequest {
+message UpdateEmployeeRequest {
   string id = 1;
-  string new_first_name = 2;
-  string new_middle_name = 3;
-  string new_last_name = 4;
-}
-
-message UpdateEmployeePositionRequest {
-  string id = 1;
-  string new_position = 2;
-}
-
-message UpdateEmployeeSexRequest {
-  string id = 1;
-  Sex sex = 2;
-}
-
-message UpdateEmployeeContactNumberRequest {
-  string id = 1;
-  string new_contact_number = 2;
-}
-
-message UpdateEmployeeBirthdayRequest {
-  string id = 1;
-  string new_birthday = 2;
-}
-
-message UpdateEmployeeContractTypeRequest {
-  string id = 1;
-  ContractType contract_type = 2;
+  oneof identifier {
+    string new_first_name = 2;
+    string new_middle_name = 3;
+    string new_last_name = 4;
+    Sex new_sex = 5;
+    string new_address = 6;
+    string new_position = 7;
+    string new_contact_number = 8;
+    ContractType new_contract_type = 9;
+  }
 }
 
 message DeleteEmployeeRequest { string id = 1; }
@@ -198,16 +173,7 @@ message DeleteEmployeeRequest { string id = 1; }
 service EmployeeService {
   rpc InsertEmployee(InsertEmployeeRequest) returns (Employee) {}
   rpc GetEmployee(GetEmployeeRequest) returns (Employee) {}
-  rpc UpdateEmployeeName(UpdateEmployeeNameRequest) returns (Employee) {}
-  rpc UpdateEmployeePosition(UpdateEmployeePositionRequest) returns (Employee) {
-  }
-  rpc UpdateEmployeeSex(UpdateEmployeeSexRequest) returns (Employee) {}
-  rpc UpdateEmployeeContactNumber(UpdateEmployeeContactNumberRequest)
-      returns (Employee) {}
-  rpc UpdateEmployeeBirthday(UpdateEmployeeBirthdayRequest) returns (Employee) {
-  }
-  rpc UpdateEmployeeContractType(UpdateEmployeeContractTypeRequest)
-      returns (Employee) {}
+  rpc UpdateEmployee(UpdateEmployeeRequest) returns (Employee) {}
   rpc DeleteEmployee(DeleteEmployeeRequest) returns (Empty) {}
 }
 
@@ -242,36 +208,24 @@ message InsertTaskRequest {
 }
 
 message GetTaskRequest {
-  string id = 1;             // optional
-  string title = 2;          // optional
-  TaskStatus status = 3;     // optional
-  string issued_by_user = 4; // optional
-  string deadline = 5;       // optional
+  oneof identifier {
+    string id = 1;
+    string title = 2;
+    TaskStatus status = 3;
+    string issued_by_user = 4;
+    string deadline = 5;
+  }
 }
 
-message UpdateTaskTitleRequest {
+message UpdateTaskRequest {
   string id = 1;
-  string new_title = 2;
-}
-
-message UpdateTaskDescriptionRequest {
-  string id = 1;
-  string new_description = 2;
-}
-
-message UpdateTaskStatusRequest {
-  string id = 1;
-  TaskStatus status = 2;
-}
-
-message UpdateTaskIssuedByUserRequest {
-  string id = 1;
-  string new_issued_by_user = 2;
-}
-
-message UpdateTaskDeadlineRequest {
-  string id = 1;
-  string new_deadline = 2;
+  oneof identifier {
+    string new_title = 2;
+    string new_description = 3;
+    TaskStatus new_status = 4;
+    string new_issued_by_user = 5;
+    string new_deadline = 6;
+  }
 }
 
 message DeleteTaskRequest { string id = 1; }
@@ -279,11 +233,7 @@ message DeleteTaskRequest { string id = 1; }
 service TaskService {
   rpc InsertTask(InsertTaskRequest) returns (Task) {}
   rpc GetTask(GetTaskRequest) returns (Task) {}
-  rpc UpdateTaskTitle(UpdateTaskTitleRequest) returns (Task) {}
-  rpc UpdateTaskDescription(UpdateTaskDescriptionRequest) returns (Task) {}
-  rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (Task) {}
-  rpc UpdateTaskIssuedByUser(UpdateTaskIssuedByUserRequest) returns (Task) {}
-  rpc UpdateTaskDeadline(UpdateTaskDeadlineRequest) returns (Task) {}
+  rpc UpdateTask(UpdateTaskRequest) returns (Task) {}
   rpc DeleteTask(DeleteTaskRequest) returns (Empty) {}
 }
 
@@ -306,15 +256,16 @@ message InsertTaskCommentRequest {
 }
 
 message GetTaskCommentRequest {
-  string id = 1;      // optional
-  string task_id = 2; // optional
-  string user_id = 3; // optional
+  oneof identifier {
+    string id = 1;
+    string task_id = 2;
+    string user_id = 3;
+  }
 }
 
 message UpdateTaskCommentRequest {
   string id = 1;
-  string user_id = 2;
-  string new_comment = 3;
+  string new_comment = 2;
 }
 
 message DeleteTaskCommentRequest { string id = 1; }
