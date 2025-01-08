@@ -13,6 +13,10 @@ export default {
 			},
 		},
 		extend: {
+			screens: {
+				"phone": "667px",
+				"desktop": "1080px",
+			},
 			colors: {
 				border: "hsl(var(--border))",
 				input: "hsl(var(--input))",
@@ -109,5 +113,9 @@ export default {
 			},
 		},
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [
+		require("tailwindcss-intersect"),
+		require("tailwindcss-animate"),
+		require("tailwindcss-animated"),
+	],
 } satisfies Config;

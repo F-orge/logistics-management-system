@@ -2,6 +2,8 @@ import { render } from "solid-js/web";
 import App from "./app.tsx";
 import "./assets/app.css";
 import "@fontsource/inter";
+import { Observer } from "tailwindcss-intersect";
+
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { AuthServiceClient } from "./lib/protoc/auth.client.ts";
 import {
@@ -11,6 +13,7 @@ import {
 	TaskServiceClient,
 	UserServiceClient,
 } from "./lib/protoc/employee_management.client.ts";
+import { executeAnimations } from "./features/marketing/animation.tsx";
 
 export const transport = new GrpcWebFetchTransport({
 	baseUrl: import.meta.env.PUBLIC_GRPC_URL as string,
@@ -47,3 +50,5 @@ if (!root) {
 }
 
 render(() => <App />, root);
+
+Observer.start();

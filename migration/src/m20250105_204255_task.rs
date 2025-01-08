@@ -163,7 +163,25 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+       
+        manager
+            .drop_table(Table::drop().table(TaskComment::Table).cascade().to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(Alias::new("task_assignee")).cascade().to_owned())
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(Task::Table).cascade().to_owned())
+            .await?;
+
+        manager
+            .drop_type(Type::drop().name(TaskStatusEnum).to_owned())
+            .await?;
+
         Ok(())
+
     }
 }
 

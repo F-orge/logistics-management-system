@@ -27,6 +27,7 @@
 		"kysely-codegen": "^0.17.0",
 		"pg": "^8.13.1",
 		"rspress": "^1.38.0",
+		"tailwindcss-intersect": "^2.0.1",
 		"vitest": "^2.1.7"
 	},
 	"peerDependencies": {
@@ -54,6 +55,7 @@
 		"solid-sonner": "^0.2.8",
 		"tailwind-merge": "^2.5.5",
 		"tailwindcss-animate": "^1.0.7",
+		"tailwindcss-animated": "^1.1.2",
 		"zod": "^3.24.1"
 	}
 }

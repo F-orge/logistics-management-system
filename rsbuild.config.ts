@@ -32,6 +32,16 @@ export default defineConfig({
 			root: "./target/release/frontend-build",
 		},
 	},
+	html: {
+		tags: [{
+			tag: "script",
+			attrs: {
+				src:
+					"https://unpkg.com/tailwindcss-intersect@2.x.x/dist/observer.min.js",
+				defer: true,
+			},
+		}],
+	},
 	resolve: {
 		alias: {
 			"~": path.resolve(__dirname, "./src/frontend"),
