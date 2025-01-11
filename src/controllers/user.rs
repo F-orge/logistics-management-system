@@ -13,42 +13,8 @@ use crate::models::_proto::employee_management::{
     UpdateUserPasswordRequest, UpdateUserRoleRequest, User,
 };
 
-use crate::models::sea_orm_active_enums::RoleEnum;
-
-use crate::models::user as UserModel;
-
-impl TryInto<UserModel::ActiveModel> for InsertUserRequest {
-    type Error = ();
-
-    fn try_into(self) -> Result<UserModel::ActiveModel, Self::Error> {
-        let role: RoleEnum = match self.role {
-            x if x == Role::SuperAdmin as i32 => RoleEnum::SuperAdmin,
-            x if x == Role::Admin as i32 => RoleEnum::Admin,
-            x if x == Role::Employee as i32 => RoleEnum::Employee,
-            x if x == Role::Client as i32 => RoleEnum::Client,
-            _ => return Err(()),
-        };
-
-        Ok(UserModel::ActiveModel {
-            email: Set(self.email),
-            password: Set(self.password),
-            role: Set(role),
-            ..Default::default()
-        })
-    }
-}
-
-impl Into<User> for UserModel::Model {
-    fn into(self) -> User {
-        User {
-            id: self.id.to_string(),
-            email: self.email,
-            role: self.role as i32,
-            created_at: self.created_at.to_string(),
-            updated_at: self.updated_at.to_string(),
-        }
-    }
-}
+use crate::models::_entities::sea_orm_active_enums::RoleEnum;
+use crate::models::_entities::user::{ActiveModel, Column, Entity};
 
 #[derive(Debug, Default)]
 pub struct UserService {
@@ -69,7 +35,7 @@ impl GrpcUserService for UserService {
         &self,
         request: Request<InsertUserRequest>,
     ) -> Result<Response<User>, Status> {
-        let payload: Result<UserModel::ActiveModel, _> = request.into_inner().try_into();
+        let payload: Result<ActiveModel, _> = request.into_inner().try_into();
 
         let db_response = match payload {
             Ok(value) => value.insert(&self.db).await,
@@ -77,7 +43,7 @@ impl GrpcUserService for UserService {
         };
 
         match db_response {
-            Ok(value) => Ok(Response::new(value.into())),
+            Ok(value) => Ok(Response::new(value.try_into().unwrap())),
             Err(err) => match err {
                 DbErr::RecordNotInserted => Err(Status::internal("Record not inserted")),
                 _ => Err(Status::internal("Internal server error")),
@@ -95,55 +61,59 @@ impl GrpcUserService for UserService {
             Some(value) => match value {
                 Identifier::Role(role) => match role {
                     x if x == RoleEnum::SuperAdmin as i32 => {
-                        UserModel::Entity::find()
-                            .filter(UserModel::Column::Role.eq(RoleEnum::SuperAdmin))
+                        Entity::find()
+                            .filter(Column::Role.eq(RoleEnum::SuperAdmin))
                             .stream(&self.db)
                             .await
                     }
                     x if x == RoleEnum::Admin as i32 => {
-                        UserModel::Entity::find()
-                            .filter(UserModel::Column::Role.eq(RoleEnum::Admin))
+                        Entity::find()
+                            .filter(Column::Role.eq(RoleEnum::Admin))
                             .stream(&self.db)
                             .await
                     }
                     x if x == RoleEnum::Employee as i32 => {
-                        UserModel::Entity::find()
-                            .filter(UserModel::Column::Role.eq(RoleEnum::Employee))
+                        Entity::find()
+                            .filter(Column::Role.eq(RoleEnum::Employee))
                             .stream(&self.db)
                             .await
                     }
                     x if x == RoleEnum::Client as i32 => {
-                        UserModel::Entity::find()
-                            .filter(UserModel::Column::Role.eq(RoleEnum::Client))
+                        Entity::find()
+                            .filter(Column::Role.eq(RoleEnum::Client))
                             .stream(&self.db)
                             .await
                     }
-                    _ => return Err(Status::invalid_argument("Invalid data")),
+                    _ => return Err(Status::invalid_argument("Invalid role selected")),
                 },
-                _ => return Err(Status::invalid_argument("Invalid data")),
+                _ => return Err(Status::invalid_argument("Invalid identifier")),
             },
-            None => return Err(Status::invalid_argument("Invalid data")),
+            None => return Err(Status::invalid_argument("Identifier required")),
         };
 
         match db_response {
             Ok(mut stream) => {
                 let (tx, rx) = tokio::sync::mpsc::channel(4);
-
                 while let Ok(item) = stream.try_next().await {
                     if let Some(item) = item {
                         let item = match item.try_into_model() {
-                            Ok(value) => value.into(),
-                            Err(_err) => return Err(Status::internal("Internal server error")),
+                            Ok(value) => value.try_into().unwrap(),
+                            Err(_err) => {
+                                return Err(Status::internal("Cannot convert item into model"))
+                            }
                         };
-
                         match tx.send(Ok(item)).await {
                             Ok(_) => {}
-                            Err(_) => return Err(Status::internal("Internal server error")),
+                            Err(_) => {
+                                return Err(Status::internal("Unable to send item to channel"))
+                            }
                         }
                     }
                 }
-
-                Ok(Response::new(rx.into()))
+                match rx.try_into() {
+                    Ok(v) => Ok(Response::new(v)),
+                    Err(_) => return Err(Status::internal("Cannot send stream to user")),
+                }
             }
             Err(err) => match err {
                 DbErr::RecordNotFound(data) => Err(Status::not_found(data)),
@@ -162,24 +132,27 @@ impl GrpcUserService for UserService {
 
         let db_response = match identifier {
             Identifier::Email(email) => {
-                UserModel::Entity::find()
-                    .filter(UserModel::Column::Email.eq(email))
+                Entity::find()
+                    .filter(Column::Email.eq(email))
                     .one(&self.db)
                     .await
             }
             Identifier::Id(id) => {
                 let uuid = match id.parse::<sea_orm::prelude::Uuid>() {
-                    Ok(value) => value,
+                    Ok(parsed_id) => parsed_id,
                     Err(_) => return Err(Status::invalid_argument("Invalid UUID")),
                 };
-                UserModel::Entity::find_by_id(uuid).one(&self.db).await
+                Entity::find_by_id(uuid).one(&self.db).await
             }
             _ => return Err(Status::invalid_argument("Invalid argument")),
         };
 
         match db_response {
             Ok(value) => match value {
-                Some(value) => Ok(Response::new(value.into())),
+                Some(model) => match model.try_into() {
+                    Ok(user) => Ok(Response::new(user)),
+                    Err(_) => Err(Status::internal("Cannot convert model into response")),
+                },
                 None => Err(Status::not_found("Not found")),
             },
             Err(_err) => Err(Status::internal("Internal server error")),
@@ -196,8 +169,8 @@ impl GrpcUserService for UserService {
             Err(_err) => return Err(Status::invalid_argument("Invalid UUID")),
         };
 
-        let mut current_user = match UserModel::Entity::find_by_id(primary_key)
-            .filter(UserModel::Column::Email.eq(payload.current_email))
+        let mut current_user = match Entity::find_by_id(primary_key)
+            .filter(Column::Email.eq(payload.current_email))
             .one(&self.db)
             .await
         {
@@ -206,7 +179,9 @@ impl GrpcUserService for UserService {
                 None => return Err(Status::not_found("User not found")),
             },
             Err(err) => match err {
-                DbErr::RecordNotFound(data) => return Err(Status::not_found("User not found")),
+                DbErr::RecordNotFound(data) => {
+                    return Err(Status::not_found(format!("User not found {}", data)))
+                }
                 _ => return Err(Status::internal("Internal server error")),
             },
         };
@@ -214,7 +189,12 @@ impl GrpcUserService for UserService {
         current_user.email = Set(payload.new_email);
 
         match current_user.update(&self.db).await {
-            Ok(value) => Ok(Response::new(value.into())),
+            Ok(model) => match model.try_into() {
+                Ok(updated_user) => Ok(Response::new(updated_user)),
+                Err(_) => Err(Status::internal(
+                    "Unable to convert updated_user to response",
+                )),
+            },
             Err(err) => match err {
                 _ => Err(Status::internal("Internal server error")),
             },
@@ -232,8 +212,8 @@ impl GrpcUserService for UserService {
             Err(_err) => return Err(Status::invalid_argument("Invalid uuid")),
         };
 
-        let mut current_user = match UserModel::Entity::find_by_id(primary_key)
-            .filter(UserModel::Column::Password.eq(payload.current_password))
+        let mut current_user = match Entity::find_by_id(primary_key)
+            .filter(Column::Password.eq(payload.current_password))
             .one(&self.db)
             .await
         {
@@ -250,7 +230,12 @@ impl GrpcUserService for UserService {
         current_user.password = Set(payload.new_password);
 
         match current_user.update(&self.db).await {
-            Ok(value) => Ok(Response::new(value.into())),
+            Ok(model) => match model.try_into() {
+                Ok(updated_user) => Ok(Response::new(updated_user)),
+                Err(_) => Err(Status::internal(
+                    "Unable to convert updated_user to response",
+                )),
+            },
             Err(err) => match err {
                 _ => Err(Status::internal("Internal server error")),
             },
@@ -267,10 +252,7 @@ impl GrpcUserService for UserService {
             Err(_err) => return Err(Status::invalid_argument("Invalid UUID")),
         };
 
-        let mut current_user = match UserModel::Entity::find_by_id(primary_key)
-            .one(&self.db)
-            .await
-        {
+        let mut current_user = match Entity::find_by_id(primary_key).one(&self.db).await {
             Ok(value) => match value {
                 Some(value) => value.into_active_model(),
                 None => return Err(Status::not_found("User not found")),
@@ -290,7 +272,12 @@ impl GrpcUserService for UserService {
         };
 
         match current_user.update(&self.db).await {
-            Ok(value) => Ok(Response::new(value.into())),
+            Ok(model) => match model.try_into() {
+                Ok(updated_user) => Ok(Response::new(updated_user)),
+                Err(_) => Err(Status::internal(
+                    "Unable to convert updated_user to response",
+                )),
+            },
             Err(err) => match err {
                 _ => Err(Status::internal("Internal server error")),
             },
@@ -307,10 +294,7 @@ impl GrpcUserService for UserService {
             Err(_err) => return Err(Status::invalid_argument("Invalid UUID")),
         };
 
-        let db_response = match UserModel::Entity::find_by_id(primary_key)
-            .one(&self.db)
-            .await
-        {
+        let db_response = match Entity::find_by_id(primary_key).one(&self.db).await {
             Ok(value) => match value {
                 Some(value) => value.delete(&self.db).await,
                 None => return Err(Status::not_found("User not found")),
@@ -329,7 +313,6 @@ impl GrpcUserService for UserService {
 
 #[cfg(test)]
 mod test {
-
     use migration::MigratorTrait;
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};
@@ -343,6 +326,7 @@ mod test {
     use super::*;
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_insert_user(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
@@ -369,6 +353,7 @@ mod test {
     }
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_get_user_by_id(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
@@ -402,6 +387,7 @@ mod test {
     }
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_get_user_by_email(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
@@ -435,6 +421,7 @@ mod test {
     }
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_update_user_email(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
@@ -468,6 +455,7 @@ mod test {
     }
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_update_user_password(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
@@ -501,6 +489,7 @@ mod test {
     }
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_update_user_role(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();
@@ -533,6 +522,7 @@ mod test {
     }
 
     #[sqlx::test]
+    #[test_log::test]
     async fn test_delete_user(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
         migration::Migrator::up(&db, None).await.unwrap();

@@ -68,6 +68,13 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Alias::new("task_assignee"))
+                    .col(
+                        ColumnDef::new(Alias::new("id"))
+                            .uuid()
+                            .not_null()
+                            .primary_key()
+                            .default(Expr::cust("gen_random_uuid()")),
+                    )
                     .col(ColumnDef::new(Alias::new("task_id")).uuid().not_null())
                     .col(ColumnDef::new(Alias::new("user_id")).uuid().not_null())
                     .to_owned(),
@@ -163,13 +170,17 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-       
         manager
             .drop_table(Table::drop().table(TaskComment::Table).cascade().to_owned())
             .await?;
 
         manager
-            .drop_table(Table::drop().table(Alias::new("task_assignee")).cascade().to_owned())
+            .drop_table(
+                Table::drop()
+                    .table(Alias::new("task_assignee"))
+                    .cascade()
+                    .to_owned(),
+            )
             .await?;
 
         manager
@@ -181,7 +192,6 @@ impl MigrationTrait for Migration {
             .await?;
 
         Ok(())
-
     }
 }
 

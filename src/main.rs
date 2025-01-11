@@ -1,8 +1,10 @@
 #![deny(clippy::unwrap_used)]
 
-use std::{sync::Arc, time::Duration};
+use std::{process::exit, sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
+use controllers::user::UserService;
+use sea_orm::Database;
 use tokio::net::TcpListener;
 use tonic::transport::Server;
 use tower_http::{
@@ -51,9 +53,18 @@ async fn main() {
     // Database connection
     tracing::debug!("Connecting to database");
 
+    let db_url = std::env::var("DATABASE_URL").unwrap();
+
+    let db = match Database::connect(db_url).await {
+        Ok(value) => value,
+        Err(_) => exit(1),
+    };
+
+    tracing::debug!("Connected to database");
+
     // App address and port
-    let app_address = std::env::var("APP_ADDRESS").expect("APP_ADDRESS not set");
-    let app_port = std::env::var("APP_PORT").expect("APP_PORT not set");
+    let app_address = std::env::var("APP_ADDRESS").unwrap_or("127.0.0.1".into());
+    let app_port = std::env::var("APP_PORT").unwrap_or("8080".into());
 
     // CORS layer
     let cors = CorsLayer::new()
@@ -63,6 +74,8 @@ async fn main() {
 
     let headers = Arc::new([header::AUTHORIZATION, header::COOKIE, header::SET_COOKIE]);
 
+    tracing::debug!("Setting up file service");
+
     let file_service = match cfg!(debug_assertions) {
         true => ServeDir::new("./target/release/frontend-build")
             .not_found_service(ServeFile::new("./target/release/frontedn-build/index.html")),
@@ -70,15 +83,16 @@ async fn main() {
             .not_found_service(ServeFile::new("./frontend-build/index.html")),
     };
 
-    // GRPC server
-    /*
+    tracing::debug!("Setting up grpc service router");
+
     let grpc_server = Server::builder()
+        .add_service(UserService::new(&db))
         .into_service()
         .into_axum_router();
-    */
 
     // App routes
     let app: Router = Router::new()
+        .nest("/grpc", grpc_server)
         .fallback_service(file_service)
         .layer(CatchPanicLayer::new())
         .layer(DecompressionLayer::new())
@@ -109,6 +123,8 @@ async fn main() {
                 ),
         )
         .layer(cors);
+
+    tracing::info!("Listening to: {} {}", app_address, app_port);
 
     // Start the server
     let listener = TcpListener::bind(format!("{}:{}", app_address, app_port))
