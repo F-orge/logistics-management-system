@@ -54,7 +54,7 @@ const TestimonialsSection: Component<{}> = (props) => {
 				</h2>
 			</div>
 			<div class="flex flex-col desktop:items-center">
-				<Card class="desktop:w-1/2 shadow-lg ">
+				<Card class="desktop:w-1/2 shadow-lg intersect:animate-fade-up animate-delay-300 intersect-once">
 					<CardContent>
 						<blockquote class="blockquote desktop:heading-4 desktop:font-light">
 							{TESTIMONAILS[0].content}
@@ -76,7 +76,7 @@ const TestimonialsSection: Component<{}> = (props) => {
 			<div class="grid md:grid-cols-1 lg:grid-cols-3 gap-5">
 				<For each={TESTIMONAILS.splice(1)}>
 					{(testimonial) => (
-						<Card class="flex flex-col justify-end shadow-lg ">
+						<Card class="flex flex-col justify-end shadow-lg intersect:animate-fade-up animate-delay-300 intersect-once">
 							<CardContent>
 								<blockquote class="blockquote desktop:heading-4 desktop:font-light">
 									{testimonial.content}

@@ -90,7 +90,7 @@ const ServicesSection: Component<{}> = (props) => {
 			<div class="grid phone:grid-cols-1 desktop:grid-cols-2 gap-5">
 				<For each={SERVICES}>
 					{(feature) => (
-						<Card class="shadow-lg intersect:animate-fade-up animate-delay-300 intersect-full">
+						<Card class="shadow-lg intersect:animate-fade-up animate-delay-300 intersect-once">
 							<CardHeader class="flex flex-row items-center gap-2.5">
 								{feature.icon}
 								<CardTitle>{feature.title}</CardTitle>

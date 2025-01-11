@@ -44,7 +44,7 @@ const ContactSection: Component<{}> = (props) => {
 			<div class="grid grid-cols-1 desktop:grid-cols-3 gap-5">
 				<For each={CONTACT_LIST}>
 					{(contact) => (
-						<Card class="shadow-lg p-4 justify-center items-start flex flex-col">
+						<Card class="shadow-lg p-4 justify-center items-start flex flex-col intersect:animate-fade-up animate-delay-300 intersect-once">
 							<div class="flex flex-row gap-2.5 items-center">
 								{contact.icon}
 								<CardTitle>{contact.name}</CardTitle>

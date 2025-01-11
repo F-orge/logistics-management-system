@@ -1,4 +1,11 @@
-import { lazy, Match, Suspense, Switch, type Component } from "solid-js";
+import {
+	lazy,
+	Match,
+	onMount,
+	Suspense,
+	Switch,
+	type Component,
+} from "solid-js";
 import { Navigate, Route, Router } from "@solidjs/router";
 import {
 	ColorModeProvider,
@@ -7,6 +14,7 @@ import {
 } from "@kobalte/core";
 import { Toaster } from "./components/ui/toast.tsx";
 import StatusPage from "./status.tsx";
+import { Observer } from "tailwindcss-intersect";
 
 /*-- Global Routes --*/
 const NotFoundPage = lazy(() => import("./not-found.tsx"));
@@ -37,6 +45,10 @@ const EmployeeManagementDashboardLayout = lazy(
 
 const App: Component<{}> = (_props) => {
 	const storageManager = createLocalStorageManager("rsbuild-ui-theme");
+
+	onMount(() => {
+		Observer.start();
+	});
 
 	return (
 		<Router

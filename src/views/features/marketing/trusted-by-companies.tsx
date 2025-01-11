@@ -32,7 +32,7 @@ const TRUSTED_BY_COMPANIES = [
 const TrustedByCompaniesSection: Component<{}> = (props) => {
 	return (
 		<section class="py-12 rounded-md px-4 w-full flex flex-col gap-5 ">
-			<span class="heading-2">
+			<span class="heading-2 text-center desktop:text-start">
 				Trusted by the world’s most innovative companies
 			</span>
 			<div class="grid grid-cols-1 desktop:grid-cols-5 gap-5 p-4">
