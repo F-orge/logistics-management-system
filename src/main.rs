@@ -3,7 +3,7 @@
 use std::{process::exit, sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
-use controllers::user::UserService;
+use controllers::{auth::AuthService, user::UserService};
 use sea_orm::Database;
 use tokio::net::TcpListener;
 use tonic::transport::Server;
@@ -86,6 +86,7 @@ async fn main() {
     tracing::debug!("Setting up grpc service router");
 
     let grpc_server = Server::builder()
+        .add_service(AuthService::new(&db))
         .add_service(UserService::new(&db))
         .into_service()
         .into_axum_router();
