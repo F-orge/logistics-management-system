@@ -44,6 +44,14 @@ impl GrpcAuthService for AuthService {
         tonic::Response<crate::models::_proto::auth::AuthResponse>,
         tonic::Status,
     > {
+        let host_name = match request.metadata().get("Hostname") {
+            Some(host_name) => match host_name.to_str() {
+                Ok(host_name) => host_name.to_string(),
+                Err(_) => return Err(Status::invalid_argument("Invalid `Hostname` header")),
+            },
+            None => return Err(Status::invalid_argument("missing `Hostname` header")),
+        };
+
         let payload = request.into_inner();
 
         let user = match Entity::find()
@@ -83,6 +91,8 @@ impl GrpcAuthService for AuthService {
         claims.insert("sub", user.id.to_string());
 
         // TODO: implement aud (audience) claims using hostname
+
+        claims.insert("aud", host_name);
         claims.insert("exp", expiration.clone());
         claims.insert("iat", Utc::now().to_string());
         claims.insert("jti", Uuid::new_v4().to_string());
@@ -107,6 +117,8 @@ impl GrpcAuthService for AuthService {
 pub struct JWTReserveClaims {
     #[serde(rename = "iss")]
     issuer: String,
+    #[serde(rename = "aud")]
+    audience: String,
     #[serde(rename = "sub")]
     subject: Uuid,
     #[serde(rename = "exp")]
@@ -153,7 +165,7 @@ pub async fn auth_middleware(mut request: Request, next: Next) -> axum::response
         }
     };
 
-    let claims: JWTClaims = match token.to_str().unwrap().verify_with_key(&key) {
+    let mut claims: JWTClaims = match token.to_str().unwrap().verify_with_key(&key) {
         Ok(claims) => claims,
         Err(_) => {
             return axum::response::Response::builder()
@@ -161,6 +173,60 @@ pub async fn auth_middleware(mut request: Request, next: Next) -> axum::response
                 .unwrap_or_default()
         }
     };
+
+    // check if the token is ready to use
+    if claims.reserve.not_before_time > Utc::now() {
+        return axum::response::Response::builder()
+            .status(403)
+            .body(Body::empty())
+            .unwrap_or_default();
+    }
+
+    let host_name = match request.headers().get("Hostname") {
+        Some(host_name) => match host_name.to_str() {
+            Ok(host_name) => host_name.to_string(),
+            Err(_) => {
+                return axum::response::Response::builder()
+                    .status(403)
+                    .body(Body::empty())
+                    .unwrap_or_default()
+            }
+        },
+        None => {
+            return axum::response::Response::builder()
+                .status(403)
+                .body(Body::empty())
+                .unwrap_or_default()
+        }
+    };
+
+    // check if the token is from the aud (audience) using hostname
+    if claims.reserve.audience != host_name {
+        return axum::response::Response::builder()
+            .status(403)
+            .body(Body::empty())
+            .unwrap_or_default();
+    }
+
+    // TODO: convert this to env variable or state since we are not the issuer
+    if claims.reserve.issuer != "api.f-org-e.systems" {
+        return axum::response::Response::builder()
+            .status(403)
+            .body(Body::empty())
+            .unwrap_or_default();
+    }
+
+    // let's check if the token is expired
+    if claims.reserve.expiry < Utc::now() {
+        return axum::response::Response::builder()
+            .status(403)
+            .body(Body::empty())
+            .unwrap_or_default();
+    }
+
+    // Future versions: have a way to check if the token is banned or not using jti claims
+
+    claims.is_authenticated = true;
 
     request.extensions_mut().insert(claims);
 
