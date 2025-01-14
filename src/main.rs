@@ -86,7 +86,8 @@ async fn main() {
     tracing::debug!("Setting up grpc service router");
 
     let grpc_server = Server::builder()
-        .add_service(AuthService::new(&db))
+        // TODO: convert this "Authencation service" to a environment variable to hide it in the source code
+        .add_service(AuthService::new(&db, "api.f-org-e.systems".into()))
         .add_service(UserService::new(&db))
         .into_service()
         .into_axum_router();
