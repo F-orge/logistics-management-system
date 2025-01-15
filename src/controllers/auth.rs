@@ -236,14 +236,12 @@ pub async fn auth_middleware(
 
     request.extensions_mut().insert(claims);
 
-    let response = next.run(request).await;
-
-    response
+    next.run(request).await
 }
 
 #[cfg(test)]
 mod test {
-
+    #![allow(clippy::unwrap_used)]
     use migration::MigratorTrait;
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};

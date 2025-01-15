@@ -1,5 +1,6 @@
 #[cfg(test)]
 pub mod test {
+    #![allow(clippy::unwrap_used)]
 
     use hyper_util::rt::TokioIo;
     use tokio::task::JoinHandle;
