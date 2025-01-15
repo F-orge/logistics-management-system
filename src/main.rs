@@ -3,7 +3,7 @@
 use std::{process::exit, sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
-use controllers::{auth::AuthService, user::UserService};
+use controllers::{auth::AuthService, file::FileService, user::UserService};
 use hmac::{Hmac, Mac};
 use sea_orm::{Database, DatabaseConnection};
 use sha2::Sha256;
@@ -158,12 +158,15 @@ async fn main() {
 
     tracing::debug!("Setting up grpc service router");
 
+    let (axum_file_service, grpc_file_service) = FileService::new(&db);
+
     let grpc_server = Server::builder()
         // TODO: convert this "Authencation service" to a environment variable to hide it in the source code
         .add_service(AuthService::new(
             &app_state.db,
             "api.f-org-e.systems".into(),
         ))
+        .add_service(grpc_file_service)
         .add_service(UserService::new(&app_state.db))
         .into_service()
         .into_axum_router();
@@ -171,6 +174,7 @@ async fn main() {
     // App routes
     let app: Router = Router::new()
         .nest("/grpc", grpc_server)
+        .nest("/file", axum_file_service)
         .fallback_service(file_service);
 
     let app = setup_layers(app, app_state);
