@@ -158,7 +158,7 @@ async fn main() {
 
     tracing::debug!("Setting up grpc service router");
 
-    let (axum_file_service, grpc_file_service) = FileService::new(&db);
+    let (axum_file_service, grpc_file_service) = FileService::new(&app_state.db);
 
     let grpc_server = Server::builder()
         // TODO: convert this "Authencation service" to a environment variable to hide it in the source code
