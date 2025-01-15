@@ -3,13 +3,13 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "file")]
+#[sea_orm(schema_name = "etmar_logistics", table_name = "file")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     #[sea_orm(unique)]
-    pub name: Vec<u8>,
-    #[sea_orm(column_type = "Text", unique)]
+    pub name: String,
+    #[sea_orm(column_type = "Text")]
     pub path: String,
     pub owner_id: Uuid,
     pub created_at: DateTime,
@@ -18,8 +18,8 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::task_comment::Entity")]
-    TaskComment,
+    #[sea_orm(has_many = "super::task_comment_file_attachment::Entity")]
+    TaskCommentFileAttachment,
     #[sea_orm(
         belongs_to = "super::user::Entity",
         from = "Column::OwnerId",
@@ -30,9 +30,9 @@ pub enum Relation {
     User,
 }
 
-impl Related<super::task_comment::Entity> for Entity {
+impl Related<super::task_comment_file_attachment::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::TaskComment.def()
+        Relation::TaskCommentFileAttachment.def()
     }
 }
 

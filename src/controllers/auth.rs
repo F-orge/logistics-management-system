@@ -51,7 +51,7 @@ impl GrpcAuthService for AuthService {
         tonic::Response<crate::models::_proto::auth::AuthResponse>,
         tonic::Status,
     > {
-        let host_name = match request.metadata().get("Hostname") {
+        let host_name = match request.metadata().get("host") {
             Some(host_name) => match host_name.to_str() {
                 Ok(host_name) => host_name.to_string(),
                 Err(_) => return Err(Status::invalid_argument("Invalid `Hostname` header")),
@@ -106,7 +106,7 @@ impl GrpcAuthService for AuthService {
         claims.insert("nbf", Utc::now().to_string());
 
         // private claims
-        claims.insert("role", user.role.to_value().to_string());
+        claims.insert("role", user.user_role);
         claims.insert("email", user.email);
 
         let token = match claims.sign_with_key(&key) {
@@ -188,7 +188,7 @@ pub async fn auth_middleware(
             .unwrap_or_default();
     }
 
-    let host_name = match request.headers().get("Hostname") {
+    let host_name = match request.headers().get("Host") {
         Some(host_name) => match host_name.to_str() {
             Ok(host_name) => host_name.to_string(),
             Err(_) => {
@@ -236,18 +236,15 @@ pub async fn auth_middleware(
 
     request.extensions_mut().insert(claims);
 
-    let response = next.run(request).await;
-
-    response
+    next.run(request).await
 }
 
 #[cfg(test)]
 mod test {
-
-    use migration::MigratorTrait;
+    #![allow(clippy::unwrap_used)]
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};
-    use tonic::transport::Server;
+    use tonic::{transport::Server, Request};
 
     use super::*;
 
@@ -266,9 +263,6 @@ mod test {
     #[test_log::test]
     async fn test_auth_login(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-
-        migration::Migrator::up(&db, None).await.unwrap();
-
         let (_, channel) = start_server(
             Server::builder()
                 .add_service(UserService::new(&db))
@@ -277,7 +271,12 @@ mod test {
         .await;
 
         let mut user_client = UserServiceClient::new(channel.clone());
-        let mut auth_client = AuthServiceClient::new(channel);
+        let mut auth_client =
+            AuthServiceClient::with_interceptor(channel, move |mut req: Request<()>| {
+                req.metadata_mut()
+                    .insert("host", "www.example.com".parse().unwrap());
+                Ok(req)
+            });
 
         let request = InsertUserRequest {
             email: "johndoe@gmail.com".into(),
@@ -295,6 +294,6 @@ mod test {
 
         let response = auth_client.login(auth_request).await;
 
-        assert!(response.is_ok());
+        assert!(response.is_ok(), "{:#?}", response.err());
     }
 }

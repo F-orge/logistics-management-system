@@ -33,7 +33,7 @@ impl FileService {
         (axum_router, grpc_router)
     }
 
-    async fn upload_file(mut multipart: Multipart) {
+    async fn upload_file(mut multipart: Multipart) -> Result<(), (StatusCode, String)> {
         // retrieve the file bytes and store it in a `storage` folder
         while let Ok(Some(field)) = multipart.next_field().await {
             // TODO: just replace this with Uuid::new_v4 and convert it to string since we do not need the file name
@@ -43,10 +43,12 @@ impl FileService {
             } else {
                 continue;
             };
-            FileService::stream_to_file(&file_name, field)
-                .await
-                .unwrap();
+            match FileService::stream_to_file(&file_name, field).await {
+                Ok(_) => {}
+                Err(err) => return Err(err),
+            };
         }
+        Ok(())
     }
 
     async fn stream_to_file<S, E>(name: &str, stream: S) -> Result<(), (StatusCode, String)>

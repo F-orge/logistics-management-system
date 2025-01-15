@@ -13,25 +13,37 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  * @generated from protobuf service auth.AuthService
  */
 export interface IAuthServiceClient {
-    /**
-     * @generated from protobuf rpc: Login(auth.AuthRequest) returns (auth.AuthResponse);
-     */
-    login(input: AuthRequest, options?: RpcOptions): UnaryCall<AuthRequest, AuthResponse>;
+	/**
+	 * @generated from protobuf rpc: Login(auth.AuthRequest) returns (auth.AuthResponse);
+	 */
+	login(
+		input: AuthRequest,
+		options?: RpcOptions,
+	): UnaryCall<AuthRequest, AuthResponse>;
 }
 /**
  * @generated from protobuf service auth.AuthService
  */
 export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
-    typeName = AuthService.typeName;
-    methods = AuthService.methods;
-    options = AuthService.options;
-    constructor(private readonly _transport: RpcTransport) {
-    }
-    /**
-     * @generated from protobuf rpc: Login(auth.AuthRequest) returns (auth.AuthResponse);
-     */
-    login(input: AuthRequest, options?: RpcOptions): UnaryCall<AuthRequest, AuthResponse> {
-        const method = this.methods[0], opt = this._transport.mergeOptions(options);
-        return stackIntercept<AuthRequest, AuthResponse>("unary", this._transport, method, opt, input);
-    }
+	typeName = AuthService.typeName;
+	methods = AuthService.methods;
+	options = AuthService.options;
+	constructor(private readonly _transport: RpcTransport) {}
+	/**
+	 * @generated from protobuf rpc: Login(auth.AuthRequest) returns (auth.AuthResponse);
+	 */
+	login(
+		input: AuthRequest,
+		options?: RpcOptions,
+	): UnaryCall<AuthRequest, AuthResponse> {
+		const method = this.methods[0],
+			opt = this._transport.mergeOptions(options);
+		return stackIntercept<AuthRequest, AuthResponse>(
+			"unary",
+			this._transport,
+			method,
+			opt,
+			input,
+		);
+	}
 }
