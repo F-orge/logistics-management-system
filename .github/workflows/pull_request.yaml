@@ -9,19 +9,26 @@ env:
 jobs:
   rust:
     runs-on: ubuntu-latest
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.7
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
       - name: Lint with Clippy
-        run: cargo clippy --verbose
+        run: cargo clippy
       - name: Build with Cargo
-        run: cargo build --verbose
+        run: cargo build
       - name: Test with Cargo
-        run: cargo test --verbose
+        run: cargo test
   typescript:
     runs-on: [self-hosted, linux, x64]
     steps:
