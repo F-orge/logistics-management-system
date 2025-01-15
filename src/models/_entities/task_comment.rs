@@ -28,10 +28,10 @@ pub enum Relation {
     File,
     #[sea_orm(
         belongs_to = "super::task::Entity",
-        from = "Column::TaskId",
-        to = "super::task::Column::Id",
+        from = "(Column::TaskId, Column::TaskId)",
+        to = "(super::task::Column::Id, super::task::Column::Id)",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "NoAction"
     )]
     Task,
     #[sea_orm(

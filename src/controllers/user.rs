@@ -199,7 +199,9 @@ impl GrpcUserService for UserService {
                     "Unable to convert updated_user to response",
                 )),
             },
-            Err(err) => Err(Status::internal("Internal server error")),
+            Err(err) => match err {
+                _ => Err(Status::internal("Internal server error")),
+            },
         }
     }
 
@@ -238,7 +240,9 @@ impl GrpcUserService for UserService {
                     "Unable to convert updated_user to response",
                 )),
             },
-            Err(err) => Err(Status::internal("Internal server error")),
+            Err(err) => match err {
+                _ => Err(Status::internal("Internal server error")),
+            },
         }
     }
     async fn update_user_role(
@@ -278,7 +282,9 @@ impl GrpcUserService for UserService {
                     "Unable to convert updated_user to response",
                 )),
             },
-            Err(err) => Err(Status::internal("Internal server error")),
+            Err(err) => match err {
+                _ => Err(Status::internal("Internal server error")),
+            },
         }
     }
     async fn delete_user(
@@ -309,9 +315,6 @@ impl GrpcUserService for UserService {
 
 #[cfg(test)]
 mod test {
-
-    #![allow(clippy::unwrap_used)]
-
     use migration::MigratorTrait;
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};

@@ -22,8 +22,8 @@ pub enum Relation {
     TaskComment,
     #[sea_orm(
         belongs_to = "super::user::Entity",
-        from = "Column::OwnerId",
-        to = "super::user::Column::Id",
+        from = "(Column::OwnerId, Column::OwnerId)",
+        to = "(super::user::Column::Id, super::user::Column::Id)",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
