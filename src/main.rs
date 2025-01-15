@@ -1,4 +1,5 @@
 #![deny(clippy::unwrap_used)]
+#![allow(unused_imports)]
 
 use std::{process::exit, sync::Arc, time::Duration};
 
