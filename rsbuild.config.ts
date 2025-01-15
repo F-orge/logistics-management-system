@@ -33,14 +33,15 @@ export default defineConfig({
 		},
 	},
 	html: {
-		tags: [{
-			tag: "script",
-			attrs: {
-				src:
-					"https://unpkg.com/tailwindcss-intersect@2.x.x/dist/observer.min.js",
-				defer: true,
+		tags: [
+			{
+				tag: "script",
+				attrs: {
+					src: "https://unpkg.com/tailwindcss-intersect@2.x.x/dist/observer.min.js",
+					defer: true,
+				},
 			},
-		}],
+		],
 	},
 	resolve: {
 		alias: {

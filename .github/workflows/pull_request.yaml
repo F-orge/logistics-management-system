@@ -35,15 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v2
-      - name: Lint with Biome
-        run: deno lint
-      - name: Format with Deno
-        run: deno fmt
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22.x"
+      - uses: oven-sh/setup-bun@v2
       - name: Install dependencies
-        run: npm ci
-      - name: Test using vitest
-        run: npm test
+        run: bun install
+      - name: Lint with Biome
+        run: bunx biome lint
+      - name: Format with Biome
+        run: bunx biome format --fix

@@ -27,10 +27,10 @@
 		},
 		"ignore": [
 			"src/views/components/ui",
-			"database/migrations",
 			"dist",
 			"coverage",
-			"src/models/typescript"
+			"src/views/lib/protoc",
+			"target"
 		]
 	},
 	"javascript": {
