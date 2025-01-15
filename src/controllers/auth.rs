@@ -51,7 +51,7 @@ impl GrpcAuthService for AuthService {
         tonic::Response<crate::models::_proto::auth::AuthResponse>,
         tonic::Status,
     > {
-        let host_name = match request.metadata().get("Hostname") {
+        let host_name = match request.metadata().get("host") {
             Some(host_name) => match host_name.to_str() {
                 Ok(host_name) => host_name.to_string(),
                 Err(_) => return Err(Status::invalid_argument("Invalid `Hostname` header")),
@@ -188,7 +188,7 @@ pub async fn auth_middleware(
             .unwrap_or_default();
     }
 
-    let host_name = match request.headers().get("Hostname") {
+    let host_name = match request.headers().get("Host") {
         Some(host_name) => match host_name.to_str() {
             Ok(host_name) => host_name.to_string(),
             Err(_) => {
@@ -245,7 +245,7 @@ mod test {
     use migration::MigratorTrait;
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};
-    use tonic::transport::Server;
+    use tonic::{metadata::MetadataMap, transport::Server, Request};
 
     use super::*;
 
@@ -275,7 +275,12 @@ mod test {
         .await;
 
         let mut user_client = UserServiceClient::new(channel.clone());
-        let mut auth_client = AuthServiceClient::new(channel);
+        let mut auth_client =
+            AuthServiceClient::with_interceptor(channel, move |mut req: Request<()>| {
+                req.metadata_mut()
+                    .insert("host", "www.example.com".parse().unwrap());
+                Ok(req)
+            });
 
         let request = InsertUserRequest {
             email: "johndoe@gmail.com".into(),
@@ -293,6 +298,6 @@ mod test {
 
         let response = auth_client.login(auth_request).await;
 
-        assert!(response.is_ok());
+        assert!(response.is_ok(), "{:#?}", response.err());
     }
 }
