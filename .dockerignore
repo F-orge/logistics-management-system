@@ -6,3 +6,4 @@ dist
 .env.production
 .data
 doc_build
+.env
