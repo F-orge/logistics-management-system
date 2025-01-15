@@ -13,7 +13,7 @@ tokio = { version = "1.41.1", features = ["full"] }
 
 [dependencies]
 migration = { path = "./migration" }
-axum = "0.7.9"
+axum = { version = "0.7.9", features = ["multipart"] }
 tokio.workspace = true
 dotenv.workspace = true
 garde = { version = "0.20.0", features = ["derive", "serde"] }
@@ -58,6 +58,7 @@ test-log = "0.2.16"
 jwt = "0.16.0"
 sha2 = "0.10.8"
 hmac = "0.12.1"
+tokio-util = "0.7.13"
 
 [build-dependencies]
 tonic-build = "0.12.3"

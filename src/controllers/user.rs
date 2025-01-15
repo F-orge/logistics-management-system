@@ -22,7 +22,7 @@ pub struct UserService {
 }
 
 impl UserService {
-    pub fn new(db: &DatabaseConnection) -> UserServiceServer<UserService> {
+    pub fn new(db: &DatabaseConnection) -> UserServiceServer<Self> {
         UserServiceServer::new(Self { db: db.clone() })
     }
 }
@@ -43,7 +43,10 @@ impl GrpcUserService for UserService {
         };
 
         match db_response {
-            Ok(value) => Ok(Response::new(value.try_into().unwrap())),
+            Ok(model) => match model.try_into() {
+                Ok(response) => Ok(Response::new(response)),
+                Err(_) => Err(Status::internal("Internal server error")),
+            },
             Err(err) => match err {
                 DbErr::RecordNotInserted => Err(Status::internal("Record not inserted")),
                 _ => Err(Status::internal("Internal server error")),
@@ -97,7 +100,11 @@ impl GrpcUserService for UserService {
                 while let Ok(item) = stream.try_next().await {
                     if let Some(item) = item {
                         let item = match item.try_into_model() {
-                            Ok(value) => value.try_into().unwrap(),
+                            Ok(model) => match model.try_into() {
+                                Ok(user) => user,
+                                // TODO: should we continue?? or break the stream?
+                                Err(_) => continue,
+                            },
                             Err(_err) => {
                                 return Err(Status::internal("Cannot convert item into model"))
                             }
@@ -110,10 +117,7 @@ impl GrpcUserService for UserService {
                         }
                     }
                 }
-                match rx.try_into() {
-                    Ok(v) => Ok(Response::new(v)),
-                    Err(_) => return Err(Status::internal("Cannot send stream to user")),
-                }
+                Ok(Response::new(rx.into()))
             }
             Err(err) => match err {
                 DbErr::RecordNotFound(data) => Err(Status::not_found(data)),
@@ -304,9 +308,7 @@ impl GrpcUserService for UserService {
 
         match db_response {
             Ok(_value) => Ok(Response::new(Empty {})),
-            Err(err) => match err {
-                _ => Err(Status::internal("Internal server error")),
-            },
+            Err(_) => Err(Status::internal("Internal server error")),
         }
     }
 }

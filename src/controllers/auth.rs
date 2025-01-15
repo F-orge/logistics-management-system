@@ -1,6 +1,10 @@
 use std::collections::BTreeMap;
 
-use axum::{body::Body, extract::Request, middleware::Next};
+use axum::{
+    body::Body,
+    extract::{Request, State},
+    middleware::Next,
+};
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
 use sea_orm::{ActiveEnum, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
@@ -12,12 +16,15 @@ use sqlx::types::{
 };
 use tonic::{Response, Status};
 
-use crate::models::{
-    _entities::user::{Column, Entity, Model},
-    _proto::auth::{
-        auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
-        AuthResponse,
+use crate::{
+    models::{
+        _entities::user::{Column, Entity},
+        _proto::auth::{
+            auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
+            AuthResponse,
+        },
     },
+    AppState,
 };
 
 #[derive(Default)]
@@ -146,27 +153,26 @@ pub struct JWTClaims {
     is_authenticated: bool,
 }
 
-pub async fn auth_middleware(mut request: Request, next: Next) -> axum::response::Response {
+pub async fn auth_middleware(
+    State(state): State<AppState>,
+    mut request: Request,
+    next: Next,
+) -> axum::response::Response {
     // TODO: either find this in cookies or in headers
     let token = match request.headers().get("Authentication") {
         Some(token) => token,
         None => return next.run(request).await,
     };
 
-    // TODO: convert this into middleware state
-    let key: Hmac<Sha256> = match Hmac::new_from_slice(b"some-random-key") {
-        Ok(value) => value,
-        Err(err) => {
-            tracing::error!("encryption key error: {}", err);
-            return axum::response::Response::builder()
-                .status(500)
-                .body(Body::empty())
-                .unwrap_or_default();
-        }
-    };
-
-    let mut claims: JWTClaims = match token.to_str().unwrap().verify_with_key(&key) {
-        Ok(claims) => claims,
+    let mut claims: JWTClaims = match token.to_str() {
+        Ok(token) => match token.verify_with_key(&state.key) {
+            Ok(claims) => claims,
+            Err(_) => {
+                return axum::response::Response::builder()
+                    .body(Body::empty())
+                    .unwrap_or_default()
+            }
+        },
         Err(_) => {
             return axum::response::Response::builder()
                 .body(Body::empty())
@@ -260,7 +266,9 @@ mod test {
     #[test_log::test]
     async fn test_auth_login(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
+
         migration::Migrator::up(&db, None).await.unwrap();
+
         let (_, channel) = start_server(
             Server::builder()
                 .add_service(UserService::new(&db))

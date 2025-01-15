@@ -72,33 +72,19 @@ message File {
   string updated_at = 6;
 }
 
-message InsertFileRequest {
-  string name = 1;
-  string path = 2;
-  string owner_id = 3;
-}
-
-message GetFileRequest {
-  oneof identifier {
-    string id = 1;
-    string name = 2;
-    string path = 3;
-  }
-}
+message GetFileRequest { string id = 1; }
 
 message UpdateFileRequest {
   string id = 1;
   oneof identifier {
     string name = 2;
-    string path = 3;
-    string owner_id = 4;
+    string owner_id = 3;
   }
 }
 
 message DeleteFileRequest { string id = 1; }
 
 service FileService {
-  rpc InsertFile(InsertFileRequest) returns (File) {}
   rpc GetFile(GetFileRequest) returns (File) {}
   rpc UpdateFile(UpdateFileRequest) returns (File) {}
   rpc DeleteFile(DeleteFileRequest) returns (Empty) {}

@@ -90,36 +90,15 @@ pub struct File {
     pub updated_at: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct InsertFileRequest {
-    #[prost(string, tag = "1")]
-    pub name: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub path: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub owner_id: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetFileRequest {
-    #[prost(oneof = "get_file_request::Identifier", tags = "1, 2, 3")]
-    pub identifier: ::core::option::Option<get_file_request::Identifier>,
-}
-/// Nested message and enum types in `GetFileRequest`.
-pub mod get_file_request {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Identifier {
-        #[prost(string, tag = "1")]
-        Id(::prost::alloc::string::String),
-        #[prost(string, tag = "2")]
-        Name(::prost::alloc::string::String),
-        #[prost(string, tag = "3")]
-        Path(::prost::alloc::string::String),
-    }
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateFileRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
-    #[prost(oneof = "update_file_request::Identifier", tags = "2, 3, 4")]
+    #[prost(oneof = "update_file_request::Identifier", tags = "2, 3")]
     pub identifier: ::core::option::Option<update_file_request::Identifier>,
 }
 /// Nested message and enum types in `UpdateFileRequest`.
@@ -129,8 +108,6 @@ pub mod update_file_request {
         #[prost(string, tag = "2")]
         Name(::prost::alloc::string::String),
         #[prost(string, tag = "3")]
-        Path(::prost::alloc::string::String),
-        #[prost(string, tag = "4")]
         OwnerId(::prost::alloc::string::String),
     }
 }
@@ -850,29 +827,6 @@ pub mod file_service_client {
         pub fn max_encoding_message_size(mut self, limit: usize) -> Self {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
-        }
-        pub async fn insert_file(
-            &mut self,
-            request: impl tonic::IntoRequest<super::InsertFileRequest>,
-        ) -> std::result::Result<tonic::Response<super::File>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/employee_management.FileService/InsertFile",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(
-                    GrpcMethod::new("employee_management.FileService", "InsertFile"),
-                );
-            self.inner.unary(req, path, codec).await
         }
         pub async fn get_file(
             &mut self,
@@ -2009,10 +1963,6 @@ pub mod file_service_server {
     /// Generated trait containing gRPC methods that should be implemented for use with FileServiceServer.
     #[async_trait]
     pub trait FileService: std::marker::Send + std::marker::Sync + 'static {
-        async fn insert_file(
-            &self,
-            request: tonic::Request<super::InsertFileRequest>,
-        ) -> std::result::Result<tonic::Response<super::File>, tonic::Status>;
         async fn get_file(
             &self,
             request: tonic::Request<super::GetFileRequest>,
@@ -2102,51 +2052,6 @@ pub mod file_service_server {
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             match req.uri().path() {
-                "/employee_management.FileService/InsertFile" => {
-                    #[allow(non_camel_case_types)]
-                    struct InsertFileSvc<T: FileService>(pub Arc<T>);
-                    impl<
-                        T: FileService,
-                    > tonic::server::UnaryService<super::InsertFileRequest>
-                    for InsertFileSvc<T> {
-                        type Response = super::File;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::InsertFileRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as FileService>::insert_file(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = InsertFileSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
                 "/employee_management.FileService/GetFile" => {
                     #[allow(non_camel_case_types)]
                     struct GetFileSvc<T: FileService>(pub Arc<T>);
