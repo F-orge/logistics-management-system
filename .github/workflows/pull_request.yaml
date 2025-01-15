@@ -14,6 +14,8 @@ jobs:
       RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
+      - name: Run Postgres in compose
+        uses: docker compose -f dev.compose.yaml -d
       - name: Install Protoc
         uses: arduino/setup-protoc@v3
       - name: Run sccache-cache
@@ -34,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: denoland/setup-deno@v2
-      - name: Lint with Deno
+      - name: Lint with Biome
         run: deno lint
       - name: Format with Deno
         run: deno fmt
