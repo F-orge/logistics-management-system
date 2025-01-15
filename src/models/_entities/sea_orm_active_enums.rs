@@ -5,40 +5,44 @@ use sea_orm::entity::prelude::*;
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "contract_type_enum")]
 pub enum ContractTypeEnum {
-    #[sea_orm(string_value = "full_time")]
+    #[sea_orm(string_value = "FULL_TIME")]
     FullTime,
-    #[sea_orm(string_value = "part_time")]
+    #[sea_orm(string_value = "PART_TIME")]
     PartTime,
 }
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
-#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "role_enum")]
+#[sea_orm(
+    rs_type = "String",
+    db_type = "Enum",
+    enum_name = "etmar_logistics.role_enum"
+)]
 pub enum RoleEnum {
-    #[sea_orm(string_value = "super_admin")]
+    #[sea_orm(string_value = "SUPER_ADMIN")]
     SuperAdmin,
-    #[sea_orm(string_value = "admin")]
+    #[sea_orm(string_value = "ADMIN")]
     Admin,
-    #[sea_orm(string_value = "employee")]
+    #[sea_orm(string_value = "EMPLOYEE")]
     Employee,
-    #[sea_orm(string_value = "client")]
+    #[sea_orm(string_value = "CLIENT")]
     Client,
 }
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "sex_enum")]
 pub enum SexEnum {
-    #[sea_orm(string_value = "male")]
+    #[sea_orm(string_value = "MALE")]
     Male,
-    #[sea_orm(string_value = "female")]
+    #[sea_orm(string_value = "FEMALE")]
     Female,
 }
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "task_status_enum")]
 pub enum TaskStatusEnum {
-    #[sea_orm(string_value = "unassigned")]
+    #[sea_orm(string_value = "UNASSIGNED")]
     Unassigned,
-    #[sea_orm(string_value = "in_progress")]
+    #[sea_orm(string_value = "IN_PROGRESS")]
     InProgress,
-    #[sea_orm(string_value = "review")]
+    #[sea_orm(string_value = "REVIEW")]
     Review,
-    #[sea_orm(string_value = "done")]
+    #[sea_orm(string_value = "DONE")]
     Done,
 }

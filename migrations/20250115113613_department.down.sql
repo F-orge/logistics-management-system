@@ -1,2 +1,2 @@
 -- Add down migration script here
-drop table "management"."department" cascade;
+drop table "etmar_logistics"."department" cascade;

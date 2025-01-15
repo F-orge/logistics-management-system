@@ -106,7 +106,7 @@ impl GrpcAuthService for AuthService {
         claims.insert("nbf", Utc::now().to_string());
 
         // private claims
-        claims.insert("role", user.role.to_value().to_string());
+        claims.insert("role", user.user_role);
         claims.insert("email", user.email);
 
         let token = match claims.sign_with_key(&key) {
@@ -242,10 +242,9 @@ pub async fn auth_middleware(
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
-    use migration::MigratorTrait;
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};
-    use tonic::{metadata::MetadataMap, transport::Server, Request};
+    use tonic::{transport::Server, Request};
 
     use super::*;
 
@@ -264,9 +263,6 @@ mod test {
     #[test_log::test]
     async fn test_auth_login(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-
-        migration::Migrator::up(&db, None).await.unwrap();
-
         let (_, channel) = start_server(
             Server::builder()
                 .add_service(UserService::new(&db))

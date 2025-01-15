@@ -9,11 +9,10 @@ use tonic::{Request, Response, Status};
 use crate::models::_proto::employee_management::{
     get_user_request::Identifier,
     user_service_server::{UserService as GrpcUserService, UserServiceServer},
-    DeleteUserRequest, Empty, GetUserRequest, InsertUserRequest, Role, UpdateUserEmailRequest,
-    UpdateUserPasswordRequest, UpdateUserRoleRequest, User,
+    DeleteUserRequest, Empty, GetUserRequest, InsertUserRequest, Role as GrpcRole,
+    UpdateUserEmailRequest, UpdateUserPasswordRequest, UpdateUserRoleRequest, User,
 };
 
-use crate::models::_entities::sea_orm_active_enums::RoleEnum;
 use crate::models::_entities::user::{ActiveModel, Column, Entity};
 
 #[derive(Debug, Default)]
@@ -39,17 +38,26 @@ impl GrpcUserService for UserService {
 
         let db_response = match payload {
             Ok(value) => value.insert(&self.db).await,
-            Err(_) => return Err(Status::invalid_argument("Invalid data")),
+            Err(err) => {
+                println!("{}", err);
+                return Err(Status::invalid_argument("Invalid data"));
+            }
         };
 
         match db_response {
             Ok(model) => match model.try_into() {
                 Ok(response) => Ok(Response::new(response)),
-                Err(_) => Err(Status::internal("Internal server error")),
+                Err(err) => {
+                    println!("{:#?}", err);
+                    Err(Status::internal("Internal server error"))
+                }
             },
             Err(err) => match err {
                 DbErr::RecordNotInserted => Err(Status::internal("Record not inserted")),
-                _ => Err(Status::internal("Internal server error")),
+                err => {
+                    println!("{:#?}", err);
+                    Err(Status::internal("Internal server error"))
+                }
             },
         }
     }
@@ -63,27 +71,27 @@ impl GrpcUserService for UserService {
         let db_response = match payload.identifier {
             Some(value) => match value {
                 Identifier::Role(role) => match role {
-                    x if x == RoleEnum::SuperAdmin as i32 => {
+                    x if x == GrpcRole::SuperAdmin as i32 => {
                         Entity::find()
-                            .filter(Column::Role.eq(RoleEnum::SuperAdmin))
+                            .filter(Column::UserRole.eq("SUPER_ADMIN"))
                             .stream(&self.db)
                             .await
                     }
-                    x if x == RoleEnum::Admin as i32 => {
+                    x if x == GrpcRole::Admin as i32 => {
                         Entity::find()
-                            .filter(Column::Role.eq(RoleEnum::Admin))
+                            .filter(Column::UserRole.eq("ADMIN"))
                             .stream(&self.db)
                             .await
                     }
-                    x if x == RoleEnum::Employee as i32 => {
+                    x if x == GrpcRole::Employee as i32 => {
                         Entity::find()
-                            .filter(Column::Role.eq(RoleEnum::Employee))
+                            .filter(Column::UserRole.eq("EMPLOYEE"))
                             .stream(&self.db)
                             .await
                     }
-                    x if x == RoleEnum::Client as i32 => {
+                    x if x == GrpcRole::Client as i32 => {
                         Entity::find()
-                            .filter(Column::Role.eq(RoleEnum::Client))
+                            .filter(Column::UserRole.eq("CLIENT"))
                             .stream(&self.db)
                             .await
                     }
@@ -267,11 +275,11 @@ impl GrpcUserService for UserService {
             },
         };
 
-        current_user.role = match payload.role {
-            x if x == Role::SuperAdmin as i32 => Set(RoleEnum::SuperAdmin),
-            x if x == Role::Admin as i32 => Set(RoleEnum::Admin),
-            x if x == Role::Employee as i32 => Set(RoleEnum::Employee),
-            x if x == Role::Client as i32 => Set(RoleEnum::Client),
+        current_user.user_role = match payload.role {
+            x if x == GrpcRole::SuperAdmin as i32 => Set("SUPER_ADMIN".into()),
+            x if x == GrpcRole::Admin as i32 => Set("ADMIN".into()),
+            x if x == GrpcRole::Employee as i32 => Set("EMPLOYEE".into()),
+            x if x == GrpcRole::Client as i32 => Set("CLIENT".into()),
             _ => return Err(Status::invalid_argument("Invalid role")),
         };
 
@@ -315,7 +323,6 @@ impl GrpcUserService for UserService {
 
 #[cfg(test)]
 mod test {
-    use migration::MigratorTrait;
     use sea_orm::Database;
     use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};
     use tonic::transport::Server;
@@ -327,12 +334,10 @@ mod test {
 
     use super::*;
 
-    #[sqlx::test]
+    #[sqlx::test(migrations = "./migrations")]
     #[test_log::test]
     async fn test_insert_user(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
-
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
         let mut client = UserServiceClient::new(channel);
@@ -358,7 +363,6 @@ mod test {
     #[test_log::test]
     async fn test_get_user_by_id(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
 
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
@@ -392,7 +396,6 @@ mod test {
     #[test_log::test]
     async fn test_get_user_by_email(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
 
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
@@ -426,7 +429,6 @@ mod test {
     #[test_log::test]
     async fn test_update_user_email(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
 
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
@@ -460,7 +462,6 @@ mod test {
     #[test_log::test]
     async fn test_update_user_password(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
 
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
@@ -494,7 +495,6 @@ mod test {
     #[test_log::test]
     async fn test_update_user_role(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
 
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 
@@ -527,7 +527,6 @@ mod test {
     #[test_log::test]
     async fn test_delete_user(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
         let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        migration::Migrator::up(&db, None).await.unwrap();
 
         let (_, channel) = start_server(Server::builder().add_service(UserService::new(&db))).await;
 

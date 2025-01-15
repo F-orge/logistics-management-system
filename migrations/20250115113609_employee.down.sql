@@ -1,3 +1,3 @@
 -- Add down migration script here
 
-drop schema "management" cascade;
+drop table "etmar_logistics"."employee" cascade;

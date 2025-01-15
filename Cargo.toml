@@ -3,19 +3,10 @@ name = "etmar-logistics"
 version = "0.1.0"
 edition = "2021"
 
-[workspace]
-members = ['migration']
-
-[workspace.dependencies]
+[dependencies]
+axum = { version = "0.7.9", features = ["multipart"] }
 dotenv = "0.15.0"
 tokio = { version = "1.41.1", features = ["full"] }
-
-
-[dependencies]
-migration = { path = "./migration" }
-axum = { version = "0.7.9", features = ["multipart"] }
-tokio.workspace = true
-dotenv.workspace = true
 garde = { version = "0.20.0", features = ["derive", "serde"] }
 hyper-util = "0.1.10"
 prost = "0.13.4"

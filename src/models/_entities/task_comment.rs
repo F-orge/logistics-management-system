@@ -3,15 +3,14 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "task_comment")]
+#[sea_orm(schema_name = "etmar_logistics", table_name = "task_comment")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     pub task_id: Uuid,
-    pub user_id: Uuid,
+    pub employee_id: Uuid,
     #[sea_orm(column_type = "Text")]
     pub comment: String,
-    pub file_attachment: Uuid,
     pub created_at: DateTime,
     pub updated_at: DateTime,
 }
@@ -19,34 +18,28 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::file::Entity",
-        from = "Column::FileAttachment",
-        to = "super::file::Column::Id",
+        belongs_to = "super::employee::Entity",
+        from = "Column::EmployeeId",
+        to = "super::employee::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "NoAction"
     )]
-    File,
+    Employee,
     #[sea_orm(
         belongs_to = "super::task::Entity",
-        from = "(Column::TaskId, Column::TaskId)",
-        to = "(super::task::Column::Id, super::task::Column::Id)",
+        from = "Column::TaskId",
+        to = "super::task::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
     Task,
-    #[sea_orm(
-        belongs_to = "super::user::Entity",
-        from = "Column::UserId",
-        to = "super::user::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
-    User,
+    #[sea_orm(has_many = "super::task_comment_file_attachment::Entity")]
+    TaskCommentFileAttachment,
 }
 
-impl Related<super::file::Entity> for Entity {
+impl Related<super::employee::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::File.def()
+        Relation::Employee.def()
     }
 }
 
@@ -56,9 +49,9 @@ impl Related<super::task::Entity> for Entity {
     }
 }
 
-impl Related<super::user::Entity> for Entity {
+impl Related<super::task_comment_file_attachment::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::User.def()
+        Relation::TaskCommentFileAttachment.def()
     }
 }
 
