@@ -1,11 +1,13 @@
 import { useColorMode } from "@kobalte/core";
-import { Laptop, Moon, Sun } from "lucide-solid";
+import { Laptop, List, Moon, Sun } from "lucide-solid";
 import type { Component } from "solid-js";
 import { Button } from "~/components/ui/button";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
@@ -58,9 +60,23 @@ const Header: Component<{}> = (props) => {
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
-				<Button variant={"default"} size={"sm"}>
+				<Button variant={"outline"} size={"sm"}>
 					Contact us
 				</Button>
+			</div>
+			<div class="block desktop:hidden">
+				<DropdownMenu>
+					<DropdownMenuTrigger>
+						<List size={16} />
+					</DropdownMenuTrigger>
+					<DropdownMenuContent class="max-w-full w-screen">
+						<DropdownMenuLabel>Navigation</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem>Home</DropdownMenuItem>
+						<DropdownMenuItem>About us</DropdownMenuItem>
+						<DropdownMenuItem>Services</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 		</header>
 	);

@@ -1,5 +1,5 @@
 import type { Component } from "solid-js";
-import { showToast } from "../components/ui/toast";
+import { showToast } from "../../components/ui/toast";
 import { lazy } from "solid-js";
 import TrustedByCompaniesSection from "~/features/marketing/trusted-by-companies";
 
@@ -13,7 +13,7 @@ const TestimonialsSection = lazy(
 const Header = lazy(() => import("~/features/marketing/header"));
 const ContactSection = lazy(() => import("~/features/marketing/contact"));
 
-const MarketingHomePage: Component<{}> = (props) => {
+const MarketingLandingPage: Component<{}> = (props) => {
 	if (!window.document.cookie.includes("cookie-accepted=true")) {
 		console.log(window.document.cookie);
 		showToast({
@@ -38,4 +38,4 @@ const MarketingHomePage: Component<{}> = (props) => {
 	);
 };
 
-export default MarketingHomePage;
+export default MarketingLandingPage;
