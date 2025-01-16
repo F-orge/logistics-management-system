@@ -13,37 +13,25 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  * @generated from protobuf service health_check.HealthCheck
  */
 export interface IHealthCheckClient {
-	/**
-	 * @generated from protobuf rpc: Check(health_check.HealthCheckRequest) returns (health_check.HealthCheckResponse);
-	 */
-	check(
-		input: HealthCheckRequest,
-		options?: RpcOptions,
-	): UnaryCall<HealthCheckRequest, HealthCheckResponse>;
+    /**
+     * @generated from protobuf rpc: Check(health_check.HealthCheckRequest) returns (health_check.HealthCheckResponse);
+     */
+    check(input: HealthCheckRequest, options?: RpcOptions): UnaryCall<HealthCheckRequest, HealthCheckResponse>;
 }
 /**
  * @generated from protobuf service health_check.HealthCheck
  */
 export class HealthCheckClient implements IHealthCheckClient, ServiceInfo {
-	typeName = HealthCheck.typeName;
-	methods = HealthCheck.methods;
-	options = HealthCheck.options;
-	constructor(private readonly _transport: RpcTransport) {}
-	/**
-	 * @generated from protobuf rpc: Check(health_check.HealthCheckRequest) returns (health_check.HealthCheckResponse);
-	 */
-	check(
-		input: HealthCheckRequest,
-		options?: RpcOptions,
-	): UnaryCall<HealthCheckRequest, HealthCheckResponse> {
-		const method = this.methods[0],
-			opt = this._transport.mergeOptions(options);
-		return stackIntercept<HealthCheckRequest, HealthCheckResponse>(
-			"unary",
-			this._transport,
-			method,
-			opt,
-			input,
-		);
-	}
+    typeName = HealthCheck.typeName;
+    methods = HealthCheck.methods;
+    options = HealthCheck.options;
+    constructor(private readonly _transport: RpcTransport) {
+    }
+    /**
+     * @generated from protobuf rpc: Check(health_check.HealthCheckRequest) returns (health_check.HealthCheckResponse);
+     */
+    check(input: HealthCheckRequest, options?: RpcOptions): UnaryCall<HealthCheckRequest, HealthCheckResponse> {
+        const method = this.methods[0], opt = this._transport.mergeOptions(options);
+        return stackIntercept<HealthCheckRequest, HealthCheckResponse>("unary", this._transport, method, opt, input);
+    }
 }
