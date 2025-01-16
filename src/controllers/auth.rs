@@ -7,7 +7,7 @@ use axum::{
 };
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ActiveEnum, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
 use sqlx::types::{
