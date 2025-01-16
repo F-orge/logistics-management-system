@@ -208,7 +208,6 @@ impl GrpcUserService for UserService {
                 )),
             },
             Err(err) => match err {
-                DbErr::RecordNotUpdated => Err(Status::internal("Cannot update user")),
                 _ => Err(Status::internal("Internal server error")),
             },
         }
@@ -250,7 +249,6 @@ impl GrpcUserService for UserService {
                 )),
             },
             Err(err) => match err {
-                DbErr::RecordNotUpdated => Err(Status::internal("Cannot update user")),
                 _ => Err(Status::internal("Internal server error")),
             },
         }
@@ -293,7 +291,6 @@ impl GrpcUserService for UserService {
                 )),
             },
             Err(err) => match err {
-                DbErr::RecordNotUpdated => Err(Status::internal("Cannot update user")),
                 _ => Err(Status::internal("Internal server error")),
             },
         }

@@ -19,7 +19,7 @@ use crate::models::_proto::employee_management::file_service_server::{
 
 #[derive(Default)]
 pub struct FileService {
-    _db: DatabaseConnection,
+    db: DatabaseConnection,
 }
 
 impl FileService {
@@ -28,7 +28,7 @@ impl FileService {
             .route("/", post(FileService::upload_file))
             .route("/", get(FileService::retrieve_file));
 
-        let grpc_router = FileServiceServer::new(Self { _db: db.clone() });
+        let grpc_router = FileServiceServer::new(Self { db: db.clone() });
 
         (axum_router, grpc_router)
     }
@@ -103,7 +103,7 @@ impl FileService {
 impl GrpcFileService for FileService {
     async fn get_file(
         &self,
-        _request: tonic::Request<crate::models::_proto::employee_management::GetFileRequest>,
+        request: tonic::Request<crate::models::_proto::employee_management::GetFileRequest>,
     ) -> std::result::Result<
         tonic::Response<crate::models::_proto::employee_management::File>,
         tonic::Status,
@@ -113,7 +113,7 @@ impl GrpcFileService for FileService {
 
     async fn delete_file(
         &self,
-        _request: tonic::Request<crate::models::_proto::employee_management::DeleteFileRequest>,
+        request: tonic::Request<crate::models::_proto::employee_management::DeleteFileRequest>,
     ) -> std::result::Result<
         tonic::Response<crate::models::_proto::employee_management::Empty>,
         tonic::Status,
@@ -123,7 +123,7 @@ impl GrpcFileService for FileService {
 
     async fn update_file(
         &self,
-        _request: tonic::Request<crate::models::_proto::employee_management::UpdateFileRequest>,
+        request: tonic::Request<crate::models::_proto::employee_management::UpdateFileRequest>,
     ) -> std::result::Result<
         tonic::Response<crate::models::_proto::employee_management::File>,
         tonic::Status,
