@@ -4,8 +4,13 @@ FROM clux/muslrust:stable AS chef
 
 USER root
 
-RUN cargo install cargo-chef
 WORKDIR /app
+
+RUN apt update && \
+  apt install protobuf-compiler -y
+
+RUN cargo install cargo-chef
+
 
 # ----------------------------
 
@@ -22,9 +27,6 @@ WORKDIR /app
 COPY --from=planner /app/recipe.json /app/recipe.json
 
 RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
-
-RUN apt update && \
-  apt install protobuf-compiler -y
 
 COPY . .
 
