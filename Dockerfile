@@ -39,7 +39,6 @@ WORKDIR /app
 COPY . .
 
 RUN bun install && \
-  bun run cli/index.ts database query compile && \
   bun run build
 
 # ----------------------------
@@ -57,4 +56,4 @@ USER docker_user
 
 EXPOSE 3000
 
-ENTRYPOINT [ "./etmar-logistics" ]
+ENTRYPOINT [ "./etmar-logistics","serve" ]
