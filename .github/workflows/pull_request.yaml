@@ -10,7 +10,7 @@ jobs:
   rust:
     runs-on: ubuntu-latest
     env:
-      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_ENABLED: "on"
       RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4

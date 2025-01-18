@@ -3,6 +3,7 @@
 use std::{process::exit, sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
+use cli::CLI;
 use controllers::{auth::AuthService, user::UserService};
 use hmac::{Hmac, Mac};
 use sea_orm::{Database, DatabaseConnection};
@@ -25,6 +26,7 @@ use tower_http::{
 };
 use tracing::Level;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+mod cli;
 mod controllers;
 mod models;
 mod utils;
@@ -60,16 +62,10 @@ fn setup_tracing() {
 fn setup_file_service() -> ServeDir<SetStatus<ServeFile>> {
     match cfg!(debug_assertions) {
         true => ServeDir::new("./target/release/frontend-build")
-            .not_found_service(ServeFile::new("./target/release/frontedn-build/index.html")),
+            .not_found_service(ServeFile::new("./target/release/frontend-build/index.html")),
         false => ServeDir::new("./frontend-build")
             .not_found_service(ServeFile::new("./frontend-build/index.html")),
     }
-}
-
-fn setup_address_and_port() -> (String, String) {
-    let app_address = std::env::var("APP_ADDRESS").unwrap_or("127.0.0.1".into());
-    let app_port = std::env::var("APP_PORT").unwrap_or("8080".into());
-    (app_address, app_port)
 }
 
 fn setup_layers(router: Router, app_state: AppState) -> Router {
@@ -149,9 +145,6 @@ async fn main() {
 
     let app_state = AppState { key, db };
 
-    // App address and port
-    let (address, port) = setup_address_and_port();
-
     tracing::debug!("Setting up file service");
 
     let file_service = setup_file_service();
@@ -174,19 +167,9 @@ async fn main() {
         .fallback_service(file_service);
 
     let app = setup_layers(app, app_state);
-
-    tracing::info!("Listening to: {} {}", address, port);
-
-    // Start the server
-    let listener = TcpListener::bind(format!("{}:{}", address, port))
-        .await
-        .expect("Failed to bind address");
-
-    match axum::serve(listener, app).await {
-        Ok(_) => {}
-        Err(_) => {
-            tracing::error!("Unable to serve application");
-            exit(1)
-        }
-    };
+    CLI::new()
+        .about("CLI management tool")
+        .serve(app)
+        .start()
+        .await;
 }
