@@ -1,0 +1,15 @@
+package layouts 
+
+templ BaseHTML(
+	head templ.Component,
+) {
+	<html>
+		<head>
+			<link rel="stylesheet" href="assets/out.css"/>
+			@head
+		</head>
+		<body>
+			{ children... }
+		</body>
+	</html>
+}

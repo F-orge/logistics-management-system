@@ -1,12 +1,12 @@
 package marketing
 
-import "github.com/F-orge/logistics-management-system/src/views/components"
+import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+)
 
 templ landingPageMetadata() {
-	<head>
-		<title>Etmar Logistics</title>
-		<link rel="stylesheet" href="assets/out.css" />
-	</head>
+	<title>Etmar Logistics</title>
 }
 
 templ landingHeroSection() {
@@ -42,14 +42,14 @@ templ landingPageBody() {
 }
 
 templ LandingPage() {
-	<html>
-		@landingPageMetadata()
-		<body class="bg-background text-foreground">
-			<main>
-				@components.MarketingHeader()
-        @landingPageBody()
-				@components.MarketingFooter()
-      </main>
-		</body>
-	</html>
+	@layouts.BaseHTML(
+		landingPageMetadata(),
+	) {
+		@layouts.MarketingLayout(
+			components.MarketingHeader(),
+			components.MarketingFooter(),
+		) {
+			@landingPageBody()
+		}
+	}
 }
