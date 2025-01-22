@@ -1,35 +1,25 @@
 package marketing
 
 import (
-	"log"
-
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
+	"github.com/labstack/echo/v4"
 )
 
 type Marketing struct {
-	pb *pocketbase.PocketBase
+	server *echo.Echo
 }
 
 func New() *Marketing {
 	return &Marketing{
-		pb: pocketbase.New(),
+		server: echo.New(),
 	}
 }
 
-func (m *Marketing) Start() {
+func (m *Marketing) Server() *echo.Echo {
 
-	m.pb.OnServe().BindFunc(func(e *core.ServeEvent) error {
+	m.server.GET("/", m.LandingRoute)
+	m.server.GET("/about", m.AboutRoute)
+	m.server.GET("/blogs", m.BlogsRoute)
+	m.server.GET("/blogs/{id}", m.SpecificBlog)
 
-		e.Router.GET("/", m.LandingRoute)
-		e.Router.GET("/about", m.AboutRoute)
-		e.Router.GET("/blogs", m.BlogsRoute)
-		e.Router.GET("/blogs/{id}", m.SpecificBlog)
-
-		return e.Next()
-	})
-
-	if err := m.pb.Start(); err != nil {
-		log.Fatal(err)
-	}
+	return m.server
 }

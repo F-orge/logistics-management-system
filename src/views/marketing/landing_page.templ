@@ -1,0 +1,55 @@
+package marketing
+
+import "github.com/F-orge/logistics-management-system/src/views/components"
+
+templ landingPageMetadata() {
+	<head>
+		<title>Etmar Logistics</title>
+		<link rel="stylesheet" href="assets/out.css" />
+	</head>
+}
+
+templ landingHeroSection() {
+	<section>
+		Hero Section
+	</section>
+}
+
+templ landingFeaturesSection() {
+	<section>Features Section</section>
+}
+
+templ landingContactSection() {
+	<section>Contact Section</section>
+}
+
+templ landingTestimonailsSection() {
+	<section>Testimonails section</section>
+}
+
+templ landingPricingSection() {
+	<section>Pricing Section</section>
+}
+
+templ landingPageBody() {
+	<article class="p-4">
+		@landingHeroSection()
+		@landingFeaturesSection()
+		@landingPricingSection()
+		@landingTestimonailsSection()
+		@landingContactSection()
+	</article>
+}
+
+templ LandingPage() {
+	<html>
+		@landingPageMetadata()
+		<body class="bg-background text-foreground">
+			<main>
+				@components.MarketingHeader()
+        @landingPageBody()
+				@components.MarketingFooter()
+      </main>
+		</body>
+	</html>
+}
