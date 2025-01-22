@@ -12,54 +12,17 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@faker-js/faker": "^9.3.0",
-		"@rsbuild/core": "^1.1.10",
-		"@rsbuild/plugin-babel": "^1.0.3",
-		"@rsbuild/plugin-image-compress": "^1.1.0",
-		"@rsbuild/plugin-solid": "^1.0.4",
-		"@solidjs/testing-library": "^0.8.10",
 		"@tailwindcss/postcss": "^4.0.0",
-		"@testing-library/jest-dom": "^6.6.3",
-		"@testing-library/user-event": "^14.5.2",
 		"@types/bun": "^1.1.14",
 		"@types/node": "^22.10.2",
-		"@types/pg": "^8.11.10",
-		"@vitest/coverage-v8": "2.1.7",
-		"happy-dom": "^15.11.7",
-		"kysely": "^0.27.5",
-		"kysely-codegen": "^0.17.0",
-		"pg": "^8.13.1",
 		"rspress": "^1.38.0",
-		"tailwindcss": "^4.0.0",
-		"tailwindcss-intersect": "^2.0.1",
-		"vitest": "^2.1.7"
+		"tailwindcss": "^4.0.0"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
-		"@ark-ui/solid": "^4.6.0",
-		"@corvu/drawer": "^0.2.2",
-		"@corvu/otp-field": "^0.1.4",
-		"@corvu/resizable": "^0.2.3",
 		"@fontsource/inter": "^5.1.0",
-		"@kobalte/core": "^0.13.7",
-		"@protobuf-ts/grpcweb-transport": "^2.9.4",
-		"@protobuf-ts/plugin": "^2.9.4",
-		"@solid-primitives/refs": "^1.0.8",
-		"@solidjs/router": "^0.15.1",
-		"@tailwindcss/cli": "^4.0.0",
-		"chart.js": "^4.4.7",
-		"class-variance-authority": "^0.7.1",
-		"clsx": "^2.1.1",
-		"cmdk-solid": "^1.1.0",
-		"commander": "^12.1.0",
-		"embla-carousel-solid": "^8.5.1",
-		"lucide-solid": "^0.469.0",
-		"solid-js": "^1.9.3",
-		"solid-sonner": "^0.2.8",
-		"tailwind-merge": "^2.5.5",
-		"tailwindcss-animate": "^1.0.7",
-		"tailwindcss-animated": "^1.1.2",
-		"zod": "^3.24.1"
+		"@tailwindcss/cli": "^4.0.0"
 	}
 }
