@@ -7,6 +7,7 @@ fn main() {
                 "proto/health_check.proto",
                 "proto/employee_management.proto",
                 "proto/auth.proto",
+                "proto/file_management.proto",
             ],
             &["proto/"],
         )
