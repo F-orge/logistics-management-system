@@ -1,0 +1,39 @@
+package components
+
+templ Card(
+	class string,
+) {
+	<div class={ "rounded-xl border bg-card text-card-foreground shadow " + class }>
+		{ children... }
+	</div>
+}
+
+templ CardTitle(class string) {
+	<div class={ "font-semibold leading-none tracking-tight " + class }>
+		{ children... }
+	</div>
+}
+
+templ CardDescription(class string) {
+	<div class={ "text-sm text-muted-foreground " + class }>
+		{ children... }
+	</div>
+}
+
+templ CardHeader(class string) {
+	<div class={ "flex flex-col space-y-1.5 p-6 " + class }>
+		{ children... }
+	</div>
+}
+
+templ CardFooter(class string) {
+	<div class={ "flex items-center p-6 pt-0 " + class }>
+		{ children... }
+	</div>
+}
+
+templ CardContent(class string) {
+	<div class={ "p-6 " + class }>
+		{ children... }
+	</div>
+}

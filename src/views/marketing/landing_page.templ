@@ -1,0 +1,160 @@
+package marketing
+
+import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+)
+
+templ landingPageMetadata() {
+	<title>Etmar Logistics</title>
+}
+
+templ landingHeroSection(
+	slogan string,
+	description string,
+) {
+	<section class="flex flex-col justify-center items-center gap-5">
+		<h1 class="heading-1 text-center">
+			{ slogan }
+		</h1>
+		<p class="lead">
+			{ description }
+		</p>
+		<div class="flex flex-row gap-2.5">
+			{ children... }
+		</div>
+	</section>
+}
+
+type featureSectionProps struct {
+	title       string
+	description string
+}
+
+templ landingFeaturesSection(props []featureSectionProps) {
+	<section class="space-y-5">
+		<div class="flex flex-col justify-center items-center">
+			<span class="text-primary">Our Services</span>
+			<h2 class="heading-2">Everything you need to ship local or overseas</h2>
+		</div>
+		<div class="grid grid-cols-3 gap-5">
+			for _,prop := range props {
+				@components.Card("h-full") {
+					@components.CardHeader("") {
+						@components.CardTitle("") {
+							<h2 class="heading-4">
+								{ prop.title }
+							</h2>
+						}
+						@components.CardDescription("") {
+							<p class="paragraph">
+								{ prop.description }
+							</p>
+						}
+					}
+				}
+			}
+		</div>
+	</section>
+}
+
+type landingLocationSectionProps struct {
+	mapLink     string
+	address     string
+	description string
+}
+
+templ landingLocationSection(
+	props landingLocationSectionProps,
+) {
+	<section class="grid grid-cols-2 items-center gap-5">
+		<div class="">
+			<span class="text-primary">Location</span>
+			<h2 class="heading-2">Our Address</h2>
+			<span class="lead">{ props.address }</span>
+			<p class="paragraph">
+				{ props.description }
+			</p>
+		</div>
+		@components.Card("") {
+			@components.CardContent("") {
+				<iframe class="rounded-md w-full h-96" src={ props.mapLink } style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+			}
+		}
+	</section>
+}
+
+type landingCTASectionProps struct {
+	title       string
+	description string
+}
+
+templ landingCTASection(props landingCTASectionProps) {
+	<section class="grid grid-cols-2">
+		<div>
+			<span class="text-primary">Contact</span>
+			<h2 class="heading-2">{ props.title }</h2>
+			<p class="paragraph">{ props.description }</p>
+		</div>
+		<div class="flex flex-row justify-center w-full">
+			<form class="w-full gap-2.5 flex flex-col">
+				<div>
+					<label class="small">
+						Email Address
+					</label>
+					<input class="mt-1" type="text"/>
+				</div>
+				<div>
+					<label class="small">
+						Message
+					</label>
+					<textarea class="mt-1"></textarea>
+				</div>
+				<button class="w-fit" data-variant="primary" data-size="default">Send Message</button>
+			</form>
+		</div>
+	</section>
+}
+
+templ landingPageBody() {
+	<article class="p-4 space-y-24 py-24">
+		@landingHeroSection(
+			"Going Beyond Logistics",
+			"ETMAR exports premium Philippine products worldwide.",
+		) {
+			<a role="button" data-variant="primary" data-size="default">Inquire now</a>
+		}
+		@landingFeaturesSection([]featureSectionProps{
+			{title: "International and Domestic Freight Forwarding", description: "We provide comprehensive freight forwarding services for both international and domestic shipments, ensuring timely and safe delivery."},
+			{title: "Relocation Services", description: "Our relocation services are designed to make your move as smooth and stress-free as possible, whether it's local or international."},
+			{title: "Import / Export Service", description: "We offer reliable import and export services to help you navigate the complexities of international trade."},
+			{title: "Custom Clearance", description: "Our custom clearance services ensure that your goods comply with all regulatory requirements, minimizing delays and avoiding penalties."},
+			{title: "Trucking", description: "We provide efficient trucking services to transport your goods safely and on time, across the country."},
+			{title: "Door to Door Delivery Nationwide", description: "Our door-to-door delivery service ensures that your packages are delivered directly to the recipient's doorstep, anywhere in the nation."},
+		})
+		@landingLocationSection(
+			landingLocationSectionProps{
+				mapLink:     "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30866.18809540766!2d121.04868292808534!3d14.75361458133143!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397bbbd7b56cc9b%3A0x4da80215357fbf67!2sETMAR%20INTERNATIONAL%20LOGISTICS%20CORPORATION!5e0!3m2!1sen!2sph!4v1737652154271!5m2!1sen!2sph",
+				address:     "Block 1 Lot 15 Kaymito Street, Quirino Highway Brgy 179 Caloocan City",
+				description: "For any inquiries or assistance, please feel free to reach out to us via phone or email. Our dedicated support team is available to help you with all your logistics needs.",
+			},
+		)
+		@landingCTASection(landingCTASectionProps{
+			title:       "Ship with us now",
+			description: "We are always ready to help you. Reach out to us anytime.",
+		})
+	</article>
+}
+
+templ LandingPage() {
+	@layouts.BaseHTML(
+		landingPageMetadata(),
+	) {
+		@layouts.MarketingLayout(
+			components.MarketingHeader(),
+			components.MarketingFooter(),
+		) {
+			@landingPageBody()
+		}
+	}
+}

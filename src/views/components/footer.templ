@@ -1,0 +1,122 @@
+package components
+
+templ footerCompany() {
+  <div class="flex flex-row gap-2.5 px-4">
+    <div>
+      <h4 class="heading-4">ETMAR Logistics</h4>
+      <span class="muted text-xs">Going Beyond Logistics</span>
+    </div>
+  </div>
+}
+
+templ footerNav() {
+  <nav>
+    <div class="flex flex-row gap-2.5">
+      <button data-size="sm" data-variant={"ghost"} class="muted">
+        Home
+      </button>
+      <button data-size="sm" data-variant={"ghost"} class="muted">
+        About us
+      </button>
+      <button data-size="sm" data-variant={"ghost"} class="muted">
+        Services
+      </button>
+    </div>
+  </nav>
+}
+
+templ footerEmailSection() {
+  <div>
+    <h4 class="large">Email</h4>
+    <ul>
+      <li>
+        <button class="muted small flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          etmarphils@gmail.com
+        </button>
+      </li>
+      <li>
+        <button class="muted small flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          sales@etmar-philippines.com
+        </button>
+      </li>
+      <li>
+        <button class="muted small flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          etmarcorporation@gmail.com
+        </button>
+      </li>
+    </ul>
+  </div>
+}
+
+templ footerPhoneSection() {
+  <div>
+    <h4 class="large">Phone</h4>
+    <ul>
+      <li>
+        <button class="muted small flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          +63-915-137-9259
+        </button>
+      </li>
+      <li>
+        <button class="muted small flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          +63-2-8523-1183
+        </button>
+      </li>
+    </ul>
+  </div>
+}
+
+templ footerSocialMediaSection() {
+  <div>
+    <h4 class="large">Social Media</h4>
+    <ul>
+      <li>
+        <a target="_blank" href="https://www.facebook.com/etmarphilippines"
+          class="muted small inline-flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          Facebook
+        </a>
+      </li>
+      <li>
+        <a href="https://www.instagram.com/etmar_philippines?igsh=a3dlbWJ5cW80NG5z" target="_blank"
+          class="muted small inline-flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          Instagram
+        </a>
+      </li>
+      <li>
+        <a href="https://www.linkedin.com/in/etmar-intl-logistics-corporation-7b1729178/" target="_blank"
+          class="muted small inline-flex flex-row items-center gap-2.5 text-muted-foreground" data-variant="link">
+          LinkedIn
+        </a>
+      </li>
+    </ul>
+  </div>
+}
+
+templ footerGrid() {
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    @footerEmailSection()
+    @footerPhoneSection()
+    @footerSocialMediaSection()
+  </div>
+}
+
+templ footerCopyright() {
+  <span class="muted text-xs">
+    © Copyright 2025. All rights reserved.
+  </span>
+}
+
+templ MarketingFooter() {
+  <footer>
+    <div class="flex flex-col md:flex-row justify-between p-4 gap-5">
+      <div class="flex flex-col gap-2.5">
+        @footerCompany()
+        @footerNav()
+      </div>
+      @footerGrid()
+    </div>
+    <div class="px-8 flex flex-row justify-center items-center py-4">
+      @footerCopyright()
+    </div>
+  </footer>
+}
