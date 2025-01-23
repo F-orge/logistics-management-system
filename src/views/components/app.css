@@ -51,7 +51,7 @@
 
 
 @theme {
-  
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-card: hsl(var(--card));
@@ -98,7 +98,7 @@
 		@apply scroll-m-20 text-xl font-semibold tracking-tight;
 	}
 	.paragraph {
-		@apply leading-7 [&:not(:first-child)]:mt-6;
+		@apply leading-7 [&:not(:first-child)]:mt-5;
 	}
 	.blockquote {
 		@apply mt-6 border-l-2 pl-6 italic;

@@ -5,7 +5,7 @@ tmp_dir = "tmp"
 [build]
 args_bin = []
 bin = "./target/golang/frontend serve"
-cmd = "templ generate && go build -o ./target/golang/frontend ./src/views/main.go"
+cmd = "bun run build.ts && go build -o ./target/golang/frontend ./src/views/main.go"
 delay = 1000
 exclude_dir = [
   "assets",

@@ -29,7 +29,7 @@ func MarketingHeader() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"p-4 flex flex-row justify-between items-center\"><span>Etmar Logistics</span><nav><ul class=\"flex flex-row items-center gap-5\"><li><a data-variant=\"ghost\" data-size=\"sm\">Home</a></li><li><a data-variant=\"ghost\" data-size=\"sm\">About</a></li><li><a data-variant=\"ghost\" data-size=\"sm\">Contact</a></li></ul></nav><ul><li><button type=\"button\" data-size=\"sm\" data-variant=\"outline\">Contact us</button></li></ul></header>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<header class=\"p-4 flex flex-row justify-between items-center\"><span>Etmar Logistics</span><nav><ul class=\"flex flex-row items-center gap-5\"><li><a data-variant=\"ghost\" data-size=\"sm\">Home</a></li><li><a role=\"button\" data-variant=\"ghost\" data-size=\"sm\">About</a></li><li><a data-variant=\"ghost\" data-size=\"sm\">Contact</a></li></ul></nav><ul><li><button type=\"button\" data-size=\"sm\" data-variant=\"outline\">Contact us</button></li></ul></header>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

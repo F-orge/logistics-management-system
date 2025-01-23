@@ -4,10 +4,9 @@
 	"type": "module",
 	"version": "0.2.0",
 	"scripts": {
-		"start": "rsbuild preview",
-		"dev": "rsbuild dev",
-		"build": "rsbuild build",
-		"proto-compile": "bunx protoc --ts_out ./src/views/lib/protoc --proto_path proto proto/*.proto"
+		"dev:tailwind": "bun tailwindcss -i src/views/components/app.css -o src/views/assets/out.css --watch",
+		"dev:golang": "air",
+		"dev:typescript": "bun build --outdir=src/views/assets src/views/index.ts --watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
