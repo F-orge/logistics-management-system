@@ -7,116 +7,118 @@ use axum::{
 };
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
-use sea_orm::{ActiveEnum, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use sha2::Sha256;
-use sqlx::types::{
-    chrono::{DateTime, Utc},
-    Uuid,
+use sqlx::Row;
+use sqlx::{
+    types::{
+        chrono::{DateTime, Utc},
+        Uuid,
+    },
+    Pool, Postgres,
 };
-use tonic::{Response, Status};
+use tonic::{IntoRequest, Response, Status};
 
 use crate::{
     models::{
         _entities::user::{Column, Entity},
         _proto::auth::{
             auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
-            AuthResponse,
+            AuthBasicLoginRequest, AuthResponse,
         },
     },
     AppState,
 };
 
-#[derive(Default)]
 pub struct AuthService {
-    db: DatabaseConnection,
-    issuer: String,
+    db: Pool<Postgres>,
 }
 
 impl AuthService {
-    pub fn new(db: &DatabaseConnection, issuer: String) -> AuthServiceServer<AuthService> {
-        AuthServiceServer::new(Self {
-            db: db.clone(),
-            issuer,
-        })
+    pub fn new(db: &Pool<Postgres>) -> AuthServiceServer<AuthService> {
+        AuthServiceServer::new(Self { db: db.clone() })
     }
 }
 
 #[tonic::async_trait]
 impl GrpcAuthService for AuthService {
-    async fn login(
+    async fn basic_login(
         &self,
-        request: tonic::Request<crate::models::_proto::auth::AuthRequest>,
+        request: tonic::Request<crate::models::_proto::auth::AuthBasicLoginRequest>,
     ) -> std::result::Result<
         tonic::Response<crate::models::_proto::auth::AuthResponse>,
         tonic::Status,
     > {
-        let host_name = match request.metadata().get("host") {
-            Some(host_name) => match host_name.to_str() {
-                Ok(host_name) => host_name.to_string(),
-                Err(_) => return Err(Status::invalid_argument("Invalid `Hostname` header")),
-            },
-            None => return Err(Status::invalid_argument("missing `Hostname` header")),
-        };
-
         let payload = request.into_inner();
 
-        let user = match Entity::find()
-            .filter(Column::Email.eq(payload.email))
-            //TODO: convert this to hash before sending it to database. it must match algorithm used in the database for hashing.
-            .filter(Column::Password.eq(payload.password))
-            .one(&self.db)
+        let token: String = match sqlx::query("select \"auth\".\"basic_login\" ($1,$2)")
+            .bind(payload.email)
+            .bind(payload.password)
+            .fetch_one(&self.db)
             .await
         {
-            Ok(model) => match model {
-                Some(model) => model,
-                None => return Err(Status::not_found("User does not exists")),
-            },
-            Err(err) => match err {
-                sea_orm::DbErr::RecordNotFound(_) => {
-                    return Err(Status::invalid_argument("Invalid email or password"))
-                }
-                _ => return Err(Status::internal("Internal server error")),
-            },
-        };
-
-        // TODO: change this to be environment variable
-        let key: Hmac<Sha256> = match Hmac::new_from_slice(b"some-random-key") {
-            Ok(value) => value,
+            Ok(row) => row.get(0),
             Err(err) => {
-                tracing::error!("encryption key error: {}", err);
-                return Err(Status::internal("Internal server error"));
+                tracing::error!("{}", err);
+                return Err(Status::invalid_argument("Invalid username or password"));
             }
         };
 
-        let mut claims = BTreeMap::new();
+        Ok(Response::new(AuthResponse {
+            access_token: token.clone(),
+            refresh_token: token,
+            token_type: "bearer".into(),
+            expires_in: 3600,
+        }))
+    }
+    async fn basic_register(
+        &self,
+        request: tonic::Request<crate::models::_proto::auth::AuthBasicRegisterRequest>,
+    ) -> std::result::Result<
+        tonic::Response<crate::models::_proto::auth::AuthResponse>,
+        tonic::Status,
+    > {
+        let payload = request.into_inner();
 
-        let expiration = (Utc::now() + std::time::Duration::from_secs(3600)).to_string();
-
-        // reserve claims
-        claims.insert("iss", self.issuer.to_owned());
-        claims.insert("sub", user.id.to_string());
-
-        // TODO: implement aud (audience) claims using hostname
-
-        claims.insert("aud", host_name);
-        claims.insert("exp", expiration.clone());
-        claims.insert("iat", Utc::now().to_string());
-        claims.insert("jti", Uuid::new_v4().to_string());
-        claims.insert("nbf", Utc::now().to_string());
-
-        // private claims
-        claims.insert("role", user.user_role);
-        claims.insert("email", user.email);
-
-        let token = match claims.sign_with_key(&key) {
-            Ok(token) => token,
+        let mut trx = match self.db.begin().await {
+            Ok(trx) => trx,
             Err(err) => {
-                tracing::error!("jwt token error {}", err);
-                return Err(Status::internal("Internal server error"));
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to start transaction"));
             }
         };
-        Ok(Response::new(AuthResponse { token }))
+
+        let _ = match sqlx::query(
+            "insert into \"auth\".\"basic_user\" (email,password) values ($1,$2)",
+        )
+        .bind(payload.email.clone())
+        .bind(payload.password.clone())
+        .execute(&mut *trx)
+        .await
+        {
+            Ok(_) => {}
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to store user"));
+            }
+        };
+
+        let _ = match trx.commit().await {
+            Ok(_) => {}
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to commit changes"));
+            }
+        };
+
+        let request = AuthBasicLoginRequest {
+            email: payload.email,
+            password: payload.password,
+        }
+        .into_request();
+
+        self.basic_login(request).await
     }
 }
 
@@ -243,7 +245,7 @@ pub async fn auth_middleware(
 mod test {
     #![allow(clippy::unwrap_used)]
     use sea_orm::Database;
-    use sqlx::{pool::PoolOptions, ConnectOptions, Postgres};
+    use sqlx::{pool::PoolOptions, ConnectOptions, Pool, Postgres};
     use tonic::{transport::Server, Request};
 
     use super::*;
@@ -251,7 +253,10 @@ mod test {
     use crate::{
         controllers::user::UserService,
         models::_proto::{
-            auth::{auth_service_client::AuthServiceClient, AuthRequest},
+            auth::{
+                auth_service_client::AuthServiceClient, AuthBasicLoginRequest,
+                AuthBasicRegisterRequest,
+            },
             employee_management::{
                 user_service_client::UserServiceClient, InsertUserRequest, Role,
             },
@@ -260,40 +265,23 @@ mod test {
     };
 
     #[sqlx::test]
-    #[test_log::test]
-    async fn test_auth_login(_pool: PoolOptions<Postgres>, options: impl ConnectOptions) {
-        let db = Database::connect(options.to_url_lossy()).await.unwrap();
-        let (_, channel) = start_server(
-            Server::builder()
-                .add_service(UserService::new(&db))
-                .add_service(AuthService::new(&db, "api.f-org-e.systems".into())),
-        )
-        .await;
+    async fn test_auth_basic_register_and_login(db: Pool<Postgres>) {
+        let _ = sqlx::query("alter database postgres set \"app.jwt_secret\" = \"randompassword\"")
+            .execute(&db)
+            .await
+            .unwrap();
 
-        let mut user_client = UserServiceClient::new(channel.clone());
-        let mut auth_client =
-            AuthServiceClient::with_interceptor(channel, move |mut req: Request<()>| {
-                req.metadata_mut()
-                    .insert("host", "www.example.com".parse().unwrap());
-                Ok(req)
-            });
+        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(&db))).await;
 
-        let request = InsertUserRequest {
-            email: "johndoe@gmail.com".into(),
-            password: "johndoepassword".into(),
-            role: Role::Admin.into(),
+        let mut client = AuthServiceClient::new(channel);
+
+        let request = AuthBasicRegisterRequest {
+            email: "sample@email.com".into(),
+            password: "randompassowrd".into(),
         };
 
-        // ignore it
-        let _ = user_client.insert_user(request).await;
+        let response = client.basic_register(request).await;
 
-        let auth_request = AuthRequest {
-            email: "johndoe@gmail.com".into(),
-            password: "johndoepassword".into(),
-        };
-
-        let response = auth_client.login(auth_request).await;
-
-        assert!(response.is_ok(), "{:#?}", response.err());
+        assert!(response.is_ok());
     }
 }
