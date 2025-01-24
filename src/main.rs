@@ -153,10 +153,6 @@ async fn main() {
 
     let grpc_server = Server::builder()
         // TODO: convert this "Authencation service" to a environment variable to hide it in the source code
-        .add_service(AuthService::new(
-            &app_state.db,
-            "api.f-org-e.systems".into(),
-        ))
         .add_service(UserService::new(&app_state.db))
         .into_service()
         .into_axum_router();

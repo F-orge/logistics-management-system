@@ -23,18 +23,3 @@ end;
 $$ language plpgsql;
 
 -- schema test
-alter database postgres
-set "app.jwt_secret" TO 'reallyreallyreallyreallyverysafe';
-
-insert into "auth"."basic_user" (email,password) values ('sample@email.com','randompassword');
-
-select "auth"."basic_login"('sample@email.com','randompassword');
-
-update "auth"."basic_user" set password = 'random password' where email = 'sample@email.com';
-
-select "auth"."basic_login"('sample@email.com','random password');
-
-truncate "auth"."user" cascade;
-
-truncate "auth"."basic_user" cascade;
-

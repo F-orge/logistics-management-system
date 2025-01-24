@@ -2,13 +2,24 @@ syntax = "proto3";
 
 package auth;
 
-message AuthResponse { string token = 1; }
+message AuthResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  string token_type = 3;
+  int64 expires_in = 4;
+}
 
-message AuthRequest {
+message AuthBasicLoginRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message AuthBasicRegisterRequest {
   string email = 1;
   string password = 2;
 }
 
 service AuthService {
-  rpc Login(AuthRequest) returns (AuthResponse) {}
+  rpc BasicLogin(AuthBasicLoginRequest) returns (AuthResponse) {}
+  rpc BasicRegister(AuthBasicRegisterRequest) returns (AuthResponse) {}
 }
