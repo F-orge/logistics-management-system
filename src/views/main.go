@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"log/slog"
 
+	"github.com/F-orge/logistics-management-system/src/views/management"
 	"github.com/F-orge/logistics-management-system/src/views/marketing"
 	"github.com/labstack/echo/v4"
 )
@@ -16,11 +18,15 @@ func main() {
 	hosts := map[string]*Host{}
 
 	marketingSystem := marketing.New()
+	managementSystem := management.New()
 
 	// Marketing system
 	hosts["www.localhost:8080"] = &Host{marketingSystem.Server()}
+	hosts["management.localhost:8080"] = &Host{managementSystem.Server()}
 
 	e := echo.New()
+
+	slog.SetLogLoggerLevel(slog.LevelInfo)
 
 	e.Static("/assets", "./src/views/assets")
 

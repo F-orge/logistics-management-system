@@ -1,0 +1,58 @@
+package layouts
+
+type (
+	DashboardProps struct {
+		PageMetadata templ.Component
+		Navigation   DashboardSidebarNav
+	}
+	DashboardSidebarNav struct {
+		Groups []DashboardSidebarGroup
+	}
+	DashboardSidebarGroup struct {
+		Name  string
+		Items []DashboardSidebarGroupItem
+	}
+	DashboardSidebarGroupItem struct {
+		Name    string
+		Link    string
+		Icon    string
+		SubItem []DashboardSidebarGroupItem
+	}
+)
+
+templ DashboardLayout(props DashboardProps) {
+	@BaseHTML(props.PageMetadata) {
+		<main class="h-screen flex flex-row w-3/4">
+			@DashboardSidebar(props.Navigation)
+			<article>
+				{ children... }
+			</article>
+		</main>
+	}
+}
+
+templ DashboardSidebar(props DashboardSidebarNav) {
+	<aside class="border w-1/4 overflow-y-auto">
+		for _,group := range props.Groups {
+			<hr class="first:hidden"/>
+			<div class="py-4">
+				<span class="muted px-4 py-1.5">{ group.Name }</span>
+				<nav class="w-full p-2.5">
+					<ul class="w-full flex flex-col gap-1.5">
+						for _,item := range group.Items {
+							<li>
+								<a data-variant="ghost" data-size="default" class="text-primary hover:!text-primary w-full flex flex-row !justify-start" href={ templ.URL(item.Link) }>
+									<i data-lucide={ item.Icon }></i>
+									{ item.Name }
+								</a>
+							</li>
+						}
+					</ul>
+				</nav>
+			</div>
+		}
+	</aside>
+}
+
+templ DashboardHeader() {
+}

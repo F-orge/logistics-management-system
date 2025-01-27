@@ -1,0 +1,52 @@
+package management
+
+import (
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+	"github.com/labstack/echo/v4"
+)
+
+templ HRMHomePageMetadata() {
+}
+
+templ (h *HumanResource) HomePage(c echo.Context) {
+	@layouts.DashboardLayout(layouts.DashboardProps{
+		PageMetadata: HRMHomePageMetadata(),
+		Navigation: layouts.DashboardSidebarNav{
+			Groups: []layouts.DashboardSidebarGroup{
+				{
+					Name: "Human Resource", Items: []layouts.DashboardSidebarGroupItem{
+						{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
+						{Name: "Employees", Link: "/human-resource", Icon: "users-round"},
+						{Name: "Departments", Link: "/human-resource", Icon: "building-2"},
+						{Name: "Tasks", Link: "/human-resource", Icon: "clipboard-list"},
+						{Name: "Files", Link: "/human-resource", Icon: "files"},
+					},
+				},
+				{
+					Name: "Shipping", Items: []layouts.DashboardSidebarGroupItem{
+						{Name: "Account", Link: "/human-resource", Icon: "house"},
+						{Name: "Employees", Link: "/human-resource", Icon: "house"},
+						{Name: "Tasks", Link: "/human-resource", Icon: "house"},
+						{Name: "Documents", Link: "/human-resource", Icon: "house"},
+					},
+				},
+				{
+					Name: "Customer Support", Items: []layouts.DashboardSidebarGroupItem{
+						{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
+						{Name: "Reviews", Link: "/human-resource", Icon: "star"},
+						{Name: "Chats", Link: "/human-resource", Icon: "headset"},
+					},
+				},
+				{
+					Name: "Account", Items: []layouts.DashboardSidebarGroupItem{
+						{Name: "Profile", Link: "/account/profile", Icon: "user-round-pen"},
+						{Name: "Settings", Link: "/account/settings", Icon: "settings"},
+						{Name: "Log out", Link: "/logout", Icon: "log-out"},
+					},
+				},
+			},
+		},
+	}) {
+		<div>hello</div>
+	}
+}

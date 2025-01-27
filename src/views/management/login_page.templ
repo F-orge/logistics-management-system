@@ -1,0 +1,36 @@
+package management
+
+import (
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+	"github.com/labstack/echo/v4"
+)
+
+templ loginPageMetadata() {
+	<title>ETMAR Logistics | Login</title>
+}
+
+templ loginBody() {
+	<main class="space-y-5 h-screen max-h-screen flex flex-col justify-center items-center">
+		<img class="h-10" src="/assets/etmar-logo.png"/>
+		<h4 class="heading-4">Sign in to your account</h4>
+		<form class="space-y-5 w-1/2" action="/login" method="post">
+			<div>
+				<label>Email</label>
+				<input name="email" type="email"/>
+			</div>
+			<div>
+				<label>Password</label>
+				<input name="email" type="passowrd"/>
+			</div>
+			<button class="w-full" data-variant="primary" data-size="default">Sign in</button>
+		</form>
+	</main>
+}
+
+templ (h *HumanResource) LoginPage(c echo.Context) {
+	@layouts.BaseHTML(
+		loginPageMetadata(),
+	) {
+		@loginBody()
+	}
+}
