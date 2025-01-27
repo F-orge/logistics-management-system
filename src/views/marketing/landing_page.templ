@@ -5,8 +5,31 @@ import (
 	"github.com/F-orge/logistics-management-system/src/views/layouts"
 )
 
-templ landingPageMetadata() {
-	<title>Etmar Logistics</title>
+type landingPageMetadataProps struct {
+	title       string
+	description string
+	author      string
+	keywords    []string
+	siteName    string
+	seeAlso     string
+	image       string
+	pageUrl     string
+}
+
+templ landingPageMetadata(props landingPageMetadataProps) {
+	<title>{ props.title }</title>
+	<meta name="description" content={ props.description }/>
+	<meta property="og:url" content={ props.pageUrl }/>
+	<meta property="og:image" content={ props.image }/>
+	<meta property="og:description" content={ props.description }/>
+	<meta property="og:title" content={ props.title }/>
+	<meta property="og:site_name" content={ props.siteName }/>
+	<meta property="og:see_also" content={ props.seeAlso }/>
+	<meta name="twitter:card" content={ props.description }/>
+	<meta name="twitter:url" content={ props.pageUrl }/>
+	<meta name="twitter:title" content={ props.title }/>
+	<meta name="twitter:description" content={ props.description }/>
+	<meta name="twitter:image" content={ props.image }/>
 }
 
 templ landingHeroSection(
@@ -148,11 +171,42 @@ templ landingPageBody() {
 
 templ LandingPage() {
 	@layouts.BaseHTML(
-		landingPageMetadata(),
+		landingPageMetadata(landingPageMetadataProps{
+			title:       "ETMAR Logistics",
+			description: "ETMAR exports premium Philippine products worldwide.",
+			author:      "ETMAR Logistics",
+			keywords:    []string{"logistics", "freight forwarding", "relocation services", "import export", "custom clearance", "trucking", "door to door delivery"},
+			siteName:    "ETMAR Logistics",
+			seeAlso:     "https://www.etmar-logistics.com",
+			image:       "/assets/etmar-logo.png",
+			pageUrl:     "https://www.etmar-logistics.com",
+		}),
 	) {
 		@layouts.MarketingLayout(
-			components.MarketingHeader(),
-			components.MarketingFooter(),
+			components.MarketingHeader(components.MarketingHeaderProp{
+				Company: components.MarketingHeaderCompany{
+					Name:  "ETMAR Logistics",
+					Image: "/assets/etmar-logo.png",
+				},
+				ActionNav: []components.MarketingHeaderActionNav{
+					{Name: "Home", Link: "/", Variant: "ghost"},
+					{Name: "About", Link: "/about", Variant: "ghost"},
+					{Name: "Contact", Link: "/contact", Variant: "ghost"},
+				},
+			}),
+			components.Footer(components.FooterProps{
+				Company: components.FooterCompany{
+					Name:        "ETMAR Logistics",
+					Description: "Going Beyond Logistics",
+					Image:       "/assets/etmar-logo.png",
+					Copyright:   "© Copyright 2025. All rights reserved.",
+				},
+				Navigation: []components.FooterNav{
+					{Name: "Home", Link: "/", Variant: "ghost"},
+					{Name: "About", Link: "/about", Variant: "ghost"},
+					{Name: "Contact", Link: "/contact", Variant: "ghost"},
+				},
+			}),
 		) {
 			@landingPageBody()
 		}
