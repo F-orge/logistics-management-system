@@ -206,6 +206,33 @@ templ LandingPage() {
 					{Name: "About", Link: "/about", Variant: "ghost"},
 					{Name: "Contact", Link: "/contact", Variant: "ghost"},
 				},
+				GridSection: components.FooterGrid{
+					Sections: []components.FooterGridSection{
+						{
+							Title: "Email",
+							Items: []components.FooterGridSectionItem{
+								{Name: "etmarphils@gmail.com", Link: "mailto:etmarphils@gmail.com"},
+								{Name: "sales@etmar-philippines.com", Link: "mailto:sales@etmar-philippines.com"},
+								{Name: "etmarcorporation@gmail.com", Link: "mailto:etmarcorporation@gmail.com"},
+							},
+						},
+						{
+							Title: "Phone",
+							Items: []components.FooterGridSectionItem{
+								{Name: "+63-915-137-9259", Link: "tel:+639151379259"},
+								{Name: "+63-2-8523-1183", Link: "tel:+63285231183"},
+							},
+						},
+						{
+							Title: "Social Media",
+							Items: []components.FooterGridSectionItem{
+								{Name: "Facebook", Link: "https://www.facebook.com/etmarphilippines"},
+								{Name: "Instagram", Link: "https://www.instagram.com/etmar_philippines?igsh=a3dlbWJ5cW80NG5z"},
+								{Name: "LinkedIn", Link: "https://www.linkedin.com/in/etmar-intl-logistics-corporation-7b1729178/"},
+							},
+						},
+					},
+				},
 			}),
 		) {
 			@landingPageBody()
