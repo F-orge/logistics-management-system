@@ -84,10 +84,10 @@ func (h *HumanResource) HomePage(c echo.Context) templ.Component {
 					{
 						Name: "Human Resource", Items: []layouts.DashboardSidebarGroupItem{
 							{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
-							{Name: "Employees", Link: "/human-resource", Icon: "users-round"},
-							{Name: "Departments", Link: "/human-resource", Icon: "building-2"},
-							{Name: "Tasks", Link: "/human-resource", Icon: "clipboard-list"},
-							{Name: "Files", Link: "/human-resource", Icon: "files"},
+							{Name: "Employees", Link: "/human-resource/employees", Icon: "users-round"},
+							{Name: "Departments", Link: "/human-resource/departments", Icon: "building-2"},
+							{Name: "Tasks", Link: "/human-resource/tasks", Icon: "clipboard-list"},
+							{Name: "Files", Link: "/human-resource/files", Icon: "files"},
 						},
 					},
 					{
