@@ -91,14 +91,6 @@ func (h *HumanResource) HomePage(c echo.Context) templ.Component {
 						},
 					},
 					{
-						Name: "Shipping", Items: []layouts.DashboardSidebarGroupItem{
-							{Name: "Account", Link: "/human-resource", Icon: "house"},
-							{Name: "Employees", Link: "/human-resource", Icon: "house"},
-							{Name: "Tasks", Link: "/human-resource", Icon: "house"},
-							{Name: "Documents", Link: "/human-resource", Icon: "house"},
-						},
-					},
-					{
 						Name: "Customer Support", Items: []layouts.DashboardSidebarGroupItem{
 							{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
 							{Name: "Reviews", Link: "/human-resource", Icon: "star"},
