@@ -9,3 +9,4 @@ doc_build
 .env
 src/views/assets
 *.txt
+tmp
