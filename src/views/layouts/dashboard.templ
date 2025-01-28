@@ -9,6 +9,7 @@ type (
 	DashboardProps struct {
 		ServerContext echo.Context
 		PageMetadata  templ.Component
+		Title         string
 		Navigation    DashboardSidebarNav
 	}
 	DashboardSidebarNav struct {
@@ -24,24 +25,32 @@ type (
 		Icon    string
 		SubItem []DashboardSidebarGroupItem
 	}
+	DashboardPageProps struct {
+		Title         string
+		ServerContext echo.Context
+		Metadata      templ.Component
+	}
 )
 
 templ DashboardLayout(props DashboardProps) {
 	{{ path := strings.Split(props.ServerContext.Path(), "/") }}
 	@BaseHTML(props.PageMetadata) {
-		<main class="h-screen flex flex-row w-3/4">
+		<main class="h-screen flex flex-row w-full">
 			@DashboardSidebar(props.Navigation)
-			<div class="p-4">
-				<nav>
+			<div class="py-4 flex flex-col w-full">
+				<h2 class="heading-2 px-4 border-b">{ props.Title }</h2>
+				<nav class="flex flex-row items-center gap-1.5 border-b p-4">
+					<div data-lucide="house" class="size-4 muted"></div>
 					for _,item := range path {
-						<span>
-							{ item }
-						</span>
+						if item != "/" {
+							<span>
+								{ item }
+							</span>
+						}
+						<div data-lucide="chevron-right" class="size-4 last:hidden muted"></div>
 					}
 				</nav>
-				<article>
-					{ children... }
-				</article>
+				{ children... }
 			</div>
 		</main>
 	}
@@ -71,4 +80,32 @@ templ DashboardSidebar(props DashboardSidebarNav) {
 }
 
 templ DashboardHeader() {
+}
+
+templ DashboardPage(props DashboardPageProps) {
+	@DashboardLayout(DashboardProps{
+		Title:         props.Title,
+		ServerContext: props.ServerContext,
+		PageMetadata:  props.Metadata,
+		Navigation: DashboardSidebarNav{
+			Groups: []DashboardSidebarGroup{
+				{
+					Name: "Human Resource", Items: []DashboardSidebarGroupItem{
+						{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
+						{Name: "Employees", Link: "/human-resource/employees", Icon: "users-round"},
+						{Name: "Departments", Link: "/human-resource/departments", Icon: "building-2"},
+						{Name: "Tasks", Link: "/human-resource/tasks", Icon: "clipboard-list"},
+						{Name: "Files", Link: "/human-resource/files", Icon: "files"},
+					},
+				},
+				{
+					Name: "Account", Items: []DashboardSidebarGroupItem{
+						{Name: "Log out", Link: "/logout", Icon: "log-out"},
+					},
+				},
+			},
+		},
+	}) {
+		{ children... }
+	}
 }

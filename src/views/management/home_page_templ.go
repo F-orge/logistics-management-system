@@ -71,42 +71,16 @@ func (h *HumanResource) HomePage(c echo.Context) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div>hello</div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div>HELLO WORLD</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layouts.DashboardLayout(layouts.DashboardProps{
+		templ_7745c5c3_Err = layouts.DashboardPage(layouts.DashboardPageProps{
+			Title:         "Overview",
+			Metadata:      HRMHomePageMetadata(),
 			ServerContext: c,
-			PageMetadata:  HRMHomePageMetadata(),
-			Navigation: layouts.DashboardSidebarNav{
-				Groups: []layouts.DashboardSidebarGroup{
-					{
-						Name: "Human Resource", Items: []layouts.DashboardSidebarGroupItem{
-							{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
-							{Name: "Employees", Link: "/human-resource/employees", Icon: "users-round"},
-							{Name: "Departments", Link: "/human-resource/departments", Icon: "building-2"},
-							{Name: "Tasks", Link: "/human-resource/tasks", Icon: "clipboard-list"},
-							{Name: "Files", Link: "/human-resource/files", Icon: "files"},
-						},
-					},
-					{
-						Name: "Customer Support", Items: []layouts.DashboardSidebarGroupItem{
-							{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
-							{Name: "Reviews", Link: "/human-resource", Icon: "star"},
-							{Name: "Chats", Link: "/human-resource", Icon: "headset"},
-						},
-					},
-					{
-						Name: "Account", Items: []layouts.DashboardSidebarGroupItem{
-							{Name: "Profile", Link: "/account/profile", Icon: "user-round-pen"},
-							{Name: "Settings", Link: "/account/settings", Icon: "settings"},
-							{Name: "Log out", Link: "/logout", Icon: "log-out"},
-						},
-					},
-				},
-			},
 		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err

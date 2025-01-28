@@ -9,37 +9,11 @@ templ HRMHomePageMetadata() {
 }
 
 templ (h *HumanResource) HomePage(c echo.Context) {
-	@layouts.DashboardLayout(layouts.DashboardProps{
+	@layouts.DashboardPage(layouts.DashboardPageProps{
+		Title:         "Overview",
+		Metadata:      HRMHomePageMetadata(),
 		ServerContext: c,
-		PageMetadata:  HRMHomePageMetadata(),
-		Navigation: layouts.DashboardSidebarNav{
-			Groups: []layouts.DashboardSidebarGroup{
-				{
-					Name: "Human Resource", Items: []layouts.DashboardSidebarGroupItem{
-						{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
-						{Name: "Employees", Link: "/human-resource/employees", Icon: "users-round"},
-						{Name: "Departments", Link: "/human-resource/departments", Icon: "building-2"},
-						{Name: "Tasks", Link: "/human-resource/tasks", Icon: "clipboard-list"},
-						{Name: "Files", Link: "/human-resource/files", Icon: "files"},
-					},
-				},
-				{
-					Name: "Customer Support", Items: []layouts.DashboardSidebarGroupItem{
-						{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
-						{Name: "Reviews", Link: "/human-resource", Icon: "star"},
-						{Name: "Chats", Link: "/human-resource", Icon: "headset"},
-					},
-				},
-				{
-					Name: "Account", Items: []layouts.DashboardSidebarGroupItem{
-						{Name: "Profile", Link: "/account/profile", Icon: "user-round-pen"},
-						{Name: "Settings", Link: "/account/settings", Icon: "settings"},
-						{Name: "Log out", Link: "/logout", Icon: "log-out"},
-					},
-				},
-			},
-		},
 	}) {
-		<div>hello</div>
+		<div>HELLO WORLD</div>
 	}
 }
