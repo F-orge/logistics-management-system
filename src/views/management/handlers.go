@@ -23,5 +23,5 @@ func (h *HumanResource) LoginActionRoute(c echo.Context) error {
 	cookie.Expires = time.Now().Add(24 * time.Hour) // we set it to one day
 	c.SetCookie(cookie)
 
-	return c.Redirect(308, "/")
+	return c.Redirect(301, "/")
 }

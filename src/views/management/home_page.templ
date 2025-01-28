@@ -10,7 +10,8 @@ templ HRMHomePageMetadata() {
 
 templ (h *HumanResource) HomePage(c echo.Context) {
 	@layouts.DashboardLayout(layouts.DashboardProps{
-		PageMetadata: HRMHomePageMetadata(),
+		ServerContext: c,
+		PageMetadata:  HRMHomePageMetadata(),
 		Navigation: layouts.DashboardSidebarNav{
 			Groups: []layouts.DashboardSidebarGroup{
 				{

@@ -1,9 +1,15 @@
 package layouts
 
+import (
+	"github.com/labstack/echo/v4"
+	"strings"
+)
+
 type (
 	DashboardProps struct {
-		PageMetadata templ.Component
-		Navigation   DashboardSidebarNav
+		ServerContext echo.Context
+		PageMetadata  templ.Component
+		Navigation    DashboardSidebarNav
 	}
 	DashboardSidebarNav struct {
 		Groups []DashboardSidebarGroup
@@ -21,12 +27,22 @@ type (
 )
 
 templ DashboardLayout(props DashboardProps) {
+	{{ path := strings.Split(props.ServerContext.Path(), "/") }}
 	@BaseHTML(props.PageMetadata) {
 		<main class="h-screen flex flex-row w-3/4">
 			@DashboardSidebar(props.Navigation)
-			<article>
-				{ children... }
-			</article>
+			<div class="p-4">
+				<nav>
+					for _,item := range path {
+						<span>
+							{ item }
+						</span>
+					}
+				</nav>
+				<article>
+					{ children... }
+				</article>
+			</div>
 		</main>
 	}
 }

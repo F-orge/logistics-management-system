@@ -1,29 +1,31 @@
 package management
 
 import (
+	"log/slog"
+
 	"github.com/F-orge/logistics-management-system/src/views/utils"
 	"github.com/labstack/echo/v4"
 )
 
 type HumanResource struct {
-	server *echo.Echo
 }
 
 func New() *HumanResource {
-	return &HumanResource{
-		server: echo.New(),
-	}
+	return &HumanResource{}
 }
 
-func (h *HumanResource) Server() *echo.Echo {
+func (h *HumanResource) Server(group *echo.Group) {
 
-	h.server.GET("/login", func(c echo.Context) error {
+	group.GET("/login", func(c echo.Context) error {
+		// generate csrf token
+		slog.Info(c.Get("csrf").(string))
+
 		return utils.Render(h.LoginPage(c), c)
 	})
-	h.server.Any("/", func(c echo.Context) error {
+	group.GET("/", func(c echo.Context) error {
 		return utils.Render(h.HomePage(c), c)
 	})
-	h.server.GET("/logout", func(c echo.Context) error {
+	group.GET("/logout", func(c echo.Context) error {
 		// remove authorization cookie
 		cookie, err := c.Cookie("Authorization")
 
@@ -36,9 +38,8 @@ func (h *HumanResource) Server() *echo.Echo {
 
 		c.SetCookie(cookie)
 
-		return c.Redirect(308, "/login")
+		return c.Redirect(301, "/login")
 	})
-	h.server.POST("/login", h.LoginActionRoute)
+	group.POST("/login", h.LoginActionRoute)
 
-	return h.server
 }

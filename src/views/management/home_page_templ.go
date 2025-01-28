@@ -78,7 +78,8 @@ func (h *HumanResource) HomePage(c echo.Context) templ.Component {
 			return nil
 		})
 		templ_7745c5c3_Err = layouts.DashboardLayout(layouts.DashboardProps{
-			PageMetadata: HRMHomePageMetadata(),
+			ServerContext: c,
+			PageMetadata:  HRMHomePageMetadata(),
 			Navigation: layouts.DashboardSidebarNav{
 				Groups: []layouts.DashboardSidebarGroup{
 					{
