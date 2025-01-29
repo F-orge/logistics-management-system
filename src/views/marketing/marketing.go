@@ -5,21 +5,16 @@ import (
 )
 
 type Marketing struct {
-	server *echo.Echo
 }
 
 func New() *Marketing {
-	return &Marketing{
-		server: echo.New(),
-	}
+	return &Marketing{}
 }
 
-func (m *Marketing) Server() *echo.Echo {
+func (m Marketing) Server(group *echo.Group) {
 
-	m.server.GET("/", m.LandingRoute)
-	m.server.GET("/about", m.AboutRoute)
-	m.server.GET("/blogs", m.BlogsRoute)
-	m.server.GET("/blogs/{id}", m.SpecificBlog)
-
-	return m.server
+	group.GET("/", m.LandingRoute)
+	group.GET("/about", m.AboutRoute)
+	group.GET("/blogs", m.BlogsRoute)
+	group.GET("/blogs/{id}", m.SpecificBlog)
 }

@@ -1,3 +1,4 @@
+@import "@fontsource/inter";
 @import "tailwindcss";
 @import "./ui/input.css";
 @import "./ui/button.css";
@@ -46,7 +47,7 @@
   --border: 20 5.9% 90%;
   --input: 20 5.9% 90%;
   --ring: 24.6 95% 53.1%;
-  --radius: 3rem;
+  --radius: 0.3rem;
 }
 
 
@@ -133,4 +134,19 @@
 	td {
 		@apply px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right;
 	}
+}
+
+::-webkit-scrollbar {
+  width: 16px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  border: 4px solid transparent;
+  background-clip: content-box;
+  @apply bg-accent;
+}
+
+::-webkit-scrollbar-corner {
+  display: none;
 }
