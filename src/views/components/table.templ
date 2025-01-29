@@ -1,0 +1,27 @@
+package components
+
+type TableProps struct {
+	Columns []string
+	Rows    [][]string
+}
+
+templ Table(props TableProps) {
+	<table class="border">
+		<thead class="border">
+			<tr>
+				for _,item := range props.Columns {
+					<th class="first:border-none border-l">{ item }</th>
+				}
+			</tr>
+		</thead>
+		<tbody class="border">
+			for _,row := range props.Rows {
+				<tr>
+					for _,item := range row {
+						<td class="first:border-none border-l">{ item }</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}

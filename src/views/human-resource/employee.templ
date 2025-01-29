@@ -30,6 +30,18 @@ templ EmployeePage(c echo.Context) {
 					{LabelIcon: "user-x", Label: "Leave", Value: "2"},
 				})
 			</section>
+			<section class="p-4 border-b gap-5">
+				@components.Table(components.TableProps{
+					Columns: []string{
+						"First Name", "Middle Name", "Last Name",
+					},
+					Rows: [][]string{
+						[]string{
+							"John", "James", "Doe",
+						},
+					},
+				})
+			</section>
 		</article>
 	}
 }
