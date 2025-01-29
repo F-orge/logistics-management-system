@@ -31,7 +31,7 @@ func BaseHTML(
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><link rel=\"stylesheet\" href=\"assets/out.css\"><link rel=\"stylesheet\" href=\"assets/index.css\"><meta charset=\"utf-8\"><link rel=\"icon\" type=\"image/x-icon\" href=\"assets/etmar-logo.png\"><script src=\"/assets/index.js\" defer></script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<!doctype html><html><head><link rel=\"stylesheet\" href=\"/assets/out.css\"><link rel=\"stylesheet\" href=\"/assets/index.css\"><meta charset=\"utf-8\"><link rel=\"icon\" type=\"image/x-icon\" href=\"/assets/etmar-logo.png\"><script src=\"/assets/index.js\" defer></script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

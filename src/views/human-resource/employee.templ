@@ -1,4 +1,35 @@
 package humanresource
 
-templ EmployeePage() {
+import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+	"github.com/F-orge/logistics-management-system/src/views/utils"
+	"github.com/labstack/echo/v4"
+)
+
+func (h *HumanResource) EmployeePageHandler(c echo.Context) error {
+	return utils.Render(EmployeePage(c), c)
+}
+
+templ EmployeePageMetadata() {
+	<title>Management  | Employee</title>
+}
+
+templ EmployeePage(c echo.Context) {
+	@layouts.DashboardPage(layouts.DashboardPageProps{
+		Title:         "Employees",
+		Metadata:      EmployeePageMetadata(),
+		ServerContext: c,
+	}) {
+		<article>
+			<section class="p-4 border-b gap-5">
+				@components.StatsComponent([]components.StatsComponentProps{
+					{LabelIcon: "users-round", Label: "Total Employees", Value: "10/10", ValueLabel: "total"},
+					{LabelIcon: "user-round-check", Label: "Working", Value: "5"},
+					{LabelIcon: "file-user", Label: "Idle", Value: "3"},
+					{LabelIcon: "user-x", Label: "Leave", Value: "2"},
+				})
+			</section>
+		</article>
+	}
 }

@@ -4,7 +4,7 @@ import (
 	"log"
 	"log/slog"
 
-	"github.com/F-orge/logistics-management-system/src/views/management"
+	humanresource "github.com/F-orge/logistics-management-system/src/views/human-resource"
 	"github.com/F-orge/logistics-management-system/src/views/marketing"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,8 +22,13 @@ func main() {
 
 	managementSystem := e.Host("management.localhost:8080")
 	marketingSystem := e.Host("www.localhost:8080")
-	management.New().Server(managementSystem)
+
+	// marketing
 	marketing.New().Server(marketingSystem)
+
+	// management - human resource
+	humanresource.New().Server(managementSystem)
+
 	managementSystem.Static("/assets", "./src/views/assets")
 	marketingSystem.Static("/assets", "./src/views/assets")
 
