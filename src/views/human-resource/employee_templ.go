@@ -81,7 +81,7 @@ func EmployeePage(c echo.Context) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<article><section class=\"p-4 border-b gap-5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<article class=\"overflow-y-auto\"><section class=\"p-4 border-b\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -94,17 +94,38 @@ func EmployeePage(c echo.Context) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</section><section class=\"p-4 border-b gap-5\">")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</section><section class=\"p-4 border-b space-y-5\"><div class=\"flex flex-row items-center justify-between\"><div><h4 class=\"large\">Employee List</h4><span class=\"muted\">Employee directory</span></div><div class=\"space-x-2.5\"><button data-variant=\"primary\" data-size=\"sm\"><div data-lucide=\"user-plus\"></div><span>Employee</span></button> <button data-variant=\"outline\" data-size=\"sm\"><div data-lucide=\"sliders-horizontal\"></div><span>View</span></button></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = components.Table(components.TableProps{
 				Columns: []string{
-					"First Name", "Middle Name", "Last Name",
+					"First Name", "Middle Name", "Last Name", "Current Work", "Status", "Position", "Contract Type",
 				},
 				Rows: [][]string{
 					[]string{
-						"John", "James", "Doe",
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+					},
+					[]string{
+						"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
 					},
 				},
 			}).Render(ctx, templ_7745c5c3_Buffer)

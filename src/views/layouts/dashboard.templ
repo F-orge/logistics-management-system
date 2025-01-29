@@ -38,8 +38,7 @@ templ DashboardLayout(props DashboardProps) {
 		<main class="h-screen flex flex-row w-full">
 			@DashboardSidebar(props.Navigation)
 			<div class="py-4 flex flex-col w-full">
-				<h2 class="heading-2 px-4 border-b">{ props.Title }</h2>
-				<nav class="flex flex-row items-center gap-1.5 border-b p-4">
+				<nav class="flex flex-row items-center gap-1.5 border-b pb-4 px-4">
 					<div data-lucide="house" class="size-4 muted"></div>
 					for _,item := range path {
 						if item != "/" {
@@ -50,6 +49,7 @@ templ DashboardLayout(props DashboardProps) {
 						<div data-lucide="chevron-right" class="size-4 last:hidden muted"></div>
 					}
 				</nav>
+				<h2 class="heading-2 p-4 border-b">{ props.Title }</h2>
 				{ children... }
 			</div>
 		</main>
@@ -57,7 +57,7 @@ templ DashboardLayout(props DashboardProps) {
 }
 
 templ DashboardSidebar(props DashboardSidebarNav) {
-	<aside class="border w-1/4 overflow-y-auto">
+	<aside class="border w-1/4 overflow-y-auto bg-secondary">
 		for _,group := range props.Groups {
 			<hr class="first:hidden"/>
 			<div class="py-4">
@@ -66,7 +66,7 @@ templ DashboardSidebar(props DashboardSidebarNav) {
 					<ul class="w-full flex flex-col gap-1.5">
 						for _,item := range group.Items {
 							<li>
-								<a data-variant="ghost" data-size="default" class="text-primary hover:!text-primary w-full flex flex-row !justify-start" href={ templ.URL(item.Link) }>
+								<a data-variant="link" data-size="default" class="text-primary hover:!text-primary w-full flex flex-row !justify-start" href={ templ.URL(item.Link) }>
 									<i data-lucide={ item.Icon }></i>
 									{ item.Name }
 								</a>

@@ -1,6 +1,7 @@
 package humanresource
 
 import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
 	"github.com/F-orge/logistics-management-system/src/views/layouts"
 	"github.com/F-orge/logistics-management-system/src/views/utils"
 	"github.com/labstack/echo/v4"
@@ -20,8 +21,8 @@ templ OverviewPage(c echo.Context) {
 		Metadata:      OverviewPageMetadata(),
 		ServerContext: c,
 	}) {
-		<article>
-			Overview Page
+		<article class="h-full">
+			@components.EmptySection()
 		</article>
 	}
 }

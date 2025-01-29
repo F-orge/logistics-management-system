@@ -21,8 +21,8 @@ templ EmployeePage(c echo.Context) {
 		Metadata:      EmployeePageMetadata(),
 		ServerContext: c,
 	}) {
-		<article>
-			<section class="p-4 border-b gap-5">
+		<article class="overflow-y-auto">
+			<section class="p-4 border-b">
 				@components.StatsComponent([]components.StatsComponentProps{
 					{LabelIcon: "users-round", Label: "Total Employees", Value: "10/10", ValueLabel: "total"},
 					{LabelIcon: "user-round-check", Label: "Working", Value: "5"},
@@ -30,14 +30,51 @@ templ EmployeePage(c echo.Context) {
 					{LabelIcon: "user-x", Label: "Leave", Value: "2"},
 				})
 			</section>
-			<section class="p-4 border-b gap-5">
+			<section class="p-4 border-b space-y-5">
+				<div class="flex flex-row items-center justify-between">
+					<div>
+						<h4 class="large">Employee List</h4>
+						<span class="muted">Employee directory</span>
+					</div>
+					<div class="space-x-2.5">
+						<button data-variant="primary" data-size="sm">
+							<div data-lucide="user-plus"></div>
+							<span>Employee</span>
+						</button>
+						<button data-variant="outline" data-size="sm">
+							<div data-lucide="sliders-horizontal"></div>
+							<span>View</span>
+						</button>
+					</div>
+				</div>
 				@components.Table(components.TableProps{
 					Columns: []string{
-						"First Name", "Middle Name", "Last Name",
+						"First Name", "Middle Name", "Last Name", "Current Work", "Status", "Position", "Contract Type",
 					},
 					Rows: [][]string{
 						[]string{
-							"John", "James", "Doe",
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
+						},
+						[]string{
+							"John", "James", "Doe", "4", "Active", "Manager", "Full Time",
 						},
 					},
 				})
