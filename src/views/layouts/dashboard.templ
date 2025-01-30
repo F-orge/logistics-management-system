@@ -1,6 +1,7 @@
 package layouts
 
 import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
 	"github.com/labstack/echo/v4"
 	"strings"
 )
@@ -39,14 +40,10 @@ templ DashboardLayout(props DashboardProps) {
 			@DashboardSidebar(props.Navigation)
 			<div class="py-4 flex flex-col w-full">
 				<nav class="flex flex-row items-center gap-1.5 border-b pb-4 px-4">
-					<div data-lucide="house" class="size-4 muted"></div>
-					for _,item := range path {
-						if item != "/" {
-							<span class="muted">
-								{ item }
-							</span>
-						}
-						<div data-lucide="chevron-right" class="size-4 last:hidden muted"></div>
+					for _, item := range path {
+						@components.Breadcrumbs([]components.BreadcrumbsProps{
+							{Name: item, Icon: "icon-[lucide--chevron-right]"},
+						})
 					}
 				</nav>
 				<h2 class="heading-2 p-4 border-b">{ props.Title }</h2>
@@ -57,26 +54,22 @@ templ DashboardLayout(props DashboardProps) {
 }
 
 templ DashboardSidebar(props DashboardSidebarNav) {
-	<aside class="border w-1/4 overflow-y-auto bg-secondary">
-		for _,group := range props.Groups {
-			<hr class="first:hidden"/>
-			<div class="py-4">
-				<span class="muted px-4 py-1.5">{ group.Name }</span>
-				<nav class="w-full p-2.5">
-					<ul class="w-full flex flex-col gap-1.5">
-						for _,item := range group.Items {
-							<li>
-								<a data-variant="link" data-size="default" class="text-primary hover:!text-primary w-full flex flex-row !justify-start" href={ templ.URL(item.Link) }>
-									<i data-lucide={ item.Icon }></i>
-									{ item.Name }
-								</a>
-							</li>
-						}
-					</ul>
-				</nav>
-			</div>
-		}
-	</aside>
+	<div class="h-full w-1/4 overflow-y-auto border-r">
+		@components.Menu(components.MenuProps{
+			Groups: []components.MenuGroupProps{
+				{
+					Title: "Human Resource",
+					Items: []components.MenuItemProps{
+						{Name: "Overview", Link: "/human-resource", Icon: "icon-[lucide--square-chart-gantt]"},
+						{Name: "Employees", Link: "/human-resource/employees", Icon: "icon-[lucide--users-round]"},
+						{Name: "Departments", Link: "/human-resource/departments", Icon: "icon-[lucide--building-2]"},
+						{Name: "Tasks", Link: "/human-resource/tasks", Icon: "icon-[lucide--clipboard-list]"},
+						{Name: "Files", Link: "/human-resource/files", Icon: "icon-[lucide--files]"},
+					},
+				},
+			},
+		})
+	</div>
 }
 
 templ DashboardHeader() {
@@ -91,11 +84,11 @@ templ DashboardPage(props DashboardPageProps) {
 			Groups: []DashboardSidebarGroup{
 				{
 					Name: "Human Resource", Items: []DashboardSidebarGroupItem{
-						{Name: "Overview", Link: "/human-resource", Icon: "square-chart-gantt"},
-						{Name: "Employees", Link: "/human-resource/employees", Icon: "users-round"},
-						{Name: "Departments", Link: "/human-resource/departments", Icon: "building-2"},
-						{Name: "Tasks", Link: "/human-resource/tasks", Icon: "clipboard-list"},
-						{Name: "Files", Link: "/human-resource/files", Icon: "files"},
+						{Name: "Overview", Link: "/human-resource", Icon: "icon-[lucide--square-chart-gantt]"},
+						{Name: "Employees", Link: "/human-resource/employees", Icon: "icon-[lucide--users-round]"},
+						{Name: "Departments", Link: "/human-resource/departments", Icon: "icon-[lucide--building-2]"},
+						{Name: "Tasks", Link: "/human-resource/tasks", Icon: "icon-[lucide--clipboard-list]"},
+						{Name: "Files", Link: "/human-resource/files", Icon: "icon-[lucide--files]"},
 					},
 				},
 				{

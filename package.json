@@ -4,25 +4,27 @@
 	"type": "module",
 	"version": "0.2.0",
 	"scripts": {
-		"dev:tailwind": "bun tailwindcss -i src/views/components/app.css -o src/views/assets/out.css --watch",
+		"dev:tailwind": "bun tailwindcss -i src/views/components/app.css -o dist/out.css --watch",
 		"dev:golang": "air",
 		"dev:typescript": "bun build --outdir=src/views/assets src/views/index.ts --watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@faker-js/faker": "^9.3.0",
-		"@tailwindcss/postcss": "^4.0.0",
+		"@iconify/json": "^2.2.301",
+		"@iconify/tailwind": "^1.2.0",
 		"@types/bun": "^1.1.14",
 		"@types/node": "^22.10.2",
 		"rspress": "^1.38.0",
-		"tailwindcss": "^4.0.0"
+		"tailwindcss": "3"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
 	},
 	"dependencies": {
 		"@fontsource/inter": "^5.1.0",
-		"@tailwindcss/cli": "^4.0.0",
+		"@rsbuild/core": "^1.2.3",
+		"flyonui": "^1.3.0",
 		"lucide": "^0.474.0"
 	}
 }

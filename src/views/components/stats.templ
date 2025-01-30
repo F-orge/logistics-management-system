@@ -8,21 +8,17 @@ type StatsComponentProps struct {
 }
 
 templ StatsComponent(props []StatsComponentProps) {
-	<div class="grid grid-cols-4">
+	<div class="stats w-full">
 		for _,item := range props {
-			<div class="flex flex-col first:border-none border-l px-4 gap-2.5">
-				<div class="flex flex-row items-center gap-1.5">
-					<div data-lucide={ item.LabelIcon } class="size-4 muted"></div>
-					<span class="muted">
-						{ item.Label }
-					</span>
+			<div class="stat">
+				<div class="stat-figure text-base-content size-8">
+					<span class={ item.LabelIcon,"size-8" }></span>
 				</div>
-				<div class="flex flex-row items-end gap-2.5">
-					<h4 class="heading-4 tracking-widest">
-						{ item.Value }
-					</h4>
-					<span class="muted">{ item.ValueLabel }</span>
-				</div>
+				<span class="stat-title">{ item.Label }</span>
+				<h4 class="stat-value">
+					{ item.Value }
+				</h4>
+				<span class="stat-desc">{ item.ValueLabel }</span>
 			</div>
 		}
 	</div>

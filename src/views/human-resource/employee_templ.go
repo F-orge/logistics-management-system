@@ -86,15 +86,15 @@ func EmployeePage(c echo.Context) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			templ_7745c5c3_Err = components.StatsComponent([]components.StatsComponentProps{
-				{LabelIcon: "users-round", Label: "Total Employees", Value: "10/10", ValueLabel: "total"},
-				{LabelIcon: "user-round-check", Label: "Working", Value: "5"},
-				{LabelIcon: "file-user", Label: "Idle", Value: "3"},
-				{LabelIcon: "user-x", Label: "Leave", Value: "2"},
+				{LabelIcon: "icon-[lucide--users-round]", Label: "Total Employees", Value: "10/10", ValueLabel: "Total Count"},
+				{LabelIcon: "icon-[lucide--user-round-check]", Label: "Currently Working", Value: "5", ValueLabel: "Working Now"},
+				{LabelIcon: "icon-[lucide--file-user]", Label: "Currently Idle", Value: "3", ValueLabel: "Idle Now"},
+				{LabelIcon: "icon-[lucide--user-x]", Label: "On Leave", Value: "2", ValueLabel: "On Leave"},
 			}).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</section><section class=\"p-4 border-b space-y-5\"><div class=\"flex flex-row items-center justify-between\"><div><h4 class=\"large\">Employee List</h4><span class=\"muted\">Employee directory</span></div><div class=\"space-x-2.5\"><button data-variant=\"primary\" data-size=\"sm\"><div data-lucide=\"user-plus\"></div><span>Employee</span></button> <button data-variant=\"outline\" data-size=\"sm\"><div data-lucide=\"sliders-horizontal\"></div><span>View</span></button></div></div>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</section><section class=\"p-4 border-b space-y-5\"><div class=\"flex flex-row items-center justify-between\"><div><h4 class=\"heading-4\">Employee List</h4><span class=\"muted\">Employee directory</span></div><div class=\"space-x-2.5\"><button class=\"btn btn-primary\"><div class=\"icon-[lucide--user-plus]\"></div><span>Employee</span></button> <button class=\"btn btn-outline\"><div class=\"icon-[lucide--sliders-horizontal]\"></div><span>View</span></button></div></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

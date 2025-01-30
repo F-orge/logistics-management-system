@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"log/slog"
+	"os"
+	"path/filepath"
 
 	humanresource "github.com/F-orge/logistics-management-system/src/views/human-resource"
 	"github.com/F-orge/logistics-management-system/src/views/marketing"
@@ -29,8 +31,14 @@ func main() {
 	// management - human resource
 	humanresource.New().Server(managementSystem)
 
-	managementSystem.Static("/assets", "./src/views/assets")
-	marketingSystem.Static("/assets", "./src/views/assets")
+	currentDir, err := os.Getwd()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	managementSystem.Static("/assets", filepath.Join(currentDir, "dist"))
+	marketingSystem.Static("/assets", filepath.Join(currentDir, "dist"))
 
 	// set body limit to 1GB
 	e.Use(middleware.BodyLimit("1G"))

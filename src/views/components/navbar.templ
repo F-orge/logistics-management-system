@@ -1,0 +1,29 @@
+package components
+
+type NavbarProps struct {
+	Start  templ.Component
+	Center templ.Component
+	End    templ.Component
+}
+
+templ Navbar(props NavbarProps) {
+	<nav class="navbar">
+		<div class="w-full md:flex md:items-center md:gap-2">
+			if props.Start != nil {
+				<div class="navbar-start">
+					@props.Start
+				</div>
+			}
+			if props.Center != nil {
+				<div class="navbar-center">
+					@props.Center
+				</div>
+			}
+			if props.End != nil {
+				<div class="navbar-end">
+					@props.End
+				</div>
+			}
+		</div>
+	</nav>
+}

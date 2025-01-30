@@ -1,0 +1,56 @@
+package components
+
+import "fmt"
+
+type (
+	MenuProps struct {
+		Groups []MenuGroupProps
+	}
+	MenuGroupProps struct {
+		Title string
+		Items []MenuItemProps
+	}
+	MenuItemProps struct {
+		NameAsToolTip bool
+		Name          string
+		Icon          string
+		Link          string
+		Children      []MenuGroupProps
+	}
+)
+
+templ Menu(props MenuProps) {
+	<ul class="menu overflow-auto [&_.nested-collapse-wrapper]:space-y-0.5 [&_ul]:space-y-0.5">
+		for _,group := range props.Groups {
+			if group.Title != "" {
+				<li>
+					<p class="menu-title truncate">{ group.Title }</p>
+				</li>
+			}
+			for _,item := range group.Items {
+				if item.NameAsToolTip == true {
+					<li class="tooltip [--placement:right]">
+						<a href={ templ.URL(item.Link) } class="tooltip-toggle" aria-label={ item.Name }>
+							<span class={ item.Icon,"size-5" }></span>
+						</a>
+						<span class="tooltip-content tooltip-shown:opacity-100 tooltip-shown:visible" role="tooltip">
+							<span class="tooltip-body">{ fmt.Sprintf("%s - %s",group.Title,item.Name) }</span>
+						</span>
+					</li>
+				} else {
+					<li>
+						<a href={ templ.URL(item.Link) }>
+							<span class={ item.Icon,"size-5" }></span>
+							{ item.Name }
+						</a>
+					</li>
+				}
+				if item.Children != nil {
+					@Menu(MenuProps{
+						Groups: item.Children,
+					})
+				}
+			}
+		}
+	</ul>
+}

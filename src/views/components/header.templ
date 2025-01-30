@@ -36,7 +36,7 @@ templ MarketingHeader(props MarketingHeaderProp) {
 			<ul class="flex flex-row items-center gap-5">
 				for _,item := range props.MiddleNav {
 					<li>
-						<a data-variant="ghost" data-size="sm" href={ templ.URL(item.Link) }>
+						<a class="btn btn-text btn-sm" href={ templ.URL(item.Link) }>
 							{ item.Name }
 						</a>
 					</li>
@@ -46,7 +46,7 @@ templ MarketingHeader(props MarketingHeaderProp) {
 		<ul class="flex flex-row items-center gap-5">
 			for _,item := range props.ActionNav {
 				<li>
-					<a data-size="sm" data-variant={ item.Variant } href={ templ.URL(item.Link) }>
+					<a class="btn btn-text btn-sm" href={ templ.URL(item.Link) }>
 						{ item.Name }
 					</a>
 				</li>

@@ -1,0 +1,89 @@
+package marketing
+
+import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+	"github.com/F-orge/logistics-management-system/src/views/utils"
+	"github.com/labstack/echo/v4"
+)
+
+func (m *Marketing) MarketingAboutPageHandler(c echo.Context) error {
+	return utils.Render(MarketingAboutPage(), c)
+}
+
+templ MarketingAboutBody() {
+	<article class="p-4 space-y-24 py-24">
+		<h1 class="heading-1 font-bold text-center">About US</h1>
+		<section class="grid grid-cols-2 gap-5">
+			<div class="card">
+				<div class="card-body">
+					<img src="https://etmarphilippines.com/wp-content/uploads/2024/10/359532169_756981383099220_2370446486103410996_n.jpg"/>
+				</div>
+			</div>
+			<div>
+				<h2 class="heading-2">WHO WE ARE:</h2>
+				<p class="paragraph pt-4 tracking-wide">
+					ETMAR was established in 2014 and developed by a Strong, Young Management Team, Professional and Experienced Staff together with the Founding Directors who are committed to working within Established Quality Procedures to provide each client with the most reliable Exportation of Food and Non-Food Products, Freight Forwarding by Air and Sea , Customs Clearing, and other Logistics Services in the market.
+					<br/>
+					<br/>
+					We pride ourselves to provide Immediate and Quality Services to our Clients by helping them in return to meet the increasing demands of their necessities.
+					At ETMAR, we provide Shipment Solutions to our Clients from the source of products to the final destination which comprises of Air, Land, & Sea and Domestic and International Freight Forwarding, Trucking and Door to Door Delivery Services.
+				</p>
+			</div>
+		</section>
+		<div class="divider">OUR</div>
+		<section class="grid grid-cols-3 gap-5">
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">
+						Vision
+					</div>
+					<p class="paragraph pt-4">
+						To develop ALL LOGISTICS SOLUTIONS/SERVICES that are cost effective and efficient and be recognized for the quality of services provided.
+					</p>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">
+						Mission
+					</div>
+					<p class="paragraph pt-4">
+						Our mission is to ensure the QUALITY remains at the FOREFRONT of our shipments and other related services.
+					</p>
+				</div>
+			</div>
+			<div class="card">
+				<div class="card-header">
+					<div class="card-title">
+						Company Values
+					</div>
+					<p class="paragraph pt-4">
+						We are committed to ensuring that the quality of services delivered are of the highest standard at all times.
+					</p>
+				</div>
+			</div>
+		</section>
+	</article>
+}
+
+templ MarketingAboutPage() {
+	@layouts.BaseHTML(
+		MarketingPageMetadata(MarketingLandingPageMetadata{
+			title:       "ETMAR Logistics",
+			description: "ETMAR exports premium Philippine products worldwide.",
+			author:      "ETMAR Logistics",
+			keywords:    []string{"logistics", "freight forwarding", "relocation services", "import export", "custom clearance", "trucking", "door to door delivery"},
+			siteName:    "ETMAR Logistics",
+			seeAlso:     "https://www.etmar-logistics.com",
+			image:       "/assets/etmar-logo.png",
+			pageUrl:     "https://www.etmar-logistics.com",
+		}),
+	) {
+		@components.Navbar(components.NavbarProps{
+			Start: landingNavbarStart(),
+			End:   landingNavbarEnd(),
+		})
+		@MarketingAboutBody()
+	}
+}

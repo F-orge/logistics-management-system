@@ -52,7 +52,7 @@ templ Footer(props FooterProps) {
 					<ul class="flex flex-row gap-2.5">
 						for _,item := range props.Navigation {
 							<li>
-								<a data-size="sm" data-variant={ item.Variant } href={ templ.URL(item.Link) }>
+								<a class="btn btn-sm btn-text" href={ templ.URL(item.Link) }>
 									{ item.Name }
 								</a>
 							</li>
@@ -70,7 +70,7 @@ templ Footer(props FooterProps) {
 									<a
 										target="_blank"
 										href={ templ.URL(item.Link) }
-										class="muted small inline-flex flex-row items-center gap-2.5 text-muted-foreground"
+										class="muted small inline-flex flex-row items-center gap-2.5 text-primary"
 										data-variant="link"
 									>
 										{ item.Name }

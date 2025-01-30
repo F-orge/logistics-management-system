@@ -1,0 +1,22 @@
+package components
+
+type BreadcrumbsProps struct {
+	Name string
+	Icon string
+}
+
+templ Breadcrumbs(props []BreadcrumbsProps) {
+	<div class="breadcrumbs">
+		<ul>
+			for _,item := range props {
+				<li>
+					{ item.Name }
+				</li>
+				/* FIXME: hide element if last row */
+				<li class="breadcrumbs-separator rtl:rotate-180">
+					<span class={ item.Icon }></span>
+				</li>
+			}
+		</ul>
+	</div>
+}

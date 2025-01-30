@@ -1,0 +1,75 @@
+package marketing
+
+import (
+	"github.com/F-orge/logistics-management-system/src/views/components"
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+	"github.com/F-orge/logistics-management-system/src/views/utils"
+	"github.com/labstack/echo/v4"
+)
+
+func (m *Marketing) MarketingServicesHandler(c echo.Context) error {
+	return utils.Render(MarketingServicesPage(), c)
+}
+
+type marketingServicesSectionProps struct {
+	image       string
+	title       string
+	description string
+}
+
+templ marketingServicesSection(props []marketingServicesSectionProps) {
+	for _,item := range props {
+		<div class="card">
+			<figure>
+				<img class="h-64 w-full object-cover" src={ item.image } alt="Watch"/>
+			</figure>
+			<div class="card-body">
+				<h5 class="card-title mb-2.5">{ item.title }</h5>
+				<p class="mb-4">{ item.description }</p>
+			</div>
+		</div>
+	}
+}
+
+templ MarketingServicesBody() {
+	<article class="w-full h-full p-4 flex flex-col items-center gap-20">
+		<section class="w-1/2">
+			<h1 class="heading-1 font-bold text-center">Our Services</h1>
+			<p class="text-center paragraph pt-5">ETMAR provides a full suite of logistics and import-export services tailored to streamline your supply chain needs. From reliable customs brokerage to simplify clearance processes, to efficient storage and warehousing solutions ensuring your goods are secure and accessible, we handle every aspect of your cargo journey. </p>
+		</section>
+		<section class="grid grid-cols-3 gap-5">
+			@marketingServicesSection([]marketingServicesSectionProps{
+				{title: "Import and Export", image: "https://etmarphilippines.com/wp-content/uploads/2024/10/att.x3vzd7jtkredydexqeoadrftby3zj3usmwpirqkuuyi.jpg", description: "We export assorted foodstuff and non-food products from Philippines to any destination."},
+				{title: "Customs Brokerage", image: "https://etmarphilippines.com/wp-content/uploads/2024/10/blogposts-10.png", description: "We can customs clear your cargo shipments by Air or sea mode of shipments."},
+				{title: "Air & Sea International and Domestic Freight Forwarding", image: "https://etmarphilippines.com/wp-content/uploads/2024/10/6566d0f3c265148e9dc9bb14_post.png", description: "We offer a full range of personalized forwarding services regardless of size from any point of origin, or destination."},
+			})
+		</section>
+		<section class="grid grid-cols-2 gap-5">
+			@marketingServicesSection([]marketingServicesSectionProps{
+				{title: "Storage & Warehousing", image: "https://etmarphilippines.com/wp-content/uploads/2024/10/att.6wlpshutgv89sy0zqz23h4rhbt3htgnf8afgr0-zfkm-2.jpg", description: "Etmar offers reliable and safe storage and warehousing solutions for your cargoes."},
+				{title: "Tariff & Trade Agreement Consultancy", image: "https://etmarphilippines.com/wp-content/uploads/2024/10/hero-professional-svcs_0.jpg", description: "Etmar offers expert guidance in customs and tariff and freight matters in navigating regulations for first time traders and regular exporters and importers."},
+			})
+		</section>
+	</article>
+}
+
+templ MarketingServicesPage() {
+	@layouts.BaseHTML(
+		MarketingPageMetadata(MarketingLandingPageMetadata{
+			title:       "ETMAR Logistics",
+			description: "ETMAR exports premium Philippine products worldwide.",
+			author:      "ETMAR Logistics",
+			keywords:    []string{"logistics", "freight forwarding", "relocation services", "import export", "custom clearance", "trucking", "door to door delivery"},
+			siteName:    "ETMAR Logistics",
+			seeAlso:     "https://www.etmar-logistics.com",
+			image:       "/assets/etmar-logo.png",
+			pageUrl:     "https://www.etmar-logistics.com",
+		}),
+	) {
+		@components.Navbar(components.NavbarProps{
+			Start: landingNavbarStart(),
+			End:   landingNavbarEnd(),
+		})
+		@MarketingServicesBody()
+	}
+}

@@ -6,22 +6,24 @@ type TableProps struct {
 }
 
 templ Table(props TableProps) {
-	<table class="border w-full overflow-x-auto rounded-md">
-		<thead class="">
-			<tr>
-				for _,item := range props.Columns {
-					<th class="first:border-none border-l">{ item }</th>
-				}
-			</tr>
-		</thead>
-		<tbody class="">
-			for _,row := range props.Rows {
+	<div class="w-full overflow-x-auto rounded-lg border">
+		<table class="table">
+			<thead class="">
 				<tr>
-					for _,item := range row {
-						<td class="first:border-none border-l">{ item }</td>
+					for _,item := range props.Columns {
+						<th class="">{ item }</th>
 					}
 				</tr>
-			}
-		</tbody>
-	</table>
+			</thead>
+			<tbody class="">
+				for _,row := range props.Rows {
+					<tr>
+						for _,item := range row {
+							<td class="">{ item }</td>
+						}
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
 }

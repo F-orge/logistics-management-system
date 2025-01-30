@@ -12,9 +12,7 @@ func New() *Marketing {
 }
 
 func (m Marketing) Server(group *echo.Group) {
-
-	group.GET("/", m.LandingRoute)
-	group.GET("/about", m.AboutRoute)
-	group.GET("/blogs", m.BlogsRoute)
-	group.GET("/blogs/{id}", m.SpecificBlog)
+	group.GET("/", m.MarketingLandingPageHandler)
+	group.GET("/about", m.MarketingAboutPageHandler)
+	group.GET("/services", m.MarketingServicesHandler)
 }
