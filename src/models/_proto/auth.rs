@@ -2,10 +2,23 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AuthResponse {
     #[prost(string, tag = "1")]
-    pub token: ::prost::alloc::string::String,
+    pub access_token: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub refresh_token: ::prost::alloc::string::String,
+    #[prost(string, tag = "3")]
+    pub token_type: ::prost::alloc::string::String,
+    #[prost(int64, tag = "4")]
+    pub expires_in: i64,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuthRequest {
+pub struct AuthBasicLoginRequest {
+    #[prost(string, tag = "1")]
+    pub email: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub password: ::prost::alloc::string::String,
+}
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct AuthBasicRegisterRequest {
     #[prost(string, tag = "1")]
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
@@ -102,9 +115,9 @@ pub mod auth_service_client {
             self.inner = self.inner.max_encoding_message_size(limit);
             self
         }
-        pub async fn login(
+        pub async fn basic_login(
             &mut self,
-            request: impl tonic::IntoRequest<super::AuthRequest>,
+            request: impl tonic::IntoRequest<super::AuthBasicLoginRequest>,
         ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status> {
             self.inner
                 .ready()
@@ -115,9 +128,33 @@ pub mod auth_service_client {
                     )
                 })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/auth.AuthService/Login");
+            let path = http::uri::PathAndQuery::from_static(
+                "/auth.AuthService/BasicLogin",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new("auth.AuthService", "Login"));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("auth.AuthService", "BasicLogin"));
+            self.inner.unary(req, path, codec).await
+        }
+        pub async fn basic_register(
+            &mut self,
+            request: impl tonic::IntoRequest<super::AuthBasicRegisterRequest>,
+        ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status> {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/auth.AuthService/BasicRegister",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("auth.AuthService", "BasicRegister"));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -135,9 +172,13 @@ pub mod auth_service_server {
     /// Generated trait containing gRPC methods that should be implemented for use with AuthServiceServer.
     #[async_trait]
     pub trait AuthService: std::marker::Send + std::marker::Sync + 'static {
-        async fn login(
+        async fn basic_login(
             &self,
-            request: tonic::Request<super::AuthRequest>,
+            request: tonic::Request<super::AuthBasicLoginRequest>,
+        ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status>;
+        async fn basic_register(
+            &self,
+            request: tonic::Request<super::AuthBasicRegisterRequest>,
         ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status>;
     }
     #[derive(Debug)]
@@ -216,11 +257,13 @@ pub mod auth_service_server {
         }
         fn call(&mut self, req: http::Request<B>) -> Self::Future {
             match req.uri().path() {
-                "/auth.AuthService/Login" => {
+                "/auth.AuthService/BasicLogin" => {
                     #[allow(non_camel_case_types)]
-                    struct LoginSvc<T: AuthService>(pub Arc<T>);
-                    impl<T: AuthService> tonic::server::UnaryService<super::AuthRequest>
-                    for LoginSvc<T> {
+                    struct BasicLoginSvc<T: AuthService>(pub Arc<T>);
+                    impl<
+                        T: AuthService,
+                    > tonic::server::UnaryService<super::AuthBasicLoginRequest>
+                    for BasicLoginSvc<T> {
                         type Response = super::AuthResponse;
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
@@ -228,11 +271,11 @@ pub mod auth_service_server {
                         >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<super::AuthRequest>,
+                            request: tonic::Request<super::AuthBasicLoginRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as AuthService>::login(&inner, request).await
+                                <T as AuthService>::basic_login(&inner, request).await
                             };
                             Box::pin(fut)
                         }
@@ -243,7 +286,52 @@ pub mod auth_service_server {
                     let max_encoding_message_size = self.max_encoding_message_size;
                     let inner = self.inner.clone();
                     let fut = async move {
-                        let method = LoginSvc(inner);
+                        let method = BasicLoginSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/auth.AuthService/BasicRegister" => {
+                    #[allow(non_camel_case_types)]
+                    struct BasicRegisterSvc<T: AuthService>(pub Arc<T>);
+                    impl<
+                        T: AuthService,
+                    > tonic::server::UnaryService<super::AuthBasicRegisterRequest>
+                    for BasicRegisterSvc<T> {
+                        type Response = super::AuthResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::AuthBasicRegisterRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as AuthService>::basic_register(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = BasicRegisterSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

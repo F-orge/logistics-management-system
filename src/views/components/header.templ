@@ -1,0 +1,56 @@
+package components
+
+type (
+	MarketingHeaderNav struct {
+		Name string
+		Link string
+	}
+
+	MarketingHeaderActionNav struct {
+		Name    string
+		Link    string
+		Variant string
+	}
+
+	MarketingHeaderCompany struct {
+		Name  string
+		Image string
+	}
+
+	MarketingHeaderProp struct {
+		Company   MarketingHeaderCompany
+		MiddleNav []MarketingHeaderNav
+		ActionNav []MarketingHeaderActionNav
+	}
+)
+
+templ MarketingHeader(props MarketingHeaderProp) {
+	<header class="p-4 flex flex-row justify-between items-center">
+		<div class="flex flex-row items-center gap-2.5">
+			<div>
+				<img class="h-8" src={ props.Company.Image }/>
+			</div>
+			<h4 class="heading-4">{ props.Company.Name }</h4>
+		</div>
+		<nav>
+			<ul class="flex flex-row items-center gap-5">
+				for _,item := range props.MiddleNav {
+					<li>
+						<a data-variant="ghost" data-size="sm" href={ templ.URL(item.Link) }>
+							{ item.Name }
+						</a>
+					</li>
+				}
+			</ul>
+		</nav>
+		<ul class="flex flex-row items-center gap-5">
+			for _,item := range props.ActionNav {
+				<li>
+					<a data-size="sm" data-variant={ item.Variant } href={ templ.URL(item.Link) }>
+						{ item.Name }
+					</a>
+				</li>
+			}
+		</ul>
+	</header>
+}

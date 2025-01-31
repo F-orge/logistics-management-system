@@ -1,0 +1,27 @@
+package humanresource
+
+import (
+	"github.com/F-orge/logistics-management-system/src/views/layouts"
+	"github.com/F-orge/logistics-management-system/src/views/utils"
+	"github.com/labstack/echo/v4"
+)
+
+func (h *HumanResource) OverviewPageHandler(c echo.Context) error {
+	return utils.Render(OverviewPage(c), c)
+}
+
+templ OverviewPageMetadata() {
+	<title>Human Resource | Employee</title>
+}
+
+templ OverviewPage(c echo.Context) {
+	@layouts.DashboardPage(layouts.DashboardPageProps{
+		Title:         "Overview",
+		Metadata:      OverviewPageMetadata(),
+		ServerContext: c,
+	}) {
+		<article>
+			Overview Page
+		</article>
+	}
+}

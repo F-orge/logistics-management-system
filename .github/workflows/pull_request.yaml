@@ -10,7 +10,7 @@ jobs:
   rust:
     runs-on: ubuntu-latest
     env:
-      SCCACHE_GHA_ENABLED: "true"
+      SCCACHE_GHA_ENABLED: "on"
       RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
@@ -33,14 +33,14 @@ jobs:
         run: cargo build
       - name: Test with Cargo
         run: cargo test
-  typescript:
+  golang:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: oven-sh/setup-bun@v2
-      - name: Install dependencies
-        run: bun install
-      - name: Lint with Biome
-        run: bunx biome lint
-      - name: Format with Biome
-        run: bunx biome format --fix
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60
