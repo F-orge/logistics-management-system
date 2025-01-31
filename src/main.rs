@@ -3,10 +3,7 @@
 use std::{process::exit, sync::Arc, time::Duration};
 
 use axum::{http::header, Router};
-<<<<<<< HEAD
-=======
 use cli::CLI;
->>>>>>> origin/main
 use controllers::{auth::AuthService, user::UserService};
 use hmac::{Hmac, Mac};
 use sea_orm::{Database, DatabaseConnection};
@@ -155,15 +152,7 @@ async fn main() {
     tracing::debug!("Setting up grpc service router");
 
     let grpc_server = Server::builder()
-<<<<<<< HEAD
-        // TODO: convert this "api.f-org-e.systems" to a environment variable to hide it in the source code
-        .add_service(AuthService::new(
-            &app_state.db,
-            "api.f-org-e.systems".into(),
-        ))
-=======
         // TODO: convert this "Authencation service" to a environment variable to hide it in the source code
->>>>>>> origin/main
         .add_service(UserService::new(&app_state.db))
         .into_service()
         .into_axum_router();

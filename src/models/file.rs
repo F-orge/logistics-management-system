@@ -4,12 +4,11 @@ use tonic::Status;
 use super::{
     _entities::file::{ActiveModel, Model},
     _proto::file_management::{
-        CreateFileRequest, FileResponse, FileStatus as GrpcFileStatus,
-        FileError, FileErrorCode, UpdateFileRequest, UpdateFileStatusRequest,
+        CreateFileRequest, FileError, FileErrorCode, FileResponse, FileStatus as GrpcFileStatus,
+        UpdateFileRequest, UpdateFileStatusRequest,
     },
 };
 
-//sexbantutan agoi
 // Request -> ActiveModel conversions
 impl TryInto<ActiveModel> for CreateFileRequest {
     type Error = Status;
@@ -19,7 +18,9 @@ impl TryInto<ActiveModel> for CreateFileRequest {
             Ok(GrpcFileStatus::Active) => "ACTIVE",
             Ok(GrpcFileStatus::Archived) => "ARCHIVED",
             Ok(GrpcFileStatus::Deleted) => "DELETED",
-            Ok(GrpcFileStatus::Unspecified) => return Err(Status::invalid_argument("Unspecified file status")),
+            Ok(GrpcFileStatus::Unspecified) => {
+                return Err(Status::invalid_argument("Unspecified file status"))
+            }
             Err(_) => return Err(Status::invalid_argument("Invalid file status")),
         };
 
@@ -45,10 +46,12 @@ impl TryInto<ActiveModel> for UpdateFileRequest {
 
     fn try_into(self) -> Result<ActiveModel, Self::Error> {
         let mut active_model = ActiveModel {
-            id: Set(self.file_id.parse().map_err(|_| Status::invalid_argument("Invalid UUID format"))?),
+            id: Set(self
+                .file_id
+                .parse()
+                .map_err(|_| Status::invalid_argument("Invalid UUID format"))?),
             ..Default::default()
         };
-        
 
         if let Some(name) = self.name {
             active_model.name = Set(name);
@@ -75,12 +78,17 @@ impl TryInto<ActiveModel> for UpdateFileStatusRequest {
             Ok(GrpcFileStatus::Active) => "ACTIVE",
             Ok(GrpcFileStatus::Archived) => "ARCHIVED",
             Ok(GrpcFileStatus::Deleted) => "DELETED",
-            Ok(GrpcFileStatus::Unspecified) => return Err(Status::invalid_argument("Unspecified file status")),
+            Ok(GrpcFileStatus::Unspecified) => {
+                return Err(Status::invalid_argument("Unspecified file status"))
+            }
             Err(_) => return Err(Status::invalid_argument("Invalid file status")),
         };
 
         Ok(ActiveModel {
-            id: Set(self.file_id.parse().map_err(|_| Status::invalid_argument("Invalid UUID format"))?),
+            id: Set(self
+                .file_id
+                .parse()
+                .map_err(|_| Status::invalid_argument("Invalid UUID format"))?),
             status: Set(status.to_string()),
             ..Default::default()
         })
