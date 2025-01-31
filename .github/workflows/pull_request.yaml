@@ -27,6 +27,10 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Install SQLX CLI
+        run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
+      - name: Run migrations
+        run: sqlx migrate run
       - name: Lint with Clippy
         run: cargo clippy
       - name: Build with Cargo
