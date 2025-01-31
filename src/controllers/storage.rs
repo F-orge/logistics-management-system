@@ -135,37 +135,6 @@ impl GRPCStorageService for StorageService {
     ) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status,> {
         unimplemented!()
     }
-    /*async fn file_exists(
-    &self,
-    request: tonic::Request<_proto::storage::FileMetadataRequest>,
-) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status> {
-    let request_inner = request.into_inner();
-
-    let exists = match request_inner.request {
-        Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
-            sqlx::query_scalar!(
-                r#"SELECT EXISTS(SELECT 1 FROM "storage"."file" WHERE id = $1)"#,
-                id
-            )
-            .fetch_one(&self.db)
-            .await
-            .unwrap_or(false)
-        }
-        Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
-            sqlx::query_scalar!(
-                r#"SELECT EXISTS(SELECT 1 FROM "storage"."file" WHERE name = $1)"#,
-                name
-            )
-            .fetch_one(&self.db)
-            .await
-            .unwrap_or(false)
-        }
-        None => return Err(Status::invalid_argument("No search criteria provided")),
-    };
-
-    Ok(Response::new(_proto::storage::FileExistsResponse { exists }))
-} */
-
 
 }
 
