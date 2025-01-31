@@ -235,26 +235,31 @@ impl GRPCStorageService for StorageService {
                     Err(_) => return Err(Status::invalid_argument("Invalid UUID format")),
                 };
 
-                let result = sqlx::query!(
-                    r#"SELECT EXISTS(SELECT 1 FROM storage.file WHERE id = $1) as "exists!""#,
-                    uuid
-                )
-                .fetch_one(&self.db)
-                .await
-                .map_err(|_| Status::internal("Database error"))?;
-
+                let record = sqlx::query!(
+                    r#"
+                    INSERT INTO storage.file (id, name, "type", size)
+                    VALUES ($1, $2, $3, $4)
+                    RETURNING *
+                    "#,
+                    Uuid::parse_str(&file_id).map_err(|_| Status::internal("Invalid UUID"))?,
+                    metadata.name,
+                    metadata.r#type,
+                    metadata.size as i64
+                );
                 result.exists
             }
             Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
-                let result = sqlx::query!(
-                    r#"SELECT EXISTS(SELECT 1 FROM storage.file WHERE name = $1) as "exists!""#,
-                    name
+                let record = sqlx::query!(
+                    r#"
+                    INSERT INTO storage.file (id, name, "type", size)
+                    VALUES ($1, $2, $3, $4)
+                    RETURNING *
+                    "#,
+                    Uuid::parse_str(&file_id).map_err(|_| Status::internal("Invalid UUID"))?,
+                    metadata.name,
+                    metadata.r#type,
+                    metadata.size as i64
                 )
-                .fetch_one(&self.db)
-                .await
-                .map_err(|_| Status::internal("Database error"))?;
-
-                result.exists
             }
             None => return Err(Status::invalid_argument("Missing request parameters")),
         };
