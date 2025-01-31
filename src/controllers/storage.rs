@@ -65,11 +65,14 @@ impl GRPCStorageService for StorageService {
             chunks.push(file_chunk);
         }
 
-        metadata.id = Some(Uuid::new_v4().to_string());
+        let file_id = match metadata.id {
+            Some(file_id) => file_id,
+            None => Uuid::new_v4().to_string(),
+        };
 
         let file_path = self
             .directory
-            .join(format!("{}-{}", metadata.id.unwrap(), metadata.name));
+            .join(format!("{}-{}", file_id, metadata.name));
 
         match fs::write(file_path, chunks.into_iter().flatten().collect::<Vec<u8>>()).await {
             Ok(_) => {}
