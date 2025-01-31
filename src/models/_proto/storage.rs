@@ -21,6 +21,12 @@ pub struct CreateFileRequest {
     pub metadata: ::core::option::Option<FileMetadata>,
     #[prost(message, optional, tag = "2")]
     pub chunk: ::core::option::Option<FileChunk>,
+    /// total number of chunks expected
+    #[prost(uint32, tag = "3")]
+    pub total_chunks: u32,
+    /// current chunk sequence number
+    #[prost(uint32, tag = "4")]
+    pub chunk_number: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DownloadFileRequest {
@@ -46,6 +52,11 @@ pub mod file_metadata_request {
 pub struct DeleteFileRequest {
     #[prost(string, tag = "1")]
     pub id: ::prost::alloc::string::String,
+}
+#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+pub struct FileExistsResponse {
+    #[prost(bool, tag = "1")]
+    pub exists: bool,
 }
 /// Generated client implementations.
 pub mod storage_service_client {
@@ -225,6 +236,30 @@ pub mod storage_service_client {
                 .insert(GrpcMethod::new("storage.StorageService", "DeleteFile"));
             self.inner.unary(req, path, codec).await
         }
+        pub async fn file_exists(
+            &mut self,
+            request: impl tonic::IntoRequest<super::FileMetadataRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::FileExistsResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
+            let codec = tonic::codec::ProstCodec::default();
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/FileExists",
+            );
+            let mut req = request.into_request();
+            req.extensions_mut()
+                .insert(GrpcMethod::new("storage.StorageService", "FileExists"));
+            self.inner.unary(req, path, codec).await
+        }
     }
 }
 /// Generated server implementations.
@@ -265,6 +300,13 @@ pub mod storage_service_server {
             &self,
             request: tonic::Request<super::DeleteFileRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status>;
+        async fn file_exists(
+            &self,
+            request: tonic::Request<super::FileMetadataRequest>,
+        ) -> std::result::Result<
+            tonic::Response<super::FileExistsResponse>,
+            tonic::Status,
+        >;
     }
     #[derive(Debug)]
     pub struct StorageServiceServer<T> {
@@ -511,6 +553,51 @@ pub mod storage_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = DeleteFileSvc(inner);
+                        let codec = tonic::codec::ProstCodec::default();
+                        let mut grpc = tonic::server::Grpc::new(codec)
+                            .apply_compression_config(
+                                accept_compression_encodings,
+                                send_compression_encodings,
+                            )
+                            .apply_max_message_size_config(
+                                max_decoding_message_size,
+                                max_encoding_message_size,
+                            );
+                        let res = grpc.unary(method, req).await;
+                        Ok(res)
+                    };
+                    Box::pin(fut)
+                }
+                "/storage.StorageService/FileExists" => {
+                    #[allow(non_camel_case_types)]
+                    struct FileExistsSvc<T: StorageService>(pub Arc<T>);
+                    impl<
+                        T: StorageService,
+                    > tonic::server::UnaryService<super::FileMetadataRequest>
+                    for FileExistsSvc<T> {
+                        type Response = super::FileExistsResponse;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
+                        fn call(
+                            &mut self,
+                            request: tonic::Request<super::FileMetadataRequest>,
+                        ) -> Self::Future {
+                            let inner = Arc::clone(&self.0);
+                            let fut = async move {
+                                <T as StorageService>::file_exists(&inner, request).await
+                            };
+                            Box::pin(fut)
+                        }
+                    }
+                    let accept_compression_encodings = self.accept_compression_encodings;
+                    let send_compression_encodings = self.send_compression_encodings;
+                    let max_decoding_message_size = self.max_decoding_message_size;
+                    let max_encoding_message_size = self.max_encoding_message_size;
+                    let inner = self.inner.clone();
+                    let fut = async move {
+                        let method = FileExistsSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(
