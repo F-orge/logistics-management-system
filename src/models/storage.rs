@@ -46,7 +46,7 @@ impl StorageService {
         Ok(FileMetadata {
             id: Some(record.id.to_string()),
             name: record.name,
-            r#type: record.file_type,
+            r#type: record.r#type,
             size: record.size as u32,
         })
     }
@@ -113,7 +113,7 @@ impl GRPCStorageService for StorageService {
         Ok(Response::new(FileMetadata {
             id: Some(record.id.to_string()),
             name: record.name,
-            r#type: record.file_type,
+            r#type: record.r#type,
             size: record.size as u32,
         }))
     }
@@ -182,7 +182,7 @@ impl GRPCStorageService for StorageService {
                 FileMetadata {
                     id: Some(record.id.to_string()),
                     name: record.name,
-                    r#type: record.file_type,
+                    r#type: record.r#type,
                     size: record.size as u32,
                 }
             }
