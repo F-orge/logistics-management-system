@@ -29,10 +29,10 @@ jobs:
           override: true
       - name: Install SQLX CLI
         run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
-      - name: Prepare database
-        run: cargo sqlx prepare
       - name: Run migrations
         run: sqlx migrate
+      - name: Prepare database
+        run: cargo sqlx prepare
       - name: Lint with Clippy
         run: cargo clippy
       - name: Build with Cargo
