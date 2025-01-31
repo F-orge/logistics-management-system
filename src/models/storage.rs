@@ -35,7 +35,7 @@ impl StorageService {
             .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
 
         let record = sqlx::query!(
-            r#"SELECT * FROM storage.files WHERE id = $1"#,
+            r#"SELECT * FROM storage.file WHERE id = $1"#,
             uuid
         )
         .fetch_optional(&self.db)
@@ -97,7 +97,7 @@ impl GRPCStorageService for StorageService {
         // save to database
         let record = sqlx::query!(
             r#"
-            INSERT INTO storage.files (id, name, file_type, size)
+            INSERT INTO storage.file (id, name, file_type, size)
             VALUES ($1, $2, $3, $4)
             RETURNING *
             "#,
@@ -171,7 +171,7 @@ impl GRPCStorageService for StorageService {
             }
             Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
                 let record = sqlx::query!(
-                    r#"SELECT * FROM storage.files WHERE name = $1"#,
+                    r#"SELECT * FROM storage.file WHERE name = $1"#,
                     name
                 )
                 .fetch_optional(&self.db)
@@ -211,7 +211,7 @@ impl GRPCStorageService for StorageService {
             .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
 
         match sqlx::query!(
-            r#"DELETE FROM storage.files WHERE id = $1"#,
+            r#"DELETE FROM storage.file WHERE id = $1"#,
             uuid
         )
         .execute(&self.db)
@@ -236,7 +236,7 @@ impl GRPCStorageService for StorageService {
                 };
 
                 let result = sqlx::query!(
-                    r#"SELECT EXISTS(SELECT 1 FROM storage.files WHERE id = $1) as "exists!""#,
+                    r#"SELECT EXISTS(SELECT 1 FROM storage.file WHERE id = $1) as "exists!""#,
                     uuid
                 )
                 .fetch_one(&self.db)
@@ -247,7 +247,7 @@ impl GRPCStorageService for StorageService {
             }
             Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
                 let result = sqlx::query!(
-                    r#"SELECT EXISTS(SELECT 1 FROM storage.files WHERE name = $1) as "exists!""#,
+                    r#"SELECT EXISTS(SELECT 1 FROM storage.file WHERE name = $1) as "exists!""#,
                     name
                 )
                 .fetch_one(&self.db)
