@@ -7,8 +7,8 @@ pub struct FileMetadata {
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
     pub r#type: ::prost::alloc::string::String,
-    #[prost(int64, tag = "4")]
-    pub size: i64,
+    #[prost(uint32, tag = "4")]
+    pub size: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FileChunk {

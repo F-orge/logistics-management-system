@@ -8,7 +8,7 @@ message FileMetadata {
   optional string id = 1;
   string name = 2;
   string type = 3;
-  int64 size = 4;
+  uint32 size = 4;
 }
 
 message FileChunk { bytes chunk = 1; }

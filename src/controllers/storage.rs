@@ -74,16 +74,36 @@ impl GRPCStorageService for StorageService {
             .directory
             .join(format!("{}-{}", file_id, metadata.name));
 
-        match fs::write(file_path, chunks.into_iter().flatten().collect::<Vec<u8>>()).await {
+        let file_contents = chunks.into_iter().flatten().collect::<Vec<u8>>();
+        // check if file chunks have the same size as metadata.size
+        if file_contents.len() != metadata.size as usize {
+            return Err(Status::data_loss("Invalid file size"));
+        }
+
+        match fs::write(file_path, file_contents).await {
             Ok(_) => {}
             Err(_) => return Err(Status::internal("Cannot write file to the server")),
         };
 
+        // save it first to the database
+        let db_response = match sqlx::query!(
+            r#"insert into "storage"."file" (name, type, size) values ($1, $2, $3) returning *"#,
+            metadata.name,
+            metadata.r#type,
+            metadata.size as i32
+        )
+        .fetch_one(&self.db)
+        .await
+        {
+            Ok(record) => record,
+            Err(_) => return Err(Status::internal("Cannot insert file to database")),
+        };
+
         Ok(Response::new(FileMetadata {
-            id: Some(Uuid::new_v4().to_string()),
-            name: "sample.txt".into(),
-            r#type: "text/html".into(),
-            size: 0,
+            id: Some(db_response.id.to_string()),
+            name: db_response.name,
+            r#type: db_response.r#type,
+            size: db_response.size as u32,
         }))
     }
 
@@ -111,7 +131,7 @@ impl GRPCStorageService for StorageService {
 
 #[cfg(test)]
 mod test {
-
+    #![allow(clippy::unwrap_used)]
     use tempdir::TempDir;
     use tonic::{transport::Server, Request};
 
@@ -142,7 +162,7 @@ mod test {
                 id: None,
                 name: "my_file".into(),
                 r#type: "text/plain".into(),
-                size: 0,
+                size: file_content.len() as u32,
             }),
             chunk: Some(FileChunk {
                 chunk: file_content.to_vec(),
@@ -153,6 +173,12 @@ mod test {
         let response = client.create_file(request_stream).await;
 
         assert!(response.is_ok());
+
+        let response = response.unwrap().into_inner();
+
+        assert_eq!(response.name, "my_file");
+        assert_eq!(response.r#type, "text/plain");
+        assert_eq!(response.size, file_content.len() as u32);
 
         let mut read_dir = fs::read_dir(tmp_dir.path()).await.unwrap();
 
