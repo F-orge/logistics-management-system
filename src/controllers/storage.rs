@@ -46,7 +46,7 @@ impl GRPCStorageService for StorageService {
         let mut chunks = Vec::new();
 
         let mut metadata = FileMetadata::default();
-
+        
         while let Some(chunk) = stream.next().await {
             // get the first chunk and get its metadata
             let file_chunk = match chunk {
@@ -62,7 +62,8 @@ impl GRPCStorageService for StorageService {
                 }
                 Err(err) => return Err(err),
             };
-            chunks.push(file_chunk);
+            chunks.push(file_chunk); 
+        
         }
 
         let file_id = match metadata.id {
@@ -127,6 +128,45 @@ impl GRPCStorageService for StorageService {
     ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
         unimplemented!()
     }
+
+    async fn file_exists(
+        &self,
+        request: tonic::Request<_proto::storage::FileMetadataRequest>,
+    ) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status,> {
+        unimplemented!()
+    }
+    /*async fn file_exists(
+    &self,
+    request: tonic::Request<_proto::storage::FileMetadataRequest>,
+) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status> {
+    let request_inner = request.into_inner();
+
+    let exists = match request_inner.request {
+        Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
+            sqlx::query_scalar!(
+                r#"SELECT EXISTS(SELECT 1 FROM "storage"."file" WHERE id = $1)"#,
+                id
+            )
+            .fetch_one(&self.db)
+            .await
+            .unwrap_or(false)
+        }
+        Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
+            sqlx::query_scalar!(
+                r#"SELECT EXISTS(SELECT 1 FROM "storage"."file" WHERE name = $1)"#,
+                name
+            )
+            .fetch_one(&self.db)
+            .await
+            .unwrap_or(false)
+        }
+        None => return Err(Status::invalid_argument("No search criteria provided")),
+    };
+
+    Ok(Response::new(_proto::storage::FileExistsResponse { exists }))
+} */
+
+
 }
 
 #[cfg(test)]
@@ -167,6 +207,8 @@ mod test {
             chunk: Some(FileChunk {
                 chunk: file_content.to_vec(),
             }),
+            total_chunks: 1,      
+            chunk_number: 1,
         };
 
         let request_stream = tokio_stream::iter(vec![file_metadata]);
