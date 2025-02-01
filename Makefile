@@ -19,6 +19,7 @@ generate-env:
 	@echo "DATABASE_URL=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)" >> .env
 
 install:
+	chmod +x ./install.sh && ./install.sh
 	make generate-env
 	bun install
 	go mod tidy
