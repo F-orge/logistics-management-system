@@ -21,12 +21,6 @@ pub struct CreateFileRequest {
     pub metadata: ::core::option::Option<FileMetadata>,
     #[prost(message, optional, tag = "2")]
     pub chunk: ::core::option::Option<FileChunk>,
-    /// total number of chunks expected
-    #[prost(uint32, tag = "3")]
-    pub total_chunks: u32,
-    /// current chunk sequence number
-    #[prost(uint32, tag = "4")]
-    pub chunk_number: u32,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DownloadFileRequest {

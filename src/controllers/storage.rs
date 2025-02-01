@@ -110,6 +110,12 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<_proto::storage::DownloadFileRequest>,
     ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status> {
+        // extract metadata before moving request
+        let auth_header = match request.metadata().get("authorization") {
+            Some(auth_header) => auth_header.clone(),
+            None => return Err(Status::unauthenticated("No Authorization header")),
+        };
+
         let file_id = request.into_inner().id;
 
         let mut metadata_request = Request::new(FileMetadataRequest {
@@ -118,10 +124,11 @@ impl GRPCStorageService for StorageService {
             )),
         });
 
-        // TODO: Pass the JWT token here so that `get_file_metadata` can verify this client if they have access to file
+        // insert authorization header
+
         metadata_request
             .metadata_mut()
-            .append("Authorization", MetadataValue::from_static("im a key shhh"));
+            .append("authorization", auth_header);
 
         // NOTE: this will automatically return a error response if we can't get file metadata thus not downloading the file that the client requested.
         let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
@@ -186,22 +193,29 @@ impl GRPCStorageService for StorageService {
         };
 
         // insert the JWT token to the database and let ROW LEVEL SECURITY handle all of the database access control
-        let _ = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
+        let _ = match sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
             .fetch_one(&mut *trx)
-            .await;
+            .await
+        {
+            Ok(res) => res,
+            Err(_) => return Err(Status::internal("Cannot set JWT Token")),
+        };
 
         let metadata = match payload.request {
             Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
-                let record = match sqlx::query!(
-                    r#"SELECT * FROM "storage"."file" WHERE id = $1"#,
-                    Uuid::parse_str(&id).unwrap()
-                )
-                .fetch_one(&mut *trx)
-                .await
-                {
-                    Ok(record) => record,
-                    Err(err) => return Err(Status::not_found("File not found")),
+                let file_id = match Uuid::parse_str(&id) {
+                    Ok(file_id) => file_id,
+                    Err(err) => return Err(Status::invalid_argument("Invalid UUID format")),
                 };
+
+                let record =
+                    match sqlx::query!(r#"SELECT * FROM "storage"."file" WHERE id = $1"#, file_id)
+                        .fetch_one(&mut *trx)
+                        .await
+                    {
+                        Ok(record) => record,
+                        Err(err) => return Err(Status::not_found("File not found")),
+                    };
                 FileMetadata {
                     id: Some(record.id.to_string()),
                     name: record.name,
@@ -226,6 +240,8 @@ impl GRPCStorageService for StorageService {
             None => return Err(Status::invalid_argument("Missing request parameters")),
         };
 
+        let _ = trx.commit().await;
+
         Ok(Response::new(metadata))
     }
 
@@ -248,12 +264,19 @@ impl GRPCStorageService for StorageService {
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
+    use std::str::FromStr;
+
+    use futures::TryStreamExt;
     use tempdir::TempDir;
-    use tonic::{transport::Server, Request};
+    use tonic::{
+        service::interceptor::InterceptedService,
+        transport::{Channel, Server},
+        Request,
+    };
 
     use crate::{
         models::_proto::storage::{
-            storage_service_client::StorageServiceClient, CreateFileRequest,
+            storage_service_client::StorageServiceClient, CreateFileRequest, DownloadFileRequest,
         },
         utils::test::start_server,
     };
@@ -262,24 +285,57 @@ mod test {
 
     async fn setup_test_client(
         db: &Pool<Postgres>,
-    ) -> (TempDir, StorageServiceClient<tonic::transport::Channel>) {
+    ) -> (
+        TempDir,
+        StorageServiceClient<
+            InterceptedService<Channel, impl Fn(Request<()>) -> Result<Request<()>, Status>>,
+        >,
+    ) {
         let tmp_dir = TempDir::new("temp_storage").unwrap();
         let (_, channel) =
             start_server(Server::builder().add_service(StorageService::new(db, tmp_dir.path())))
                 .await;
-        let client = StorageServiceClient::new(channel);
+
+        let token: MetadataValue<_> = "Bearer some-auth-token".parse().unwrap();
+
+        let client = StorageServiceClient::with_interceptor(channel, move |mut req: Request<()>| {
+            // NOTE: for metadata insertion and retrieval only use lowercase keys because inserting it will cause a panic.
+            // see this bug post: https://github.com/hyperium/tonic/issues/1782
+            req.metadata_mut().insert("authorization", token.clone());
+            Ok(req)
+        });
         (tmp_dir, client)
+    }
+
+    async fn create_test_file(
+        client: &mut StorageServiceClient<
+            InterceptedService<Channel, impl Fn(Request<()>) -> Result<Request<()>, Status>>,
+        >,
+    ) -> FileMetadata {
+        let file_content = b"Test file content";
+        let request = CreateFileRequest {
+            metadata: Some(FileMetadata {
+                id: None,
+                name: "test_file.txt".into(),
+                r#type: "text/plain".into(),
+                size: file_content.len() as u32,
+            }),
+            chunk: Some(FileChunk {
+                chunk: file_content.to_vec(),
+            }),
+        };
+
+        let request_stream = tokio_stream::iter(vec![request]);
+        client
+            .create_file(request_stream)
+            .await
+            .unwrap()
+            .into_inner()
     }
 
     #[sqlx::test]
     async fn test_storage_create_file(db: Pool<Postgres>) {
-        let tmp_dir = TempDir::new("temp_storage").unwrap();
-
-        let (_, channel) =
-            start_server(Server::builder().add_service(StorageService::new(&db, tmp_dir.path())))
-                .await;
-
-        let mut client = StorageServiceClient::new(channel);
+        let (tmp_dir, mut client) = setup_test_client(&db).await;
 
         // send one chunk to the backend
         let file_content = b"HELLO MY NAME IS JOHN DOE. i am a file!!! :3";
@@ -294,8 +350,6 @@ mod test {
             chunk: Some(FileChunk {
                 chunk: file_content.to_vec(),
             }),
-            total_chunks: 1,
-            chunk_number: 1,
         };
 
         let request_stream = tokio_stream::iter(vec![file_metadata]);
@@ -313,6 +367,35 @@ mod test {
 
         let entry = read_dir.next_entry().await.unwrap();
 
+        // check if we really store it in the file system.
         assert!(entry.is_some());
+    }
+
+    #[sqlx::test]
+    async fn test_download_file(db: Pool<Postgres>) {
+        let (_tmp_dir, mut client) = setup_test_client(&db).await;
+
+        // create a file
+        let metadata = create_test_file(&mut client).await;
+
+        let mut metadata_request = Request::new(DownloadFileRequest {
+            id: metadata.id.unwrap(),
+        });
+
+        metadata_request
+            .metadata_mut()
+            .append("authorization", "hello-token".parse().unwrap());
+
+        // download file
+        let response = client.download_file(metadata_request).await.unwrap();
+
+        let chunks: Vec<FileChunk> = response.into_inner().try_collect().await.unwrap();
+
+        let content = chunks
+            .into_iter()
+            .flat_map(|chunk| chunk.chunk)
+            .collect::<Vec<u8>>();
+
+        assert_eq!(content, b"Test file content");
     }
 }
