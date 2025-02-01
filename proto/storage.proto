@@ -29,13 +29,9 @@ message FileMetadataRequest {
 
 message DeleteFileRequest { string id = 1; }
 
-message FileExistsResponse { bool exists = 1; }
-
 service StorageService {
   rpc CreateFile(stream CreateFileRequest) returns (FileMetadata);
   rpc DownloadFile(DownloadFileRequest) returns (stream FileChunk);
   rpc GetFileMetadata(FileMetadataRequest) returns (FileMetadata);
   rpc DeleteFile(DeleteFileRequest) returns (google.protobuf.Empty);
-  rpc FileExists(FileMetadataRequest)
-      returns (FileExistsResponse); // method to validate if a file exists
 }
