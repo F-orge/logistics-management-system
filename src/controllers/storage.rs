@@ -5,15 +5,15 @@ use std::{
 
 use futures::{Stream, StreamExt};
 use sqlx::{types::Uuid, Pool, Postgres};
-use tokio::fs;
+use tokio::{fs, sync::mpsc};
 use tokio_stream::wrappers::ReceiverStream;
-use tonic::{Response, Status};
+use tonic::{metadata::MetadataValue, Request, Response, Status};
 
 use crate::models::_proto::{
     self,
     storage::{
         storage_service_server::{StorageService as GRPCStorageService, StorageServiceServer},
-        FileChunk, FileMetadata,
+        FileChunk, FileMetadata, FileMetadataRequest,
     },
 };
 
@@ -46,7 +46,7 @@ impl GRPCStorageService for StorageService {
         let mut chunks = Vec::new();
 
         let mut metadata = FileMetadata::default();
-        
+
         while let Some(chunk) = stream.next().await {
             // get the first chunk and get its metadata
             let file_chunk = match chunk {
@@ -62,20 +62,17 @@ impl GRPCStorageService for StorageService {
                 }
                 Err(err) => return Err(err),
             };
-            chunks.push(file_chunk); 
-        
+            chunks.push(file_chunk);
         }
 
-        let file_id = match metadata.id {
-            Some(file_id) => file_id,
-            None => Uuid::new_v4().to_string(),
-        };
+        let file_id = Uuid::new_v4();
 
         let file_path = self
             .directory
-            .join(format!("{}-{}", file_id, metadata.name));
+            .join(format!("{}-{}", file_id.to_string(), metadata.name));
 
         let file_contents = chunks.into_iter().flatten().collect::<Vec<u8>>();
+
         // check if file chunks have the same size as metadata.size
         if file_contents.len() != metadata.size as usize {
             return Err(Status::data_loss("Invalid file size"));
@@ -88,7 +85,8 @@ impl GRPCStorageService for StorageService {
 
         // save it first to the database
         let db_response = match sqlx::query!(
-            r#"insert into "storage"."file" (name, type, size) values ($1, $2, $3) returning *"#,
+            r#"insert into "storage"."file" (id ,name, type, size) values ($1, $2, $3, $4) returning *"#,
+            file_id,
             metadata.name,
             metadata.r#type,
             metadata.size as i32
@@ -112,14 +110,103 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<_proto::storage::DownloadFileRequest>,
     ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status> {
-        unimplemented!()
+        let file_id = request.into_inner().id;
+
+        let mut metadata_request = Request::new(FileMetadataRequest {
+            request: Some(_proto::storage::file_metadata_request::Request::Id(
+                file_id.clone(),
+            )),
+        });
+
+        // TODO: Pass the JWT token here so that `get_file_metadata` can verify this client if they have access to file
+        metadata_request
+            .metadata_mut()
+            .append("Authorization", MetadataValue::from_static("im a key shhh"));
+
+        let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
+
+        let file_path = self
+            .directory
+            .join(format!("{}-{}", file_id, metadata.name));
+
+        if !file_path.exists() {
+            return Err(Status::not_found("File not found on disk"));
+        }
+
+        // TODO: check if user has access rights to this file before sending
+
+        let (tx, rx) = mpsc::channel(32);
+
+        let chunk_size = 1024 * 64; // 64KB chunks
+
+        tokio::spawn(async move {
+            let file_contents = match fs::read(file_path).await {
+                Ok(contents) => contents,
+                Err(_) => {
+                    let _ = tx.send(Err(Status::internal("Failed to read file"))).await;
+                    return;
+                }
+            };
+
+            for chunk in file_contents.chunks(chunk_size) {
+                if tx
+                    .send(Ok(FileChunk {
+                        chunk: chunk.to_vec(),
+                    }))
+                    .await
+                    .is_err()
+                {
+                    break;
+                }
+            }
+        });
+
+        Ok(Response::new(ReceiverStream::new(rx)))
     }
 
     async fn get_file_metadata(
         &self,
         request: tonic::Request<_proto::storage::FileMetadataRequest>,
     ) -> std::result::Result<tonic::Response<_proto::storage::FileMetadata>, tonic::Status> {
-        unimplemented!()
+        let request = request.into_inner();
+        let metadata = match request.request {
+            Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
+                let record = match sqlx::query!(
+                    r#"SELECT * FROM "storage"."file" WHERE id = $1"#,
+                    Uuid::parse_str(&id).unwrap()
+                )
+                .fetch_one(&self.db)
+                .await
+                {
+                    Ok(record) => record,
+                    Err(err) => return Err(Status::not_found("File not found")),
+                };
+
+                FileMetadata {
+                    id: Some(record.id.to_string()),
+                    name: record.name,
+                    r#type: record.r#type,
+                    size: record.size as u32,
+                }
+            }
+            Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
+                let record =
+                    sqlx::query!(r#"SELECT * FROM "storage"."file" WHERE name = $1"#, name)
+                        .fetch_optional(&self.db)
+                        .await
+                        .map_err(|_| Status::internal("Database error"))?
+                        .ok_or_else(|| Status::not_found("File not found"))?;
+                FileMetadata {
+                    id: Some(record.id.to_string()),
+                    name: record.name,
+                    r#type: record.r#type,
+                    size: record.size as u32,
+                }
+            }
+            None => return Err(Status::invalid_argument("Missing request parameters")),
+        };
+
+        Ok(Response::new(metadata))
     }
 
     async fn delete_file(
@@ -132,10 +219,10 @@ impl GRPCStorageService for StorageService {
     async fn file_exists(
         &self,
         request: tonic::Request<_proto::storage::FileMetadataRequest>,
-    ) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status,> {
+    ) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status>
+    {
         unimplemented!()
     }
-
 }
 
 #[cfg(test)]
@@ -152,6 +239,17 @@ mod test {
     };
 
     use super::*;
+
+    async fn setup_test_client(
+        db: &Pool<Postgres>,
+    ) -> (TempDir, StorageServiceClient<tonic::transport::Channel>) {
+        let tmp_dir = TempDir::new("temp_storage").unwrap();
+        let (_, channel) =
+            start_server(Server::builder().add_service(StorageService::new(db, tmp_dir.path())))
+                .await;
+        let client = StorageServiceClient::new(channel);
+        (tmp_dir, client)
+    }
 
     #[sqlx::test]
     async fn test_storage_create_file(db: Pool<Postgres>) {
@@ -176,7 +274,7 @@ mod test {
             chunk: Some(FileChunk {
                 chunk: file_content.to_vec(),
             }),
-            total_chunks: 1,      
+            total_chunks: 1,
             chunk_number: 1,
         };
 

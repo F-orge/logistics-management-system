@@ -13,7 +13,7 @@ use crate::models::_proto::{
     self,
     storage::{
         storage_service_server::{StorageService as GRPCStorageService, StorageServiceServer},
-        FileChunk, FileMetadata, FileExistsResponse,
+        FileChunk, FileExistsResponse, FileMetadata,
     },
 };
 
@@ -31,17 +31,14 @@ impl StorageService {
     }
 
     async fn get_file_by_id(&self, id: &str) -> Result<FileMetadata, Status> {
-        let uuid = Uuid::parse_str(id)
-            .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
+        let uuid =
+            Uuid::parse_str(id).map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
 
-        let record = sqlx::query!(
-            r#"SELECT * FROM storage.file WHERE id = $1"#,
-            uuid
-        )
-        .fetch_optional(&self.db)
-        .await
-        .map_err(|_| Status::internal("Database error"))?
-        .ok_or_else(|| Status::not_found("File not found"))?;
+        let record = sqlx::query!(r#"SELECT * FROM storage.file WHERE id = $1"#, uuid)
+            .fetch_optional(&self.db)
+            .await
+            .map_err(|_| Status::internal("Database error"))?
+            .ok_or_else(|| Status::not_found("File not found"))?;
 
         Ok(FileMetadata {
             id: Some(record.id.to_string()),
@@ -64,16 +61,16 @@ impl GRPCStorageService for StorageService {
         let mut chunks = Vec::new();
         let mut metadata = FileMetadata::default();
         let mut total_size = 0;
-        
+
         while let Some(chunk) = stream.next().await {
             let chunk = chunk.map_err(|e| Status::internal(e.to_string()))?;
-            
+
             if metadata.name.is_empty() {
-                metadata = chunk.metadata.ok_or_else(|| {
-                    Status::invalid_argument("First chunk must contain metadata")
-                })?;
+                metadata = chunk
+                    .metadata
+                    .ok_or_else(|| Status::invalid_argument("First chunk must contain metadata"))?;
             }
-            
+
             if let Some(chunk_data) = chunk.chunk {
                 total_size += chunk_data.chunk.len();
                 chunks.push(chunk_data.chunk);
@@ -86,7 +83,9 @@ impl GRPCStorageService for StorageService {
         }
 
         let file_id = metadata.id.unwrap_or_else(|| Uuid::new_v4().to_string());
-        let file_path = self.directory.join(format!("{}-{}", file_id, metadata.name));
+        let file_path = self
+            .directory
+            .join(format!("{}-{}", file_id, metadata.name));
 
         // write file to disk
         let file_contents: Vec<u8> = chunks.into_iter().flatten().collect();
@@ -97,7 +96,7 @@ impl GRPCStorageService for StorageService {
         // save to database
         let record = sqlx::query!(
             r#"
-            INSERT INTO storage.file (id, name, file_type, size)
+            INSERT INTO "storage"."file" (id, name, type, size)
             VALUES ($1, $2, $3, $4)
             RETURNING *
             "#,
@@ -125,8 +124,10 @@ impl GRPCStorageService for StorageService {
         let file_id = request.into_inner().id;
         let metadata = self.get_file_by_id(&file_id).await?;
 
-        let file_path = self.directory.join(format!("{}-{}", file_id, metadata.name));
-        
+        let file_path = self
+            .directory
+            .join(format!("{}-{}", file_id, metadata.name));
+
         if !file_path.exists() {
             return Err(Status::not_found("File not found on disk"));
         }
@@ -164,20 +165,17 @@ impl GRPCStorageService for StorageService {
         request: tonic::Request<_proto::storage::FileMetadataRequest>,
     ) -> Result<Response<FileMetadata>, Status> {
         let request = request.into_inner();
-        
+
         let metadata = match request.request {
             Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
                 self.get_file_by_id(&id).await?
             }
             Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
-                let record = sqlx::query!(
-                    r#"SELECT * FROM storage.file WHERE name = $1"#,
-                    name
-                )
-                .fetch_optional(&self.db)
-                .await
-                .map_err(|_| Status::internal("Database error"))?
-                .ok_or_else(|| Status::not_found("File not found"))?;
+                let record = sqlx::query!(r#"SELECT * FROM storage.file WHERE name = $1"#, name)
+                    .fetch_optional(&self.db)
+                    .await
+                    .map_err(|_| Status::internal("Database error"))?
+                    .ok_or_else(|| Status::not_found("File not found"))?;
 
                 FileMetadata {
                     id: Some(record.id.to_string()),
@@ -199,9 +197,11 @@ impl GRPCStorageService for StorageService {
         let file_id = request.into_inner().id;
         let metadata = self.get_file_by_id(&file_id).await?;
 
-        let file_path = self.directory.join(format!("{}-{}", file_id, metadata.name));
+        let file_path = self
+            .directory
+            .join(format!("{}-{}", file_id, metadata.name));
 
-       //  delete from filesystem
+        //  delete from filesystem
         if let Err(_) = fs::remove_file(&file_path).await {
             return Err(Status::internal("Failed to delete file from disk"));
         }
@@ -210,12 +210,9 @@ impl GRPCStorageService for StorageService {
         let uuid = Uuid::parse_str(&file_id)
             .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
 
-        match sqlx::query!(
-            r#"DELETE FROM storage.file WHERE id = $1"#,
-            uuid
-        )
-        .execute(&self.db)
-        .await
+        match sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, uuid)
+            .execute(&self.db)
+            .await
         {
             Ok(_) => Ok(Response::new(())),
             Err(_) => Err(Status::internal("Failed to delete file from database")),
@@ -227,7 +224,7 @@ impl GRPCStorageService for StorageService {
         request: tonic::Request<_proto::storage::FileMetadataRequest>,
     ) -> Result<Response<FileExistsResponse>, Status> {
         let request = request.into_inner();
-        
+
         let exists = match request.request {
             Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
                 let uuid = match Uuid::parse_str(&id) {
@@ -259,7 +256,7 @@ impl GRPCStorageService for StorageService {
                     metadata.name,
                     metadata.r#type,
                     metadata.size as i64
-                )
+                );
             }
             None => return Err(Status::invalid_argument("Missing request parameters")),
         };
@@ -271,26 +268,29 @@ impl GRPCStorageService for StorageService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempdir::TempDir;
-    use tonic::{transport::Server, Request};
     use crate::models::_proto::storage::{
-        storage_service_client::StorageServiceClient,
-        CreateFileRequest, DownloadFileRequest, FileMetadataRequest,
-        DeleteFileRequest, file_metadata_request,
+        file_metadata_request, storage_service_client::StorageServiceClient, CreateFileRequest,
+        DeleteFileRequest, DownloadFileRequest, FileMetadataRequest,
     };
     use crate::utils::test::start_server;
     use futures::TryStreamExt;
+    use tempdir::TempDir;
+    use tonic::{transport::Server, Request};
 
-    async fn setup_test_client(db: &Pool<Postgres>) -> (TempDir, StorageServiceClient<tonic::transport::Channel>) {
+    async fn setup_test_client(
+        db: &Pool<Postgres>,
+    ) -> (TempDir, StorageServiceClient<tonic::transport::Channel>) {
         let tmp_dir = TempDir::new("temp_storage").unwrap();
-        let (_, channel) = start_server(
-            Server::builder().add_service(StorageService::new(db, tmp_dir.path()))
-        ).await;
+        let (_, channel) =
+            start_server(Server::builder().add_service(StorageService::new(db, tmp_dir.path())))
+                .await;
         let client = StorageServiceClient::new(channel);
         (tmp_dir, client)
     }
 
-    async fn create_test_file(client: &mut StorageServiceClient<tonic::transport::Channel>) -> FileMetadata {
+    async fn create_test_file(
+        client: &mut StorageServiceClient<tonic::transport::Channel>,
+    ) -> FileMetadata {
         let file_content = b"Test file content";
         let request = CreateFileRequest {
             metadata: Some(FileMetadata {
@@ -307,16 +307,20 @@ mod tests {
         };
 
         let request_stream = tokio_stream::iter(vec![request]);
-        client.create_file(request_stream).await.unwrap().into_inner()
+        client
+            .create_file(request_stream)
+            .await
+            .unwrap()
+            .into_inner()
     }
 
     #[sqlx::test]
     async fn test_download_file(db: Pool<Postgres>) {
         let (_tmp_dir, mut client) = setup_test_client(&db).await;
-        
+
         // create a file
         let metadata = create_test_file(&mut client).await;
-        
+
         // download file
         let response = client
             .download_file(Request::new(DownloadFileRequest {
@@ -325,12 +329,10 @@ mod tests {
             .await
             .unwrap();
 
-        let chunks: Vec<FileChunk> = response.into_inner()
-            .try_collect()
-            .await
-            .unwrap();
+        let chunks: Vec<FileChunk> = response.into_inner().try_collect().await.unwrap();
 
-        let content = chunks.into_iter()
+        let content = chunks
+            .into_iter()
             .flat_map(|chunk| chunk.chunk)
             .collect::<Vec<u8>>();
 
@@ -340,10 +342,10 @@ mod tests {
     #[sqlx::test]
     async fn test_get_file_metadata(db: Pool<Postgres>) {
         let (_tmp_dir, mut client) = setup_test_client(&db).await;
-        
+
         // create a file first
         let created_metadata = create_test_file(&mut client).await;
-        
+
         // test get by ID
         let response = client
             .get_file_metadata(Request::new(FileMetadataRequest {
@@ -357,7 +359,7 @@ mod tests {
         let metadata = response.into_inner();
         assert_eq!(metadata.name, "test_file.txt");
         assert_eq!(metadata.r#type, "text/plain");
-        
+
         // test get by name
         let response = client
             .get_file_metadata(Request::new(FileMetadataRequest {
@@ -375,10 +377,10 @@ mod tests {
     #[sqlx::test]
     async fn test_delete_file(db: Pool<Postgres>) {
         let (_tmp_dir, mut client) = setup_test_client(&db).await;
-        
+
         // create a file first
         let metadata = create_test_file(&mut client).await;
-        
+
         // delete the file
         client
             .delete_file(Request::new(DeleteFileRequest {
@@ -386,7 +388,7 @@ mod tests {
             }))
             .await
             .unwrap();
-        
+
         // verify file doesn't exist
         let response = client
             .file_exists(Request::new(FileMetadataRequest {
@@ -403,7 +405,7 @@ mod tests {
     #[sqlx::test]
     async fn test_file_exists(db: Pool<Postgres>) {
         let (_tmp_dir, mut client) = setup_test_client(&db).await;
-        
+
         // test non-existent file
         let response = client
             .file_exists(Request::new(FileMetadataRequest {
@@ -415,16 +417,14 @@ mod tests {
             .unwrap();
 
         assert!(!response.into_inner().exists);
-        
+
         // create a file
         let metadata = create_test_file(&mut client).await;
-        
+
         // test existing file by ID
         let response = client
             .file_exists(Request::new(FileMetadataRequest {
-                request: Some(file_metadata_request::Request::Id(
-                    metadata.id.unwrap(),
-                )),
+                request: Some(file_metadata_request::Request::Id(metadata.id.unwrap())),
             }))
             .await
             .unwrap();
