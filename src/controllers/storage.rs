@@ -123,17 +123,17 @@ impl GRPCStorageService for StorageService {
             .metadata_mut()
             .append("Authorization", MetadataValue::from_static("im a key shhh"));
 
+        // NOTE: this will automatically return a error response if we can't get file metadata thus not downloading the file that the client requested.
         let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
 
         let file_path = self
             .directory
             .join(format!("{}-{}", file_id, metadata.name));
 
+        // TODO: please call delete_file function so that the database will know that the file does not exists and safely remove the file metadat from the database.
         if !file_path.exists() {
             return Err(Status::not_found("File not found on disk"));
         }
-
-        // TODO: check if user has access rights to this file before sending
 
         let (tx, rx) = mpsc::channel(32);
 
@@ -168,20 +168,40 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<_proto::storage::FileMetadataRequest>,
     ) -> std::result::Result<tonic::Response<_proto::storage::FileMetadata>, tonic::Status> {
-        let request = request.into_inner();
-        let metadata = match request.request {
+        let auth_key = match request.metadata().get("Authorization") {
+            Some(header_val) => match header_val.to_str() {
+                Ok(value) => value.to_string(),
+                Err(err) => {
+                    return Err(Status::invalid_argument("Invalid Authorization key format"))
+                }
+            },
+            None => return Err(Status::unauthenticated("No Authorization Header")),
+        };
+
+        let payload = request.into_inner();
+
+        let mut trx = match self.db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => return Err(Status::internal("Cannot start transaction")),
+        };
+
+        // insert the JWT token to the database and let ROW LEVEL SECURITY handle all of the database access control
+        let _ = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
+            .fetch_one(&mut *trx)
+            .await;
+
+        let metadata = match payload.request {
             Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
                 let record = match sqlx::query!(
                     r#"SELECT * FROM "storage"."file" WHERE id = $1"#,
                     Uuid::parse_str(&id).unwrap()
                 )
-                .fetch_one(&self.db)
+                .fetch_one(&mut *trx)
                 .await
                 {
                     Ok(record) => record,
                     Err(err) => return Err(Status::not_found("File not found")),
                 };
-
                 FileMetadata {
                     id: Some(record.id.to_string()),
                     name: record.name,

@@ -14,12 +14,6 @@ jobs:
       RUSTC_WRAPPER: "sccache"
     steps:
       - uses: actions/checkout@v4
-      - name: Run Postgres in compose
-        run: docker compose -f dev.compose.yaml up postgres -d
-      - name: Copy .env.development to .env
-        run: cp .env.development .env
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@v0.0.7
       - name: Set up Rust
@@ -27,16 +21,12 @@ jobs:
         with:
           toolchain: stable
           override: true
-      - name: Install SQLX CLI
-        run: cargo install sqlx-cli --no-default-features --features native-tls,postgres
-      - name: Run migrations
-        run: sqlx migrate run
-      - name: Prepare database
-        run: cargo sqlx prepare
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+      - name: Run make Install
+        run: make install
       - name: Lint with Clippy
         run: cargo clippy
-      - name: Build with Cargo
-        run: cargo build
       - name: Test with Cargo
         run: cargo test
   golang:
