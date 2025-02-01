@@ -12,6 +12,14 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "on"
       RUSTC_WRAPPER: "sccache"
+      ADDRESS: "0.0.0.0"
+      DOMAIN: "localhost"
+      PORT: "3000"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+      POSTGRES_HOST: "localhost"
+      POSTGRES_PORT: "5432"
     steps:
       - uses: actions/checkout@v4
       - name: Run sccache-cache
