@@ -372,7 +372,7 @@ mod test {
     }
 
     #[sqlx::test]
-    async fn test_download_file(db: Pool<Postgres>) {
+    async fn test_storage_download_file(db: Pool<Postgres>) {
         let (_tmp_dir, mut client) = setup_test_client(&db).await;
 
         // create a file
@@ -397,5 +397,35 @@ mod test {
             .collect::<Vec<u8>>();
 
         assert_eq!(content, b"Test file content");
+    }
+
+    #[sqlx::test]
+    async fn test_storage_get_file_metadata(db: Pool<Postgres>) {
+        let (_tmp_dir, mut client) = setup_test_client(&db).await;
+
+        // create a file
+        let metadata = create_test_file(&mut client).await;
+
+        let mut metadata_request = Request::new(FileMetadataRequest {
+            request: Some(_proto::storage::file_metadata_request::Request::Id(
+                metadata.clone().id.unwrap(),
+            )),
+        });
+
+        metadata_request
+            .metadata_mut()
+            .append("authorization", "hello-token".parse().unwrap());
+
+        // download file
+        let response = client.get_file_metadata(metadata_request).await;
+
+        assert!(response.is_ok());
+
+        let response = response.unwrap().into_inner();
+
+        assert_eq!(metadata.id.unwrap(), response.id.unwrap());
+        assert_eq!(metadata.name, response.name);
+        assert_eq!(metadata.r#type, response.r#type);
+        assert_eq!(metadata.size, response.size);
     }
 }
