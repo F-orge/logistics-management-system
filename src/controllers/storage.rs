@@ -248,16 +248,30 @@ impl GRPCStorageService for StorageService {
     async fn delete_file(
         &self,
         request: tonic::Request<_proto::storage::DeleteFileRequest>,
-    ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-        unimplemented!()
-    }
+    ) -> Result<Response<()>, Status> {
+        let file_id = request.into_inner().id;
+        let metadata = self.get_file_by_id(&file_id).await?;
 
-    async fn file_exists(
-        &self,
-        request: tonic::Request<_proto::storage::FileMetadataRequest>,
-    ) -> std::result::Result<tonic::Response<_proto::storage::FileExistsResponse>, tonic::Status>
-    {
-        unimplemented!()
+        let file_path = self
+            .directory
+            .join(format!("{}-{}", file_id, metadata.name));
+
+        //  delete from filesystem
+        if let Err(_) = fs::remove_file(&file_path).await {
+            return Err(Status::internal("Failed to delete file from disk"));
+        }
+
+        // delete from database
+        let uuid = Uuid::parse_str(&file_id)
+            .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
+
+        match sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, uuid)
+            .execute(&self.db)
+            .await
+        {
+            Ok(_) => Ok(Response::new(())),
+            Err(_) => Err(Status::internal("Failed to delete file from database")),
+        }
     }
 }
 
@@ -276,7 +290,8 @@ mod test {
 
     use crate::{
         models::_proto::storage::{
-            storage_service_client::StorageServiceClient, CreateFileRequest, DownloadFileRequest,
+            storage_service_client::StorageServiceClient, CreateFileRequest, DownloadFileRequest, FileMetadataRequest, 
+            DeleteFileRequest, file_metadata_request,
         },
         utils::test::start_server,
     };
@@ -428,4 +443,34 @@ mod test {
         assert_eq!(metadata.r#type, response.r#type);
         assert_eq!(metadata.size, response.size);
     }
+    
+    #[sqlx::test]
+    async fn test_delete_file(db: Pool<Postgres>) {
+        let (_tmp_dir, mut client) = setup_test_client(&db).await;
+        
+        // Create a file first
+        let metadata = create_test_file(&mut client).await;
+        
+        // Delete the file
+        let file_id = metadata.id.clone().unwrap();
+        let delete_response = client
+            .delete_file(Request::new(DeleteFileRequest {
+                id: file_id.clone(),
+            }))
+            .await
+            .unwrap();
+
+        // try to get the deleted file - should return not found
+        let get_response = client
+            .get_file_metadata(Request::new(FileMetadataRequest {
+                request: Some(file_metadata_request::Request::Id(
+                    file_id,
+                )),
+            }))
+            .await;
+
+        assert!(get_response.is_err(), "File should not exist after deletion");
+        assert_eq!(get_response.unwrap_err().code(), tonic::Code::NotFound);
+    }
+    
 }
