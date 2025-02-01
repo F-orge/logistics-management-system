@@ -249,22 +249,39 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<_proto::storage::DeleteFileRequest>,
     ) -> Result<Response<()>, Status> {
+        let auth_header = match request.metadata().get("authorization") {
+            Some(auth_header) => auth_header.clone(),
+            None => return Err(Status::unauthenticated("No Authorization header")),
+        };
+    
         let file_id = request.into_inner().id;
-        let metadata = self.get_file_by_id(&file_id).await?;
-
+    
+        // create metadata request with authorization
+        let mut metadata_request = Request::new(FileMetadataRequest {
+            request: Some(_proto::storage::file_metadata_request::Request::Id(
+                file_id.clone(),
+            )),
+        });
+        metadata_request
+            .metadata_mut()
+            .append("authorization", auth_header);
+    
+        // get file metadata using existing method
+        let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
+    
         let file_path = self
             .directory
             .join(format!("{}-{}", file_id, metadata.name));
-
-        //  delete from filesystem
+    
+        // delete from filesystem
         if let Err(_) = fs::remove_file(&file_path).await {
             return Err(Status::internal("Failed to delete file from disk"));
         }
-
+    
         // delete from database
         let uuid = Uuid::parse_str(&file_id)
             .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
-
+    
         match sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, uuid)
             .execute(&self.db)
             .await
