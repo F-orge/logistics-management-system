@@ -2,6 +2,10 @@
 name = "etmar-logistics"
 version = "0.3.0"
 edition = "2021"
+authors = [
+  "Karl Robeck Alferez <karlalferezfx@gmail.com>",
+  "Mhell Francis Bergonio <bergonio.mhell101001@gmail.com>",
+]
 
 [dependencies]
 axum = { version = "0.7.9", features = ["multipart"] }
