@@ -29,6 +29,7 @@ jobs:
         with:
           toolchain: nightly
           override: true
+          components: rustfmt, clippy
       - name: Install Protoc
         uses: arduino/setup-protoc@v3
       - name: Run make Install
