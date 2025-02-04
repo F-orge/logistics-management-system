@@ -7,13 +7,18 @@ authors = [
   "Mhell Francis Bergonio <bergonio.mhell101001@gmail.com>",
 ]
 
+[workspace]
+members = ["crate-proto"]
+
+[workspace.dependencies]
+prost = "0.13.4"
+
 [dependencies]
 axum = { version = "0.7.9", features = ["multipart"] }
 dotenv = "0.15.0"
 tokio = { version = "1.41.1", features = ["full"] }
 garde = { version = "0.20.0", features = ["derive", "serde"] }
 hyper-util = "0.1.10"
-prost = "0.13.4"
 serde = { version = "1.0.215", features = ["derive"] }
 sqlx = { version = "0.8.2", features = [
   "runtime-tokio",

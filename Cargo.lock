@@ -533,6 +533,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "crate-proto"
+version = "0.1.0"
+dependencies = [
+ "prost",
+]
+
+[[package]]
 name = "crc"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -715,7 +722,6 @@ dependencies = [
  "hmac",
  "hyper-util",
  "jwt",
- "prost",
  "sea-orm",
  "serde",
  "sha2",
