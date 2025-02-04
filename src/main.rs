@@ -1,4 +1,4 @@
-#![deny(clippy::unwrap_used)]
+/*#![deny(clippy::unwrap_used)]
 
 use std::{process::exit, sync::Arc, time::Duration};
 
@@ -168,4 +168,8 @@ async fn main() {
         .serve(app)
         .start()
         .await;
+}
+*/
+fn main() {
+    println!("maintenance mode!");
 }

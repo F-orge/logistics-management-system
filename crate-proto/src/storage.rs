@@ -207,10 +207,7 @@ pub mod storage_service_client {
         pub async fn delete_file(
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteFileRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::super::google::protobuf::Empty>,
-            tonic::Status,
-        > {
+        ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -267,10 +264,7 @@ pub mod storage_service_server {
         async fn delete_file(
             &self,
             request: tonic::Request<super::DeleteFileRequest>,
-        ) -> std::result::Result<
-            tonic::Response<super::super::google::protobuf::Empty>,
-            tonic::Status,
-        >;
+        ) -> std::result::Result<tonic::Response<()>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct StorageServiceServer<T> {
@@ -494,7 +488,7 @@ pub mod storage_service_server {
                         T: StorageService,
                     > tonic::server::UnaryService<super::DeleteFileRequest>
                     for DeleteFileSvc<T> {
-                        type Response = super::super::google::protobuf::Empty;
+                        type Response = ();
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,

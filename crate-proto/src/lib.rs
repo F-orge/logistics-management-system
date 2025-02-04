@@ -1,2 +1,2 @@
-mod auth;
-mod storage;
+pub mod auth;
+pub mod storage;
