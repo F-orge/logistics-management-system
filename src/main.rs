@@ -1,16 +1,14 @@
-/*#![deny(clippy::unwrap_used)]
+#![deny(clippy::unwrap_used)]
 
 use std::{process::exit, sync::Arc, time::Duration};
 
-use axum::{http::header, Router};
+use authentication::AuthService;
+use axum::{Router, http::header};
 use cli::CLI;
-use controllers::{auth::AuthService, user::UserService};
-use hmac::{Hmac, Mac};
-use sea_orm::{Database, DatabaseConnection};
-use sha2::Sha256;
-use tokio::net::TcpListener;
+use sqlx::{Connection, Pool, Postgres};
 use tonic::transport::Server;
 use tower_http::{
+    LatencyUnit,
     catch_panic::CatchPanicLayer,
     compression::CompressionLayer,
     cors::{Any, CorsLayer},
@@ -18,23 +16,16 @@ use tower_http::{
     limit::RequestBodyLimitLayer,
     request_id::{MakeRequestUuid, SetRequestIdLayer},
     sensitive_headers::{SetSensitiveHeadersLayer, SetSensitiveResponseHeadersLayer},
-    services::{ServeDir, ServeFile},
-    set_status::SetStatus,
     timeout::TimeoutLayer,
     trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
-    LatencyUnit,
 };
 use tracing::Level;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 mod cli;
-mod controllers;
-mod models;
-mod utils;
 
 #[derive(Clone)]
 pub struct AppState {
-    key: Hmac<Sha256>,
-    db: DatabaseConnection,
+    db: Pool<Postgres>,
 }
 
 fn setup_tracing() {
@@ -59,15 +50,6 @@ fn setup_tracing() {
     }
 }
 
-fn setup_file_service() -> ServeDir<SetStatus<ServeFile>> {
-    match cfg!(debug_assertions) {
-        true => ServeDir::new("./target/release/frontend-build")
-            .not_found_service(ServeFile::new("./target/release/frontend-build/index.html")),
-        false => ServeDir::new("./frontend-build")
-            .not_found_service(ServeFile::new("./frontend-build/index.html")),
-    }
-}
-
 fn setup_layers(router: Router, app_state: AppState) -> Router {
     // CORS layer
     let cors = CorsLayer::new()
@@ -78,10 +60,6 @@ fn setup_layers(router: Router, app_state: AppState) -> Router {
     let headers = Arc::new([header::AUTHORIZATION, header::COOKIE, header::SET_COOKIE]);
 
     router
-        .layer(axum::middleware::from_fn_with_state(
-            app_state,
-            controllers::auth::auth_middleware,
-        ))
         .layer(CatchPanicLayer::new())
         .layer(DecompressionLayer::new())
         .layer(CompressionLayer::new())
@@ -128,39 +106,25 @@ async fn main() {
         }
     };
 
-    let db = match Database::connect(db_url).await {
+    let db = match sqlx::PgPool::connect(&db_url).await {
         Ok(value) => value,
         Err(_) => exit(1),
     };
 
     tracing::debug!("Connected to database");
 
-    let key: Hmac<Sha256> = match Hmac::new_from_slice(b"some-random-key") {
-        Ok(value) => value,
-        Err(err) => {
-            tracing::error!("encryption key error: {}", err);
-            exit(1);
-        }
-    };
-
-    let app_state = AppState { key, db };
-
-    tracing::debug!("Setting up file service");
-
-    let file_service = setup_file_service();
+    let app_state = AppState { db };
 
     tracing::debug!("Setting up grpc service router");
 
     let grpc_server = Server::builder()
         // TODO: convert this "Authencation service" to a environment variable to hide it in the source code
-        .add_service(UserService::new(&app_state.db))
+        .add_service(AuthService::new(&app_state.db))
         .into_service()
         .into_axum_router();
 
     // App routes
-    let app: Router = Router::new()
-        .nest("/grpc", grpc_server)
-        .fallback_service(file_service);
+    let app: Router = Router::new().nest("/grpc", grpc_server);
 
     let app = setup_layers(app, app_state);
     CLI::new()
@@ -168,8 +132,4 @@ async fn main() {
         .serve(app)
         .start()
         .await;
-}
-*/
-fn main() {
-    println!("maintenance mode!");
 }

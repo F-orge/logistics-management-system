@@ -24,7 +24,7 @@ sqlx = { version = "0.8.2", features = [
   "chrono",
   "json",
 ] }
-tonic = "0.12.3"
+tonic = { version = "0.12.3", features = ["router"] }
 jwt = "0.16.0"
 tokio = { version = "1.41.1", features = ["full"] }
 tracing = "0.1.41"
@@ -36,6 +36,13 @@ garde = { version = "0.20.0", features = ["derive", "serde"] }
 uuid = { version = "1.12.1", features = ["v4"] }
 
 [dependencies]
+storage = { path = "services/storage" }
+authentication = { path = "services/authentication" }
+tracing-subscriber = { workspace = true }
+tracing = { workspace = true }
+tokio = { workspace = true }
+sqlx = { workspace = true }
+tonic = { workspace = true }
 dotenv = "0.15.0"
 tower-http = { version = "0.6.2", features = [
   "catch-panic",
@@ -49,9 +56,11 @@ tower-http = { version = "0.6.2", features = [
   "timeout",
   "trace",
 ] }
+
 test-log = "0.2.16"
 tokio-util = "0.7.13"
 clap = { version = "4.5.26", features = ["derive", "string"] }
+axum = "0.7.9"
 
 
 [build-dependencies]
