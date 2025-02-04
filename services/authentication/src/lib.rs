@@ -1,12 +1,5 @@
-use serde::{Deserialize, Serialize};
 use sqlx::Row;
-use sqlx::{
-    Pool, Postgres,
-    types::{
-        Uuid,
-        chrono::{DateTime, Utc},
-    },
-};
+use sqlx::{Pool, Postgres};
 use tonic::{IntoRequest, Response, Status};
 
 use crate_proto::auth::{
@@ -102,14 +95,12 @@ impl GrpcAuthService for AuthService {
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
-    use sqlx::{ConnectOptions, Pool, Postgres, pool::PoolOptions};
-    use tonic::{Request, transport::Server};
+    use sqlx::{Pool, Postgres};
+    use tonic::transport::Server;
 
     use super::*;
 
-    use crate_proto::auth::{
-        AuthBasicLoginRequest, AuthBasicRegisterRequest, auth_service_client::AuthServiceClient,
-    };
+    use crate_proto::auth::{AuthBasicRegisterRequest, auth_service_client::AuthServiceClient};
     use crate_utils::test::start_server;
 
     #[sqlx::test(migrations = "../../migrations")]

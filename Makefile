@@ -33,7 +33,7 @@ postgres:
 	docker compose down -v && docker compose up -d && sleep 10
 
 migrate:
-	sqlx migrate run && cargo sqlx prepare
+	sqlx migrate run
 
 lint:
 	cargo clippy
