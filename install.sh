@@ -30,11 +30,3 @@ npm install -g bun
 # Install protobuf
 
 sudo apt install protobuf-compiler
-
-# Install SQLx CLI
-
-cargo install sqlx-cli --no-default-features --features native-tls,postgres
-
-# Install Bun dependencies
-
-bun install

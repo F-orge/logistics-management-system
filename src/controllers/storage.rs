@@ -13,7 +13,7 @@ use crate::models::_proto::{
     self,
     storage::{
         storage_service_server::{StorageService as GRPCStorageService, StorageServiceServer},
-        FileChunk, FileMetadata, FileMetadataRequest,
+        DeleteFileRequest, FileChunk, FileMetadata, FileMetadataRequest,
     },
 };
 
@@ -39,9 +39,34 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<tonic::Streaming<_proto::storage::CreateFileRequest>>,
     ) -> std::result::Result<tonic::Response<_proto::storage::FileMetadata>, tonic::Status> {
+        let mut trx = match self.db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to start transaction"));
+            }
+        };
+
+        let auth_key = match request.metadata().get("authorization") {
+            Some(header_val) => match header_val.to_str() {
+                Ok(value) => value.to_string(),
+                Err(err) => {
+                    return Err(Status::invalid_argument("Invalid Authorization key format"))
+                }
+            },
+            None => return Err(Status::unauthenticated("No Authorization Header")),
+        };
+
         // refer to this documentation. https://github.com/hyperium/tonic/blob/master/examples/routeguide-tutorial.md
         // under client side streaming section.
         let mut stream = request.into_inner();
+
+        if let Err(err) = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
+            .fetch_one(&mut *trx)
+            .await
+        {
+            return Err(Status::internal("Cannot set JWT Token"));
+        }
 
         let mut chunks = Vec::new();
 
@@ -91,11 +116,16 @@ impl GRPCStorageService for StorageService {
             metadata.r#type,
             metadata.size as i32
         )
-        .fetch_one(&self.db)
+        .fetch_one(&mut *trx)
         .await
         {
             Ok(record) => record,
             Err(_) => return Err(Status::internal("Cannot insert file to database")),
+        };
+
+        if let Err(err) = trx.commit().await {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Unable to commit transaction"));
         };
 
         Ok(Response::new(FileMetadata {
@@ -124,8 +154,6 @@ impl GRPCStorageService for StorageService {
             )),
         });
 
-        // insert authorization header
-
         metadata_request
             .metadata_mut()
             .append("authorization", auth_header);
@@ -137,9 +165,17 @@ impl GRPCStorageService for StorageService {
             .directory
             .join(format!("{}-{}", file_id, metadata.name));
 
-        // TODO: please call delete_file function so that the database will know that the file does not exists and safely remove the file metadat from the database.
         if !file_path.exists() {
-            return Err(Status::not_found("File not found on disk"));
+            let delete_request = DeleteFileRequest { id: file_id };
+            match self.delete_file(Request::new(delete_request)).await {
+                Ok(_) => return Err(Status::not_found("File not found on disk")),
+                Err(err) => {
+                    tracing::error!("{}", err);
+                    return Err(Status::internal(
+                        "An error occured when deleting file in the database",
+                    ));
+                }
+            };
         }
 
         let (tx, rx) = mpsc::channel(32);
@@ -175,7 +211,12 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<_proto::storage::FileMetadataRequest>,
     ) -> std::result::Result<tonic::Response<_proto::storage::FileMetadata>, tonic::Status> {
-        let auth_key = match request.metadata().get("Authorization") {
+        let mut trx = match self.db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => return Err(Status::internal("Cannot start transaction")),
+        };
+
+        let auth_key = match request.metadata().get("authorization") {
             Some(header_val) => match header_val.to_str() {
                 Ok(value) => value.to_string(),
                 Err(err) => {
@@ -187,19 +228,12 @@ impl GRPCStorageService for StorageService {
 
         let payload = request.into_inner();
 
-        let mut trx = match self.db.begin().await {
-            Ok(trx) => trx,
-            Err(err) => return Err(Status::internal("Cannot start transaction")),
-        };
-
-        // insert the JWT token to the database and let ROW LEVEL SECURITY handle all of the database access control
-        let _ = match sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
+        if let Err(err) = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
             .fetch_one(&mut *trx)
             .await
         {
-            Ok(res) => res,
-            Err(_) => return Err(Status::internal("Cannot set JWT Token")),
-        };
+            return Err(Status::internal("Cannot set JWT Token"));
+        }
 
         let metadata = match payload.request {
             Some(_proto::storage::file_metadata_request::Request::Id(id)) => {
@@ -214,7 +248,10 @@ impl GRPCStorageService for StorageService {
                         .await
                     {
                         Ok(record) => record,
-                        Err(err) => return Err(Status::not_found("File not found")),
+                        Err(err) => {
+                            tracing::error!("{}", err);
+                            return Err(Status::not_found("File not found"));
+                        }
                     };
                 FileMetadata {
                     id: Some(record.id.to_string()),
@@ -226,7 +263,7 @@ impl GRPCStorageService for StorageService {
             Some(_proto::storage::file_metadata_request::Request::Name(name)) => {
                 let record =
                     sqlx::query!(r#"SELECT * FROM "storage"."file" WHERE name = $1"#, name)
-                        .fetch_optional(&self.db)
+                        .fetch_optional(&mut *trx)
                         .await
                         .map_err(|_| Status::internal("Database error"))?
                         .ok_or_else(|| Status::not_found("File not found"))?;
@@ -240,7 +277,10 @@ impl GRPCStorageService for StorageService {
             None => return Err(Status::invalid_argument("Missing request parameters")),
         };
 
-        let _ = trx.commit().await;
+        if let Err(err) = trx.commit().await {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Unable to commit file to database"));
+        };
 
         Ok(Response::new(metadata))
     }
@@ -249,46 +289,78 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<_proto::storage::DeleteFileRequest>,
     ) -> Result<Response<()>, Status> {
+        let mut trx = match self.db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => return Err(Status::internal("Cannot start transaction")),
+        };
+
         let auth_header = match request.metadata().get("authorization") {
             Some(auth_header) => auth_header.clone(),
             None => return Err(Status::unauthenticated("No Authorization header")),
         };
-    
+
         let file_id = request.into_inner().id;
-    
+
         // create metadata request with authorization
         let mut metadata_request = Request::new(FileMetadataRequest {
             request: Some(_proto::storage::file_metadata_request::Request::Id(
                 file_id.clone(),
             )),
         });
+
         metadata_request
             .metadata_mut()
-            .append("authorization", auth_header);
-    
-        // get file metadata using existing method
-        let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
-    
-        let file_path = self
-            .directory
-            .join(format!("{}-{}", file_id, metadata.name));
-    
-        // delete from filesystem
-        if let Err(_) = fs::remove_file(&file_path).await {
-            return Err(Status::internal("Failed to delete file from disk"));
+            .append("authorization", auth_header.clone());
+
+        let auth_key = match auth_header.to_str() {
+            Ok(value) => value.to_string(),
+            Err(err) => return Err(Status::invalid_argument("Invalid Authorization key format")),
+        };
+
+        if let Err(err) = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
+            .fetch_one(&mut *trx)
+            .await
+        {
+            return Err(Status::internal("Cannot set JWT Token"));
         }
-    
+
+        // before deleting, we need to make sure that we get file metadata using existing method
+        let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
+
         // delete from database
         let uuid = Uuid::parse_str(&file_id)
             .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
-    
-        match sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, uuid)
-            .execute(&self.db)
+
+        if let Err(err) = sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, uuid)
+            .execute(&mut *trx)
             .await
         {
-            Ok(_) => Ok(Response::new(())),
-            Err(_) => Err(Status::internal("Failed to delete file from database")),
+            tracing::error!("{}", err);
+
+            if let Err(err) = trx.rollback().await {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to rollback delete operation"));
+            }
+
+            return Err(Status::internal("Failed to delete file from database"));
         }
+
+        if let Err(err) = trx.commit().await {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Unable to commit delete operation"));
+        }
+
+        let file_path = self
+            .directory
+            .join(format!("{}-{}", file_id, metadata.name));
+
+        // delete from filesystem
+        if let Err(err) = fs::remove_file(&file_path).await {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Failed to delete file from disk"));
+        }
+
+        Ok(Response::new(()))
     }
 }
 
@@ -307,8 +379,8 @@ mod test {
 
     use crate::{
         models::_proto::storage::{
-            storage_service_client::StorageServiceClient, CreateFileRequest, DownloadFileRequest, FileMetadataRequest, 
-            DeleteFileRequest, file_metadata_request,
+            file_metadata_request, storage_service_client::StorageServiceClient, CreateFileRequest,
+            DeleteFileRequest, DownloadFileRequest, FileMetadataRequest,
         },
         utils::test::start_server,
     };
@@ -460,14 +532,14 @@ mod test {
         assert_eq!(metadata.r#type, response.r#type);
         assert_eq!(metadata.size, response.size);
     }
-    
+
     #[sqlx::test]
     async fn test_delete_file(db: Pool<Postgres>) {
         let (_tmp_dir, mut client) = setup_test_client(&db).await;
-        
+
         // Create a file first
         let metadata = create_test_file(&mut client).await;
-        
+
         // Delete the file
         let file_id = metadata.id.clone().unwrap();
         let delete_response = client
@@ -480,14 +552,14 @@ mod test {
         // try to get the deleted file - should return not found
         let get_response = client
             .get_file_metadata(Request::new(FileMetadataRequest {
-                request: Some(file_metadata_request::Request::Id(
-                    file_id,
-                )),
+                request: Some(file_metadata_request::Request::Id(file_id)),
             }))
             .await;
 
-        assert!(get_response.is_err(), "File should not exist after deletion");
+        assert!(
+            get_response.is_err(),
+            "File should not exist after deletion"
+        );
         assert_eq!(get_response.unwrap_err().code(), tonic::Code::NotFound);
     }
-    
 }

@@ -38,6 +38,9 @@ migrate:
 lint:
 	cargo clippy
 
+build/go:
+	go build -o ./target/golang/frontend ./src/views/main.go
+
 build: 
 	templ generate
 	bun run build.ts
@@ -48,11 +51,21 @@ test:
 	cargo test
 
 local-ci:
-	make init
-	make postgres
-	make migrate
-	make build
+	make install
 	make test
 	make lint
 
-	
+dev/go:
+	go run ./src/views/main.go
+
+dev/tailwind:
+	bun tailwindcss -i src/views/components/app.css -o src/views/assets/out.css --watch
+
+dev/typescript:
+	bun run --hot build.ts
+
+dev/templ:
+	templ generate --watch --proxybind="0.0.0.0" --proxy="http://localhost:8080" --open-browser=false	--cmd="make dev/go"
+
+dev:
+	make -j4 dev/go dev/tailwind dev/typescript dev/templ
