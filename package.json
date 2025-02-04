@@ -15,7 +15,7 @@
 		"@types/bun": "^1.1.14",
 		"@types/node": "^22.10.2",
 		"rspress": "^1.38.0",
-		"tailwindcss": "^4.0.0"
+		"tailwindcss": "v3"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
