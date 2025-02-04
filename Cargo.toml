@@ -1,6 +1,6 @@
 [package]
 name = "etmar-logistics"
-version = "0.3.0"
+version = "0.4.0"
 edition = "2021"
 
 [dependencies]
@@ -51,6 +51,7 @@ sha2 = "0.10.8"
 hmac = "0.12.1"
 tokio-util = "0.7.13"
 clap = { version = "4.5.26", features = ["derive", "string"] }
+tempdir = "0.3.7"
 
 [build-dependencies]
 tonic-build = "0.12.3"

@@ -12,14 +12,16 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "on"
       RUSTC_WRAPPER: "sccache"
+      ADDRESS: "0.0.0.0"
+      DOMAIN: "localhost"
+      PORT: "3000"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+      POSTGRES_HOST: "localhost"
+      POSTGRES_PORT: "5432"
     steps:
       - uses: actions/checkout@v4
-      - name: Run Postgres in compose
-        run: docker compose -f dev.compose.yaml up postgres -d
-      - name: Copy .env.development to .env
-        run: cp .env.development .env
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
       - name: Run sccache-cache
         uses: mozilla-actions/sccache-action@v0.0.7
       - name: Set up Rust
@@ -27,10 +29,12 @@ jobs:
         with:
           toolchain: stable
           override: true
+      - name: Install Protoc
+        uses: arduino/setup-protoc@v3
+      - name: Run make Install
+        run: make install
       - name: Lint with Clippy
         run: cargo clippy
-      - name: Build with Cargo
-        run: cargo build
       - name: Test with Cargo
         run: cargo test
   golang:
