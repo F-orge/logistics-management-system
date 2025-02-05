@@ -419,6 +419,7 @@ version = "0.1.0"
 dependencies = [
  "prost",
  "tonic",
+ "tonic-build",
 ]
 
 [[package]]
@@ -586,7 +587,7 @@ dependencies = [
 
 [[package]]
 name = "etmar-logistics"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "authentication",
  "axum",
@@ -598,7 +599,6 @@ dependencies = [
  "tokio",
  "tokio-util",
  "tonic",
- "tonic-build",
  "tower-http",
  "tracing",
  "tracing-subscriber",

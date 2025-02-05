@@ -1,6 +1,6 @@
 [package]
 name = "etmar-logistics"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2024"
 authors = [
   "Karl Robeck Alferez <karlalferezfx@gmail.com>",
@@ -65,7 +65,3 @@ test-log = "0.2.16"
 tokio-util = "0.7.13"
 clap = { version = "4.5.26", features = ["derive", "string"] }
 axum = "0.7.9"
-
-
-[build-dependencies]
-tonic-build = "0.12.3"

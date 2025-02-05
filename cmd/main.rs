@@ -5,9 +5,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use std::{path::Path, process::exit, sync::Arc, time::Duration};
 
-use authentication::AuthService;
 use axum::{Router, http::header};
-use sqlx::{Connection, Pool, Postgres};
 use tonic::transport::Server;
 use tower_http::{
     LatencyUnit,
@@ -51,7 +49,7 @@ fn setup_layers(router: Router) -> Router {
         .expose_headers(Any)
         .allow_headers(Any);
 
-    let headers = Arc::new([header::AUTHORIZATION, header::COOKIE, header::SET_COOKIE]);
+    let headers = Arc::new([header::AUTHORIZATION]);
 
     router
         .layer(CatchPanicLayer::new())
@@ -124,7 +122,7 @@ async fn main() {
     };
 
     let grpc_server = Server::builder()
-        .add_service(AuthService::new(&db))
+        .add_service(authentication::AuthService::new(&db))
         .add_service(storage::StorageService::new(&db, Path::new(&directory)))
         .into_service()
         .into_axum_router();
@@ -133,10 +131,10 @@ async fn main() {
 
     let app = setup_layers(app);
 
-    let host = match std::env::var("APP_HOST") {
+    let host = match std::env::var("APP_ADDRESS") {
         Ok(host) => host,
         Err(err) => {
-            tracing::error!("{}: HOST", err);
+            tracing::error!("{}: ADDRESS", err);
             exit(1);
         }
     };
