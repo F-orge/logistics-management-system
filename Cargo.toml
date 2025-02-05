@@ -7,6 +7,10 @@ authors = [
   "Mhell Francis Bergonio <bergonio.mhell101001@gmail.com>",
 ]
 
+[[bin]]
+name = "etmar-logistics"
+path = "cmd/main.rs"
+
 [workspace]
 members = ["crate-proto", "crate-utils", "services/*"]
 
