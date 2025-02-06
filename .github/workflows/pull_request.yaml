@@ -22,9 +22,22 @@ jobs:
       POSTGRES_PORT: "5432"
     steps:
       - uses: actions/checkout@v4
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.7
       - name: Run make Install
         run: make install
       - name: Lint Project
         run: make lint
       - name: Test Project
         run: make test
+  golang:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.60
