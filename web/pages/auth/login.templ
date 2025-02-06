@@ -1,0 +1,92 @@
+package auth
+
+import (
+	"fmt"
+	"github.com/F-orge/logistics-management-system/web/layouts"
+	"github.com/F-orge/logistics-management-system/web/proto/auth"
+	"github.com/F-orge/logistics-management-system/web/utils"
+	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"net/http"
+)
+
+type AuthHandler struct {
+	GrpcClient auth.AuthServiceClient
+}
+
+func New() *AuthHandler {
+	return &AuthHandler{}
+}
+
+func (a *AuthHandler) Build(conn grpc.ClientConnInterface, group echo.Group) {
+	a.GrpcClient = auth.NewAuthServiceClient(conn)
+	group.GET("/login", a.Show)
+	group.POST("/login", a.Action)
+}
+
+func (a *AuthHandler) Show(c echo.Context) error {
+	return utils.Render(c, 200, loginPage())
+}
+
+type LoginDTO struct {
+	Email    string `form:"email" validate:"required,email"`
+	Password string `form:"password" validate:"required,gte=8"`
+}
+
+func (a *AuthHandler) Action(c echo.Context) error {
+
+	// get payload
+	payload := new(LoginDTO)
+
+	if err := c.Bind(payload); err != nil {
+		return c.String(http.StatusBadRequest, "Email or Password required")
+	}
+
+	// validate payload
+	validate := validator.New(validator.WithRequiredStructEnabled())
+
+	if err := validate.Struct(payload); err != nil {
+		return c.String(http.StatusBadRequest, "Invalid email or password format")
+	}
+
+	// perform action
+	result, err := a.GrpcClient.BasicLogin(c.Request().Context(), &auth.AuthBasicLoginRequest{
+		Email:    payload.Email,
+		Password: payload.Password,
+	})
+
+	a.GrpcClient.BasicRegister(c.Request().Context(), &auth.AuthBasicRegisterRequest{})
+
+	if err != nil {
+		if status.Code(err) == codes.InvalidArgument {
+			a.GrpcClient.BasicRegister(c.Request().Context(), &auth.AuthBasicRegisterRequest{
+				Email:    payload.Email,
+				Password: payload.Password,
+			})
+			return c.String(200, "hello")
+		}
+	}
+
+	fmt.Println(result)
+
+	return c.String(200, "hello")
+}
+
+templ loginMetadata() {
+	<title>Login page</title>
+}
+
+templ loginPage() {
+	@layouts.BaseHTML(layouts.BaseHTMLProps{
+		Head: loginMetadata(),
+	}) {
+		<form action="/auth/login" hx-post="/auth/login">
+			<input type="email" name="email" required/>
+			<input type="password" name="password" required minlength="8"/>
+			<button type="submit">Login</button>
+		</form>
+	}
+}

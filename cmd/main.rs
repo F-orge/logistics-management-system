@@ -95,6 +95,14 @@ async fn main() {
         }
     };
 
+    let jwt_key = match std::env::var("JWT_SECRET") {
+        Ok(jwt_key) => jwt_key,
+        Err(err) => {
+            tracing::error!("{}: JWT_SECRET", err);
+            exit(1);
+        }
+    };
+
     let directory = match std::env::var("STORAGE_DIRECTORY_URL") {
         Ok(directory) => {
             let path = Path::new(&directory);
@@ -121,15 +129,25 @@ async fn main() {
         }
     };
 
+    let _ = match sqlx::query("SELECT set_config('app.jwt_secret', $1,false)")
+        .bind(jwt_key)
+        .execute(&db)
+        .await
+    {
+        Ok(_) => {}
+        Err(err) => {
+            tracing::error!("{}", err);
+            exit(1)
+        }
+    };
+
     let grpc_server = Server::builder()
         .add_service(authentication::AuthService::new(&db))
         .add_service(storage::StorageService::new(&db, Path::new(&directory)))
         .into_service()
         .into_axum_router();
 
-    let app: Router = Router::new().nest("/grpc", grpc_server);
-
-    let app = setup_layers(app);
+    let app = grpc_server;
 
     let host = match std::env::var("APP_ADDRESS") {
         Ok(host) => host,

@@ -61,10 +61,15 @@ ifeq ($(sqlx),false)
 endif
 	
 go := $(shell command -v go > /dev/null && echo true || echo false)
+protoc-gen-go-grpc := $(shell command -v protoc-gen-go-grpc > /dev/null && echo true || echo false)
 install/go:
 ifeq ($(go),false)
 	snap install go --classic
 endif
+ifeq ($(protoc-gen-go-grpc),false)
+	sudo apt install protoc-gen-go-grpc
+endif
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 	go install github.com/a-h/templ/cmd/templ@latest
 	go get -u golang.org/x/lint/golint
 	go mod tidy
@@ -93,6 +98,9 @@ lint:
 	make -j lint/rust lint/go
 
 build/go:
+	protoc --go_out=web/proto \
+		--go-grpc_out=web/proto \
+		crate-proto/proto/*.proto
 	templ generate
 	go build -o ./target/golang/frontend ./cmd/main.go
 
@@ -120,6 +128,7 @@ dev/rust:
 	cargo watch -x run
 
 dev:
+	make build/assets
 	make -j dev/go dev/tailwind dev/go dev/rust
 
 test:
