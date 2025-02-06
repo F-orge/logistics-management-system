@@ -62,10 +62,12 @@ endif
 	go mod tidy
 
 install: 
-	make install/ubuntu
 	make generate-env
+	make install/ubuntu
 	make -j install/node install/rust install/go
 	make postgres
+	sleep 10
+	make migrate
 
 postgres:
 	docker compose down -v && docker compose up -d
