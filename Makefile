@@ -23,17 +23,16 @@ generate-env:
 install/ubuntu:
 	sudo apt update
 	sudo apt install -y build-essential
-	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
 	sudo apt install curl unzip
-	curl -fsSL https://fnm.vercel.app/install | bash
-	fnm use --install-if-missing 22
 	curl -fsSL https://bun.sh/install | bash
 	sudo apt install protobuf-compiler
 	
 install/typescript:
+	fnm use --install-if-missing 22
 	bun install
 
 install/rust:
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
 	cargo install sqlx-cli --no-default-features --features postgres
 	
 install/go:
@@ -42,8 +41,8 @@ install/go:
 
 install:
 	make generate-env
-	make -j3 install/ubuntu install/typescript install/rust install/go
-	make postgres
+	make install/ubuntu
+	make -j4 install/typescript install/rust install/go make postgres
 	sleep 10
 	make migrate
 
