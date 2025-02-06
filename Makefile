@@ -1,36 +1,54 @@
-
 ADDRESS := "0.0.0.0"
 DOMAIN := "example.com"
 POSTGRES_PASSWORD := $(shell echo -n SYSTEM_PASSWORD | sha256sum | awk '{print $$1}')
 
 generate-env:
-	@echo "APP_ADDRESS=$(ADDRESS)" > .env
-	@echo "APP_PORT=8080" >> .env
-	@echo "PUBLIC_MANAGEMENT_DOMAIN=management.$(DOMAIN)" >> .env
-	@echo "PUBLIC_MARKETING_DOMAIN=www.$(DOMAIN)" >> .env
-	@echo "PUBLIC_SHIPPING_DOMAIN=shipping.$(DOMAIN)" >> .env
-	@echo "JWT_SECRET=$(shell openssl rand -base64 32)" >> .env
-	@echo "POSTGRES_USER=$(POSTGRES_USER)" >> .env
-	@echo "POSTGRES_PASSWORD=$(POSTGRES_PASSWORD)" >> .env
-	@echo "POSTGRES_DB=$(POSTGRES_DB)" >> .env
-	@echo "POSTGRES_HOST=$(POSTGRES_HOST)" >> .env
-	@echo "POSTGRES_PORT=$(POSTGRES_PORT)" >> .env
-	@echo "PG_DATA=/var/lib/postgresql/data" >> .env
-	@echo "DATABASE_URL=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)" >> .env
+	@{ \
+	echo "APP_ADDRESS=$(ADDRESS)"; \
+	echo "APP_PORT=8080"; \
+	echo "PUBLIC_MANAGEMENT_DOMAIN=management.$(DOMAIN)"; \
+	echo "PUBLIC_MARKETING_DOMAIN=www.$(DOMAIN)"; \
+	echo "PUBLIC_SHIPPING_DOMAIN=shipping.$(DOMAIN)"; \
+	echo "JWT_SECRET=$(shell openssl rand -base64 32)"; \
+	echo "POSTGRES_USER=$(POSTGRES_USER)"; \
+	echo "POSTGRES_PASSWORD=$(POSTGRES_PASSWORD)"; \
+	echo "POSTGRES_DB=$(POSTGRES_DB)"; \
+	echo "POSTGRES_HOST=$(POSTGRES_HOST)"; \
+	echo "POSTGRES_PORT=$(POSTGRES_PORT)"; \
+	echo "PG_DATA=/var/lib/postgresql/data"; \
+	echo "DATABASE_URL=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"; \
+	} > .env
+
+# install all ubuntu dependencies
+install/ubuntu:
+	sudo apt update
+	sudo apt install -y build-essential
+	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
+	sudo apt install curl unzip
+	curl -fsSL https://fnm.vercel.app/install | bash
+	fnm use --install-if-missing 22
+	curl -fsSL https://bun.sh/install | bash
+	sudo apt install protobuf-compiler
+	
+install/typescript:
+	bun install
+
+install/rust:
+	cargo install sqlx-cli --no-default-features --features postgres
+	
+install/go:
+	go install github.com/a-h/templ/cmd/templ@latest
+	go mod tidy
 
 install:
-	chmod +x ./install.sh && ./install.sh
 	make generate-env
-	bun install
-	go mod tidy
-	go install github.com/a-h/templ/cmd/templ@latest
-	cargo install sqlx-cli --no-default-features --features native-tls,postgres	
+	make -j3 install/ubuntu install/typescript install/rust install/go
 	make postgres
+	sleep 10
 	make migrate
-	cargo build
 
 postgres:
-	docker compose down -v && docker compose up -d && sleep 10
+	docker compose down -v && docker compose up -d
 
 migrate:
 	sqlx migrate run
@@ -39,14 +57,21 @@ lint:
 	cargo clippy
 
 build/go:
-	go build -o ./target/golang/frontend ./src/views/main.go
+	templ generate
+	go build -o ./target/golang/frontend ./cmd/main.go
+
+# move htmx files from node_modules to the build directory
+# move alpine.js files from node_modules to the build directory
+# move tailwindcss output to the build directory
+build/assets:
+	bun run build.ts 
+
+build/rust:
+	cargo build
 
 build: 
-	templ generate
-	bun run build.ts
-	go build -o ./target/golang/frontend ./src/views/main.go
-	cargo build
-	
+	make -j3 build/go build/typescript build/rust
+
 test:
 	cargo test
 

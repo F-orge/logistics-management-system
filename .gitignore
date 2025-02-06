@@ -9,3 +9,4 @@ doc_build
 .env
 tmp
 *.txt
+storage
