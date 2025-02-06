@@ -1,11 +1,17 @@
 {
-  "name": "etmar-logistics",
+  "name": "logistics-management-system",
   "module": "index.ts",
   "type": "module",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@tailwindcss/cli": "^4.0.4",
+    "@types/bun": "latest",
+    "tailwindcss": "^4.0.4"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "alpinejs": "^3.14.8",
+    "htmx.org": "^2.0.4"
   }
 }

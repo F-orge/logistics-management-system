@@ -586,25 +586,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "etmar-logistics"
-version = "0.4.1"
-dependencies = [
- "authentication",
- "axum",
- "clap",
- "dotenv",
- "sqlx",
- "storage",
- "test-log",
- "tokio",
- "tokio-util",
- "tonic",
- "tower-http",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "event-listener"
 version = "5.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1289,6 +1270,25 @@ name = "log"
 version = "0.4.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
+
+[[package]]
+name = "logistics-management-system"
+version = "0.4.1"
+dependencies = [
+ "authentication",
+ "axum",
+ "clap",
+ "dotenv",
+ "sqlx",
+ "storage",
+ "test-log",
+ "tokio",
+ "tokio-util",
+ "tonic",
+ "tower-http",
+ "tracing",
+ "tracing-subscriber",
+]
 
 [[package]]
 name = "matchers"

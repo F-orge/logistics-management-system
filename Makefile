@@ -2,7 +2,12 @@
 
 ADDRESS := "0.0.0.0"
 DOMAIN := "example.com"
-POSTGRES_PASSWORD := $(shell echo -n SYSTEM_PASSWORD | sha256sum | awk '{print $$1}')
+POSTGRES_PASSWORD := $(shell [ -z "${SYSTEM_PASSWORD}" ] && echo "randompassword" || echo -n ${SYSTEM_PASSWORD} | sha256sum | awk '{print $$1}' )
+POSTGRES_USER := ${shell [ -z "${POSTGRES_USER}" ] && echo "postgres" || echo ${POSTGRES_USER}}
+POSTGRES_DB := ${shell [ -z "${POSTGRES_DB}" ] && echo "postgres" || echo ${POSTGRES_DB}}
+POSTGRES_HOST := ${shell [ -z "${POSTGRES_HOST}" ] && echo "localhost" || echo ${POSTGRES_HOST}}
+POSTGRES_PORT := ${shell [ -z "${POSTGRES_PORT}" ] && echo "5432" || echo ${POSTGRES_PORT}}
+STORAGE_DIRECTORY_URL := ${shell [ -z "${STORAGE_DIRECTORY_URL}" ] && echo "./storage" || echo ${STORAGE_DIRECTORY_URL}}
 
 generate-env:
 	@{ \
@@ -18,11 +23,13 @@ generate-env:
 	echo "POSTGRES_HOST=$(POSTGRES_HOST)"; \
 	echo "POSTGRES_PORT=$(POSTGRES_PORT)"; \
 	echo "PG_DATA=/var/lib/postgresql/data"; \
+	echo "STORAGE_DIRECTORY_URL=$(STORAGE_DIRECTORY_URL)"; \
 	echo "DATABASE_URL=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"; \
 	} > .env
 
 unzip := $(shell command -v unzip > /dev/null && echo true || echo false)
 protoc := $(shell command -v protoc > /dev/null && echo true || echo false)
+
 install/ubuntu:
 	sudo apt update
 	sudo apt install -y build-essential
@@ -75,44 +82,48 @@ postgres:
 migrate:
 	sqlx migrate run
 
+lint/rust:
+	cargo clippy --no-deps
+
+lint/go:
+	golangci-lint run
+
 lint:
-	cargo clippy
+	make -j lint/rust lint/go
 
 build/go:
 	templ generate
 	go build -o ./target/golang/frontend ./cmd/main.go
 
-# move htmx files from node_modules to the build directory
-# move alpine.js files from node_modules to the build directory
-# move tailwindcss output to the build directory
 build/assets:
-	bun run build.ts 
+	cp ./node_modules/htmx.org/dist/htmx.min.js ./dist/js/htmx.min.js
+	cp ./node_modules/alpinejs/dist/cdn.min.js ./dist/js/alpine.min.js
+	make build/tailwindcss
+
+build/tailwindcss:
+	npx tailwindcss -i web/app.css -o dist/css/out.css --minify
 
 build/rust:
 	cargo build
 
 build: 
-	make -j3 build/go build/typescript build/rust
-
-test:
-	cargo test
-
-local-ci:
-	make install
-	make test
-	make lint
-
-dev/go:
-	go run ./src/views/main.go
+	make -j3 build/go build/assets build/rust
 
 dev/tailwind:
-	bun tailwindcss -i src/views/components/app.css -o src/views/assets/out.css --watch
+	npx tailwindcss -i web/app.css -o dist/css/out.css --watch
 
-dev/typescript:
-	bun run --hot build.ts
+dev/go:
+	templ generate --watch --proxybind="0.0.0.0" --proxy="http://localhost:8080" --open-browser=false	--cmd="go run ./cmd/main.go"
 
-dev/templ:
-	templ generate --watch --proxybind="0.0.0.0" --proxy="http://localhost:8080" --open-browser=false	--cmd="make dev/go"
+dev/rust:
+	cargo watch -x run
 
 dev:
-	make -j4 dev/go dev/tailwind dev/typescript dev/templ
+	make -j dev/go dev/tailwind dev/go dev/rust
+
+test:
+	cargo test --workspace
+
+local-ci:
+	make -j test lint
+	make build
