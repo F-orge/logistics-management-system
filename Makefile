@@ -25,6 +25,7 @@ install/ubuntu:
 	sudo apt install -y build-essential
 	sudo apt install curl unzip
 	curl -fsSL https://bun.sh/install | bash
+	curl -o- https://fnm.vercel.app/install | bash
 	sudo apt install protobuf-compiler
 	
 install/typescript:
