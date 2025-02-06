@@ -67,7 +67,7 @@ ifeq ($(go),false)
 	snap install go --classic
 endif
 ifeq ($(golangci-lint),false)
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
+	sudo curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.4
 endif
 	go install github.com/a-h/templ/cmd/templ@latest
 	go get -u golang.org/x/lint/golint
