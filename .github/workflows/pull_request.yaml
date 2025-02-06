@@ -7,7 +7,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
 jobs:
-  rust:
+  build:
     runs-on: ubuntu-latest
     env:
       SCCACHE_GHA_ENABLED: "on"
@@ -22,29 +22,21 @@ jobs:
       POSTGRES_PORT: "5432"
     steps:
       - uses: actions/checkout@v4
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.7
-      - name: Set up Rust
+      - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
-          override: true
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
-      - name: Run make Install
-        run: make install
-      - name: Lint with Clippy
-        run: cargo clippy
-      - name: Test with Cargo
-        run: cargo test
-  golang:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: stable
+            toolchain: nightly
+            override: true
+            components: rustfmt, clippy
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: v1.60
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@v0.0.7
+      - name: Run make Install
+        run: make install
+      - name: Lint Project
+        run: make lint
+      - name: Test Project
+        run: make test

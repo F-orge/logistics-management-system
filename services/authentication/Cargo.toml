@@ -1,0 +1,12 @@
+[package]
+name = "authentication"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+crate-proto = { path = "../../crate-proto" }
+crate-utils = { path = "../../crate-utils" }
+sqlx = { workspace = true }
+serde = { workspace = true }
+tonic = { workspace = true }
+tracing = { workspace = true }

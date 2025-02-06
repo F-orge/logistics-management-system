@@ -7,11 +7,6 @@ dist
 .data
 doc_build
 .env
-<<<<<<< HEAD
 tmp
 *.txt
-=======
-src/views/assets
-*.txt
-tmp
->>>>>>> origin/main
+storage
