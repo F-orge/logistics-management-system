@@ -24,14 +24,16 @@ install/ubuntu:
 	sudo apt update
 	sudo apt install -y build-essential
 	sudo apt install curl unzip
-	curl -fsSL https://bun.sh/install | bash
-	curl -o- https://fnm.vercel.app/install | bash
 	sudo apt install protobuf-compiler
-	
-install/typescript:
-	fnm use --install-if-missing 22
-	bun install
 
+install/node:
+	curl -o- https://fnm.vercel.app/install | bash
+	. ~/.bashrc
+	fnm use --install-if-missing 22
+
+install/bun:
+	curl -o- https://bun.sh/install | bash
+	
 install/rust:
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
 	cargo install sqlx-cli --no-default-features --features postgres
@@ -40,12 +42,10 @@ install/go:
 	go install github.com/a-h/templ/cmd/templ@latest
 	go mod tidy
 
-install:
-	make generate-env
+install: 
 	make install/ubuntu
-	make -j4 install/typescript install/rust install/go make postgres
-	sleep 10
-	make migrate
+	make generate-env
+	make -j4 install/bun install/node install/rust install/go postgres
 
 postgres:
 	docker compose down -v && docker compose up -d
