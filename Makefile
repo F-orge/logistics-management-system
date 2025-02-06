@@ -1,3 +1,5 @@
+#!/bin/bash
+
 ADDRESS := "0.0.0.0"
 DOMAIN := "example.com"
 POSTGRES_PASSWORD := $(shell echo -n SYSTEM_PASSWORD | sha256sum | awk '{print $$1}')
@@ -19,33 +21,50 @@ generate-env:
 	echo "DATABASE_URL=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)"; \
 	} > .env
 
-# install all ubuntu dependencies
+unzip := $(shell command -v unzip > /dev/null && echo true || echo false)
+protoc := $(shell command -v protoc > /dev/null && echo true || echo false)
 install/ubuntu:
 	sudo apt update
 	sudo apt install -y build-essential
+ifeq ($(unzip),false)
 	sudo apt install curl unzip
+endif
+ifeq ($(protoc),false)
 	sudo apt install protobuf-compiler
+endif
 
+
+node := $(shell command -v node > /dev/null && echo true || echo false)
 install/node:
+ifeq ($(node),false)
 	curl -o- https://fnm.vercel.app/install | bash
 	. ~/.bashrc
-	fnm use --install-if-missing 22
-
-install/bun:
-	curl -o- https://bun.sh/install | bash
+	fnm install 22
+endif
+	npm install
 	
+rust := $(shell command -v rustc > /dev/null && echo true || echo false)
+sqlx := $(shell command -v sqlx > /dev/null && echo true || echo false)
 install/rust:
+ifeq ($(rust),false)
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y 
+endif
+ifeq ($(sqlx),false)
 	cargo install sqlx-cli --no-default-features --features postgres
+endif
 	
+go := $(shell command -v go > /dev/null && echo true || echo false)
 install/go:
+ifeq ($(go),false)
+	snap install go --classic
+endif
 	go install github.com/a-h/templ/cmd/templ@latest
 	go mod tidy
 
 install: 
 	make install/ubuntu
 	make generate-env
-	make -j install/bun install/node install/rust install/go
+	make -j install/node install/rust install/go
 	make postgres
 
 postgres:
