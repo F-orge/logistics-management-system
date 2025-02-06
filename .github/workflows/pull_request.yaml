@@ -30,8 +30,7 @@ jobs:
           toolchain: nightly
           override: true
           components: rustfmt, clippy
-      - name: Install Protoc
-        uses: arduino/setup-protoc@v3
+      - uses: Swatinem/rust-cache@v2
       - name: Run make Install
         run: make install
       - name: Lint with Clippy

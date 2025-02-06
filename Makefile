@@ -45,7 +45,7 @@ install/go:
 install: 
 	make install/ubuntu
 	make generate-env
-	make -j4 install/bun install/node install/rust install/go postgres
+	make -j install/bun install/node install/rust install/go postgres
 
 postgres:
 	docker compose down -v && docker compose up -d
