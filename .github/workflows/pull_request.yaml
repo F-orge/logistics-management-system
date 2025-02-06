@@ -22,6 +22,12 @@ jobs:
       POSTGRES_PORT: "5432"
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: nightly
+            override: true
+            components: rustfmt, clippy
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
