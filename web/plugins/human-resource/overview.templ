@@ -1,0 +1,28 @@
+package humanresource
+
+import "github.com/labstack/echo/v4"
+import "github.com/F-orge/logistics-management-system/web/utils"
+
+type OverviewPage struct{}
+
+func (i OverviewPage) Path() string {
+	return "/"
+}
+
+func (o OverviewPage) Routes(group *echo.Group) {
+	group.GET("/", func(c echo.Context) error {
+		return utils.Render(c, 200, o.Page(c))
+	}).Name = "hrmis-overview-page"
+}
+
+templ (o OverviewPage) Metadata() {
+	<title>Human Resource | Overview</title>
+}
+
+templ (o OverviewPage) Navigation() {
+	<a href="/human-resource/">Overview</a>
+}
+
+templ (o OverviewPage) Page(c echo.Context) {
+	<article>Hello world</article>
+}

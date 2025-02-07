@@ -1,0 +1,53 @@
+package plugins
+
+import "github.com/labstack/echo/v4"
+
+type PluginPage interface {
+	Path() string
+	Navigation() templ.Component
+	Page(c echo.Context) templ.Component
+	Metadata() templ.Component
+	Routes(group echo.Group)
+}
+
+type Plugin interface {
+	Name() string // name of the plugin
+	Pages() []PluginPage
+	Routes() []PluginRoute
+}
+
+type PluginRoute interface {
+	New() *PluginRoute
+	Name() string
+	Path() string
+	Page(c echo.Context) templ.Component
+}
+
+type SystemPlugins struct {
+	Plugins []Plugin
+}
+
+func AddPlugin(plugin Plugin, group echo.Group) {
+	sidebarNavs := []templ.Component{}
+	for _, item := range plugin.Pages() {
+		sidebarNavs = append(sidebarNavs, item.Navigation())
+	}
+}
+
+type PluginLayoutProps struct {
+	Navs []templ.Component
+	Page templ.Component
+}
+
+templ PluginLayout(props PluginLayoutProps) {
+	<main>
+		<aside>
+			for _,nav := range props.Navs {
+				@nav
+			}
+		</aside>
+		<div>
+			@props.Page
+		</div>
+	</main>
+}

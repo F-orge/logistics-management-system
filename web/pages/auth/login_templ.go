@@ -15,27 +15,13 @@ import (
 	"github.com/F-orge/logistics-management-system/web/utils"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
+	"time"
 )
 
-type AuthHandler struct {
-	GrpcClient auth.AuthServiceClient
-}
-
-func New() *AuthHandler {
-	return &AuthHandler{}
-}
-
-func (a *AuthHandler) Build(conn grpc.ClientConnInterface, group echo.Group) {
-	a.GrpcClient = auth.NewAuthServiceClient(conn)
-	group.GET("/login", a.Show)
-	group.POST("/login", a.Action)
-}
-
-func (a *AuthHandler) Show(c echo.Context) error {
+func (a *AuthHandler) ShowLogin(c echo.Context) error {
 	return utils.Render(c, 200, loginPage())
 }
 
@@ -44,7 +30,7 @@ type LoginDTO struct {
 	Password string `form:"password" validate:"required,gte=8"`
 }
 
-func (a *AuthHandler) Action(c echo.Context) error {
+func (a *AuthHandler) LoginAction(c echo.Context) error {
 
 	// get payload
 	payload := new(LoginDTO)
@@ -66,9 +52,8 @@ func (a *AuthHandler) Action(c echo.Context) error {
 		Password: payload.Password,
 	})
 
-	a.GrpcClient.BasicRegister(c.Request().Context(), &auth.AuthBasicRegisterRequest{})
-
 	if err != nil {
+		fmt.Println(status.Code(err))
 		if status.Code(err) == codes.InvalidArgument {
 			a.GrpcClient.BasicRegister(c.Request().Context(), &auth.AuthBasicRegisterRequest{
 				Email:    payload.Email,
@@ -76,11 +61,25 @@ func (a *AuthHandler) Action(c echo.Context) error {
 			})
 			return c.String(200, "hello")
 		}
+		return c.String(400, "Bad request")
 	}
 
 	fmt.Println(result)
 
-	return c.String(200, "hello")
+	cookie := new(http.Cookie)
+
+	cookie.Name = "Authorization"
+	// TODO: create a jwt token and embed the token of rust server as a subject field
+	cookie.Value = fmt.Sprintf("%s %s", result.TokenType, result.AccessToken)
+	cookie.Path = "/"
+	cookie.Expires = time.Now().Add(time.Duration(result.ExpiresIn) * time.Second)
+
+	c.SetCookie(cookie)
+
+	// redirect the user to /dashboard
+	c.Response().Header().Add("HX-Redirect", "/dashboard")
+
+	return c.String(200, "ok")
 }
 
 func loginMetadata() templ.Component {
@@ -145,13 +144,13 @@ func loginPage() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<form action=\"/auth/login\" hx-post=\"/auth/login\"><input type=\"email\" name=\"email\" required> <input type=\"password\" name=\"password\" required minlength=\"8\"> <button type=\"submit\">Login</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<article class=\"h-full flex flex-col justify-center items-center\"><div class=\"w-1/2 space-y-5\"><section class=\"space-y-1.5\"><h1 class=\"text-2xl font-bold\">Log in to your account</h1><span class=\"text-neutral-500\">Enter your credentials</span></section><form x-data=\"{isSubmitting:false}\" class=\"w-full space-y-5\" action=\"/auth/login\" hx-post=\"/auth/login\"><div class=\"\"><label for=\"input-form-email\" class=\"block text-sm font-medium mb-2\">Email</label> <input type=\"email\" name=\"email\" required id=\"input-form-email\" class=\"py-3 px-4 block w-full border border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none \" placeholder=\"abc@email.com\"></div><div class=\"\"><div class=\"flex justify-between items-center\"><label for=\"input-form-password\" class=\"block text-sm font-medium mb-2 \">Password</label> <span class=\"block mb-2 text-sm text-neutral-500 hover:underline cursor-pointer\">I forgot my password</span></div><input type=\"password\" name=\"password\" required minlength=\"8\" id=\"input-form-password\" class=\"py-3 px-4 block w-full border border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none\" placeholder=\"*********\"><p class=\"mt-2 text-sm text-neutral-500\" id=\"hs-input-helper-text\">We'll never share your details.</p></div><button x-on:submit=\"isSubmitting = true\" type=\"submit\" class=\"w-full py-3 px-4 flex items-center justify-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none\"><span x-show=\"!isSubmitting\">Sign In</span> <svg x-show=\"isSubmitting\" class=\"spinner animate-spin\" id=\"spinner\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 12a9 9 0 1 1-6.219-8.56\"></path></svg></button></form></div></article>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = layouts.BaseHTML(layouts.BaseHTMLProps{
+		templ_7745c5c3_Err = layouts.AuthLayout(layouts.AuthLayoutProps{
 			Head: loginMetadata(),
 		}).Render(templ.WithChildren(ctx, templ_7745c5c3_Var3), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
