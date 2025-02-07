@@ -1,7 +1,7 @@
 package plugins
 
 import "github.com/labstack/echo/v4"
-import "google.golang.org/grpc"
+
 import "github.com/F-orge/logistics-management-system/web/utils"
 
 // Example:
@@ -29,6 +29,7 @@ type PageExtensionSidebar struct {
 
 // sidebarRoute - for sidebar navigation
 type PageExtensionRoute interface {
+	Path() string
 	Page(c echo.Context) templ.Component // HTTP: GET method for rendering the page. note: this page will always be path as `/`
 	Actions(group echo.Group)            // note: this will be used to bind other functions that the current page needed in order to work. example: store employee information.
 }
@@ -45,7 +46,8 @@ func (e Extensions) Build(ec *echo.Echo) {
 	for _, ex := range e.PExtensions {
 		group := ec.Group(ex.Path()) // this will create an extension. example: /human-resource
 		for _, route := range ex.Routes() {
-			e.bindRoute(group, route)
+			pageGroup := group.Group(route.Path())
+			e.bindRoute(pageGroup, route)
 		}
 	}
 }
@@ -56,59 +58,4 @@ func (e Extensions) bindRoute(group *echo.Group, route PageExtensionRoute) {
 	})
 	// bind the actions
 	route.Actions(*group)
-}
-
-type PluginPage interface {
-	Path() string
-	Navigation() templ.Component
-	Page(c echo.Context) templ.Component
-	Metadata() templ.Component
-	Routes(group echo.Group)
-}
-
-type Plugin interface {
-	Name() string // name of the plugin
-	Pages() []PluginPage
-	Routes() []PluginRoute
-}
-
-type PluginRoute interface {
-	New(grpc grpc.ClientConnInterface) *PluginRoute
-	Name() templ.Component               // name of the route. this will be rendered in the dashboard
-	Path() string                        // path of the route
-	Page(c echo.Context) templ.Component // page to be rendered. HTTP: GET
-}
-
-type PluginRouteAction interface {
-	// note: this will have two methods, one is a echo handler function and a templ.component
-	Action(c echo.Context) error // this must return a html
-}
-
-type SystemPlugins struct {
-	Plugins []Plugin
-}
-
-func AddPlugin(plugin Plugin, group echo.Group) {
-	sidebarNavs := []templ.Component{}
-	for _, item := range plugin.Pages() {
-		sidebarNavs = append(sidebarNavs, item.Navigation())
-	}
-}
-
-type PluginLayoutProps struct {
-	Navs []templ.Component
-	Page templ.Component
-}
-
-templ PluginLayout(props PluginLayoutProps) {
-	<main>
-		<aside>
-			for _,nav := range props.Navs {
-				@nav
-			}
-		</aside>
-		<div>
-			@props.Page
-		</div>
-	</main>
 }

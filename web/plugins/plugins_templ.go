@@ -9,7 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/labstack/echo/v4"
-import "google.golang.org/grpc"
+
 import "github.com/F-orge/logistics-management-system/web/utils"
 
 // Example:
@@ -37,6 +37,7 @@ type PageExtensionSidebar struct {
 
 // sidebarRoute - for sidebar navigation
 type PageExtensionRoute interface {
+	Path() string
 	Page(c echo.Context) templ.Component // HTTP: GET method for rendering the page. note: this page will always be path as `/`
 	Actions(group echo.Group)            // note: this will be used to bind other functions that the current page needed in order to work. example: store employee information.
 }
@@ -53,7 +54,8 @@ func (e Extensions) Build(ec *echo.Echo) {
 	for _, ex := range e.PExtensions {
 		group := ec.Group(ex.Path()) // this will create an extension. example: /human-resource
 		for _, route := range ex.Routes() {
-			e.bindRoute(group, route)
+			pageGroup := group.Group(route.Path())
+			e.bindRoute(pageGroup, route)
 		}
 	}
 }
@@ -64,95 +66,6 @@ func (e Extensions) bindRoute(group *echo.Group, route PageExtensionRoute) {
 	})
 	// bind the actions
 	route.Actions(*group)
-}
-
-type PluginPage interface {
-	Path() string
-	Navigation() templ.Component
-	Page(c echo.Context) templ.Component
-	Metadata() templ.Component
-	Routes(group echo.Group)
-}
-
-type Plugin interface {
-	Name() string // name of the plugin
-	Pages() []PluginPage
-	Routes() []PluginRoute
-}
-
-type PluginRoute interface {
-	New(grpc grpc.ClientConnInterface) *PluginRoute
-	Name() templ.Component               // name of the route. this will be rendered in the dashboard
-	Path() string                        // path of the route
-	Page(c echo.Context) templ.Component // page to be rendered. HTTP: GET
-}
-
-type PluginRouteAction interface {
-	// note: this will have two methods, one is a echo handler function and a templ.component
-	Action(c echo.Context) error // this must return a html
-}
-
-type SystemPlugins struct {
-	Plugins []Plugin
-}
-
-func AddPlugin(plugin Plugin, group echo.Group) {
-	sidebarNavs := []templ.Component{}
-	for _, item := range plugin.Pages() {
-		sidebarNavs = append(sidebarNavs, item.Navigation())
-	}
-}
-
-type PluginLayoutProps struct {
-	Navs []templ.Component
-	Page templ.Component
-}
-
-func PluginLayout(props PluginLayoutProps) templ.Component {
-	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
-		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
-		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
-			return templ_7745c5c3_CtxErr
-		}
-		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
-		if !templ_7745c5c3_IsBuffer {
-			defer func() {
-				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
-				if templ_7745c5c3_Err == nil {
-					templ_7745c5c3_Err = templ_7745c5c3_BufErr
-				}
-			}()
-		}
-		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var1 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var1 == nil {
-			templ_7745c5c3_Var1 = templ.NopComponent
-		}
-		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<main><aside>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		for _, nav := range props.Navs {
-			templ_7745c5c3_Err = nav.Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</aside><div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = props.Page.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div></main>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		return nil
-	})
 }
 
 var _ = templruntime.GeneratedTemplate

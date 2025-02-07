@@ -4,6 +4,10 @@ import "github.com/labstack/echo/v4"
 
 type OverviewPage struct{}
 
+func (o OverviewPage) Path() string {
+	return "/"
+}
+
 func (o OverviewPage) Actions(group echo.Group) {
 	// actions here
 }

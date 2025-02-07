@@ -1,11 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/F-orge/logistics-management-system/web/pages/auth"
 	"github.com/F-orge/logistics-management-system/web/plugins"
+	"github.com/F-orge/logistics-management-system/web/plugins/authentication"
 	humanresource "github.com/F-orge/logistics-management-system/web/plugins/human-resource"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
@@ -17,20 +16,20 @@ func main() {
 
 	e.Static("/assets", "dist")
 
+	// TODO: move this to be environment variable
 	conn, err := grpc.NewClient("dns:localhost:8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
 
 	if err != nil {
-		fmt.Println("Failed to connect to server:", err)
-		return
+		log.Fatal(err)
 	}
 
 	defer conn.Close()
 
-	auth.New().Build(conn, *e.Group("/auth"))
-
+	// TODO: create a extension for authentication
 	extension := plugins.Extensions{}
 
 	// register extension
+	extension.Register(authentication.Authentication{})
 	extension.Register(humanresource.HumanResource{})
 
 	// build the extensions and bind it to the main echo instance
