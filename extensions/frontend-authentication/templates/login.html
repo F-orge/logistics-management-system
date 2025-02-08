@@ -1,0 +1,6 @@
+<!-- TODO: create a dynamic url for the form submission since this is a extension based system. we don't know what will be the route for this html -->
+<form action="{{ action_url }}" hx-post="{{ action_url }}" method="post">
+  <input type="email" name="email" required>
+  <input type="password" name="password" required minlength="8">
+  <button>Sign in</button>
+</form>

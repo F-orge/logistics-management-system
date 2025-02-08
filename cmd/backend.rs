@@ -142,8 +142,11 @@ async fn main() {
     };
 
     let grpc_server = Server::builder()
-        .add_service(authentication::AuthService::new(&db))
-        .add_service(storage::StorageService::new(&db, Path::new(&directory)))
+        .add_service(service_authentication::AuthService::new(&db))
+        .add_service(service_storage::StorageService::new(
+            &db,
+            Path::new(&directory),
+        ))
         .into_service()
         .into_axum_router();
 

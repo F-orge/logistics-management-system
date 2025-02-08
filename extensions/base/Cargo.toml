@@ -1,0 +1,9 @@
+[package]
+name = "base"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = { workspace = true }
+askama = { workspace = true }
+askama_axum = { workspace = true }
