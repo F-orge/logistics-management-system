@@ -14,16 +14,16 @@ use crate::AuthenticationExtension;
 
 #[derive(Template)]
 #[template(path = "login.html")]
-pub struct LoginTemplate {
+pub struct PageTemplate {
     action_url: String,
 }
 
-pub async fn login(
+pub async fn page(
     state: State<AuthenticationExtension>,
 ) -> Result<Html<String>, (StatusCode, String)> {
     // TODO: check if user is already logged in. use cookie to verify it
 
-    let html = LoginTemplate {
+    let html = PageTemplate {
         action_url: state.action_url.clone(),
     }
     .render();
@@ -41,16 +41,16 @@ pub async fn login(
 }
 
 #[derive(Deserialize, Validate)]
-pub struct LoginActionPayload {
+pub struct SubmitPayload {
     #[garde(email)]
     email: String,
     #[garde(length(min = 8))]
     password: String,
 }
 
-pub async fn login_action(
+pub async fn submit(
     mut state: State<AuthenticationExtension>,
-    payload: Form<LoginActionPayload>,
+    payload: Form<SubmitPayload>,
 ) -> Result<Redirect, (StatusCode, String)> {
     if let Err(err) = payload.validate() {
         let mut err_string = String::new();

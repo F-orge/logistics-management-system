@@ -25,8 +25,8 @@ impl base::Extension for AuthenticationExtension {
     }
     fn router(&self) -> axum::Router {
         axum::Router::new()
-            .route("/login", get(login::login))
-            .route("/login", post(login::login_action))
+            .route("/login", get(login::page))
+            .route("/login", post(login::submit))
             .with_state(self.clone())
     }
 }

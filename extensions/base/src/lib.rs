@@ -13,7 +13,7 @@ pub trait Extension {
     // extension name
     fn name(&self) -> String;
 
-    // navigation helper for dashboard
+    // navigation helper
     fn navigation(&self) -> ExtensionNavigation;
 
     // routes that will be implemented in the system.
