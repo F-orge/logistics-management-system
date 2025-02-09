@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package auth;
 
-option go_package = "./auth";
+import "google/protobuf/empty.proto";
 
 message AuthResponse {
   string access_token = 1;
@@ -21,7 +21,15 @@ message AuthBasicRegisterRequest {
   string password = 2;
 }
 
+message AuthBasicUpdatePassword {
+  string email = 1;
+  string password = 2;
+  string new_password = 3;
+}
+
 service AuthService {
   rpc BasicLogin(AuthBasicLoginRequest) returns (AuthResponse) {}
   rpc BasicRegister(AuthBasicRegisterRequest) returns (AuthResponse) {}
+  rpc BasicUpdatePassword(AuthBasicUpdatePassword)
+      returns (google.protobuf.Empty) {}
 }

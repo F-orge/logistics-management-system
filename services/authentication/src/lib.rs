@@ -90,25 +90,106 @@ impl GrpcAuthService for AuthService {
 
         self.basic_login(request).await
     }
+
+    async fn basic_update_password(
+        &self,
+        request: tonic::Request<crate_proto::auth::AuthBasicUpdatePassword>,
+    ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
+        // get auth token
+        // set auth token to db
+        // update password
+        let mut trx = match self.db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Cannot start transaction"));
+            }
+        };
+
+        let auth_key = match request.metadata().get("authorization") {
+            Some(header_val) => match header_val.to_str() {
+                Ok(value) => value.to_string(),
+                Err(err) => {
+                    tracing::error!("{}", err);
+                    return Err(Status::invalid_argument("Invalid Authorization key format"));
+                }
+            },
+            None => return Err(Status::unauthenticated("No Authorization Header")),
+        };
+
+        let payload = request.into_inner();
+
+        if let Err(err) = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
+            .fetch_one(&mut *trx)
+            .await
+        {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Cannot set JWT Token"));
+        }
+
+        let _ = match sqlx::query!(
+            r#"select "auth"."basic_update_password"($1,$2,$3)"#,
+            payload.email,
+            payload.password,
+            payload.new_password
+        )
+        .execute(&mut *trx)
+        .await
+        {
+            Ok(_) => {}
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::invalid_argument("Invalid email or password"));
+            }
+        };
+
+        let _ = match trx.commit().await {
+            Ok(_) => {}
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Cannot commit transaction"));
+            }
+        };
+
+        Ok(Response::new(()))
+    }
 }
 
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
     use sqlx::{Pool, Postgres};
-    use tonic::transport::Server;
+    use tonic::{Request, transport::Server};
 
     use super::*;
 
-    use crate_proto::auth::{AuthBasicRegisterRequest, auth_service_client::AuthServiceClient};
+    use crate_proto::auth::{
+        AuthBasicRegisterRequest, AuthBasicUpdatePassword, auth_service_client::AuthServiceClient,
+    };
     use crate_utils::test::start_server;
 
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_auth_basic_register_and_login(db: Pool<Postgres>) {
-        let _ = sqlx::query("alter database postgres set \"app.jwt_secret\" = \"randompassword\"")
-            .execute(&db)
+        let mut trx = match db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return;
+            }
+        };
+
+        let _ = sqlx::query("select set_config('app.jwt_secret','randompassword',false);")
+            .execute(&mut *trx)
             .await
             .unwrap();
+
+        let _ = match trx.commit().await {
+            Ok(_) => {}
+            Err(err) => {
+                tracing::error!("{}", err);
+                return;
+            }
+        };
 
         let (_, channel) = start_server(Server::builder().add_service(AuthService::new(&db))).await;
 
@@ -120,6 +201,59 @@ mod test {
         };
 
         let response = client.basic_register(request).await;
+
+        assert!(response.is_ok(), "{:?}", response.err());
+    }
+
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_auth_basic_update_password(db: Pool<Postgres>) {
+        let mut trx = match db.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return;
+            }
+        };
+
+        let _ = sqlx::query("select set_config('app.jwt_secret','randompassword',false);")
+            .execute(&mut *trx)
+            .await
+            .unwrap();
+
+        let _ = match trx.commit().await {
+            Ok(_) => {}
+            Err(err) => {
+                tracing::error!("{}", err);
+                return;
+            }
+        };
+
+        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(&db))).await;
+
+        let mut client = AuthServiceClient::new(channel);
+
+        let request = AuthBasicRegisterRequest {
+            email: "sample@email.com".into(),
+            password: "randompassword".into(),
+        };
+
+        let response = client.basic_register(request).await;
+
+        assert!(response.is_ok(), "{:?}", response.err());
+
+        let response = response.unwrap().into_inner();
+
+        let mut request = Request::new(AuthBasicUpdatePassword {
+            email: "sample@email.com".into(),
+            password: "randompassword".into(),
+            new_password: "newest_password!".into(),
+        });
+
+        request
+            .metadata_mut()
+            .append("authorization", response.access_token.parse().unwrap());
+
+        let response = client.basic_update_password(request).await;
 
         assert!(response.is_ok(), "{:?}", response.err());
     }

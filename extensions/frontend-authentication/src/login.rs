@@ -5,6 +5,7 @@ use axum::{
     http::StatusCode,
     response::{Html, Redirect},
 };
+use axum_extra::extract::{CookieJar, cookie::Cookie};
 use crate_proto::auth::AuthBasicLoginRequest;
 use garde::Validate;
 use serde::Deserialize;
@@ -13,7 +14,7 @@ use tonic::Code;
 use crate::AuthenticationExtension;
 
 #[derive(Template)]
-#[template(path = "login.html")]
+#[template(path = "login.html.jinja2")]
 pub struct PageTemplate {
     action_url: String,
 }
@@ -49,9 +50,10 @@ pub struct SubmitPayload {
 }
 
 pub async fn submit(
+    jar: CookieJar,
     mut state: State<AuthenticationExtension>,
     payload: Form<SubmitPayload>,
-) -> Result<Redirect, (StatusCode, String)> {
+) -> Result<(CookieJar, Redirect), (StatusCode, String)> {
     if let Err(err) = payload.validate() {
         let mut err_string = String::new();
         for (path, e) in err.into_inner() {
@@ -79,7 +81,14 @@ pub async fn submit(
     };
 
     // TODO: convert the response into a JWT Token. use then `access_token` as the subject in the JWT. save this to cookie.
+    let cookie = Cookie::build((
+        "Authorization",
+        format!("{} {}", response.token_type, response.access_token),
+    ))
+    .secure(true)
+    .path("/")
+    .http_only(true)
+    .build();
 
-    // TODO: replace this to be dynamic destination URL since this will be a extension
-    Ok(Redirect::permanent(&state.destination_url))
+    Ok((jar.add(cookie), Redirect::permanent(&state.destination_url)))
 }

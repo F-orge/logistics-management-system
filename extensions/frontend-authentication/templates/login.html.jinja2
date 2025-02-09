@@ -1,0 +1,47 @@
+{% extends "base.html.jinja2" %}
+{% block body %}
+  <!-- TODO: create a dynamic url for the form submission since this is a extension based system. we don't know what will be the route for this html -->
+  <main class="h-screen bg-neutral-200">
+    <div class="h-full flex flex-row border p-4">
+      <div class="w-1/4"></div>
+      <form class="w-3/4 bg-neutral-50 p-4 rounded-md space-y-2.5 flex flex-col justify-center"
+            action="{{ action_url }}"
+            hx-post="{{ action_url }}"
+            method="post">
+        <div>
+          <h1 class="text-2xl font-bold">Log in</h1>
+          <p class="text-neutral-500">Login with your credentials</p>
+        </div>
+        <div>
+          <label for="input-label-email" class="block text-sm font-medium mb-2 ">Email</label>
+          <input type="email"
+                 name="email"
+                 required
+                 id="input-label-email"
+                 class="py-3 px-4 block w-full border border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none "
+                 placeholder="you@site.com"
+                 aria-describedby="hs-input-helper-text">
+        </div>
+        <div>
+          <div class="flex justify-between items-center">
+            <label for="input-label-password" class="block text-sm font-medium mb-2">Password</label>
+            <a href="#"
+               class="hover:underline cursor-pointer block mb-2 text-sm text-neutral-500">Forgot password?</a>
+          </div>
+          <input type="password"
+                 name="password"
+                 required
+                 minlength="8"
+                 id="input-label-password"
+                 class="py-3 px-4 block w-full border border-neutral-200 rounded-lg text-sm focus:border-orange-500 focus:ring-orange-500 disabled:opacity-50 disabled:pointer-events-none"
+                 placeholder="********"
+                 aria-describedby="hs-input-label-password">
+        </div>
+        <button type="submit"
+                class="cursor-pointer py-3 px-4 w-full inline-flex items-center justify-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-orange-600 text-white hover:bg-orange-700 focus:outline-none focus:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none">
+          Sign in
+        </button>
+      </form>
+    </div>
+  </main>
+{% endblock body %}

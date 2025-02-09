@@ -8,12 +8,16 @@ authors = [
 ]
 
 [[bin]]
-name = "logistics-management-system-backend"
+name = "backend"
 path = "cmd/backend.rs"
 
 [[bin]]
-name = "logistics-management-system-frontend"
+name = "frontend"
 path = "cmd/frontend.rs"
+
+[[bin]]
+name = "seed"
+path = "cmd/seed.rs"
 
 [workspace]
 members = ["crate-proto", "crate-utils", "extensions/*", "services/*"]
@@ -84,6 +88,7 @@ tokio-util = "0.7.13"
 clap = { version = "4.5.26", features = ["derive", "string"] }
 askama = "0.12.1"
 askama_axum = "0.4.0"
+axum-extra = { version = "0.9.0", features = ["cookie"] }
 
 [dependencies]
 service-storage = { path = "services/storage" }
@@ -102,3 +107,4 @@ axum = { workspace = true }
 frontend-authentication = { path = "extensions/frontend-authentication" }
 crate-proto = { path = "crate-proto" }
 base = { path = "extensions/base" }
+axum-extra = { workspace = true }

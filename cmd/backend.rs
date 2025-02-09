@@ -3,23 +3,9 @@
 use tokio::{fs, net::TcpListener};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use std::{path::Path, process::exit, sync::Arc, time::Duration};
+use std::{path::Path, process::exit};
 
-use axum::{Router, http::header};
 use tonic::transport::Server;
-use tower_http::{
-    LatencyUnit,
-    catch_panic::CatchPanicLayer,
-    compression::CompressionLayer,
-    cors::{Any, CorsLayer},
-    decompression::DecompressionLayer,
-    limit::RequestBodyLimitLayer,
-    request_id::{MakeRequestUuid, SetRequestIdLayer},
-    sensitive_headers::{SetSensitiveHeadersLayer, SetSensitiveResponseHeadersLayer},
-    timeout::TimeoutLayer,
-    trace::{DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, TraceLayer},
-};
-use tracing::Level;
 
 fn setup_tracing() {
     dotenv::dotenv().ok();
@@ -40,47 +26,6 @@ fn setup_tracing() {
             .with(tracing_subscriber::fmt::layer())
             .init();
     }
-}
-
-fn setup_layers(router: Router) -> Router {
-    // CORS layer
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .expose_headers(Any)
-        .allow_headers(Any);
-
-    let headers = Arc::new([header::AUTHORIZATION]);
-
-    router
-        .layer(CatchPanicLayer::new())
-        .layer(DecompressionLayer::new())
-        .layer(CompressionLayer::new())
-        .layer(RequestBodyLimitLayer::new(4096))
-        .layer(SetRequestIdLayer::x_request_id(MakeRequestUuid))
-        .layer(SetSensitiveHeadersLayer::from_shared(headers.clone()))
-        .layer(SetSensitiveResponseHeadersLayer::from_shared(headers))
-        .layer(TimeoutLayer::new(Duration::from_secs(60)))
-        .layer(
-            TraceLayer::new_for_grpc()
-                .make_span_with(DefaultMakeSpan::new().include_headers(true))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(
-                    DefaultOnResponse::new()
-                        .level(Level::INFO)
-                        .latency_unit(LatencyUnit::Nanos),
-                ),
-        )
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::new().include_headers(true))
-                .on_request(DefaultOnRequest::new().level(Level::INFO))
-                .on_response(
-                    DefaultOnResponse::new()
-                        .level(Level::INFO)
-                        .latency_unit(LatencyUnit::Nanos),
-                ),
-        )
-        .layer(cors)
 }
 
 #[tokio::main]
@@ -176,7 +121,7 @@ async fn main() {
         }
     };
 
-    if let Err(err) = axum::serve(listener, app).await {
+    if let Err(err) = axum::serve(listener, app.into_make_service()).await {
         tracing::error!("{}", err);
         exit(1);
     }

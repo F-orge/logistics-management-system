@@ -15,3 +15,4 @@ serde = { workspace = true }
 crate-proto = { path = "../../crate-proto" }
 tonic = { workspace = true }
 base = { path = "../base" }
+axum-extra = { workspace = true }

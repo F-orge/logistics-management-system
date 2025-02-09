@@ -4,8 +4,7 @@ create view "storage"."file_view" as (
     "storage"."file".id,
     "storage"."file".name,
     "storage"."file".type,
-    "storage"."file".size
+    "storage"."file".size,
+    "storage"."file".owner_id
   from "storage"."file"
 );
-
-select * from "storage"."file_view";
