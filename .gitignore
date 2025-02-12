@@ -43,3 +43,5 @@ next-env.d.ts
 # rust
 /target
 
+# storage
+storage

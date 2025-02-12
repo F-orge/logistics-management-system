@@ -12,15 +12,11 @@ name = "backend"
 path = "cmd/backend.rs"
 
 [[bin]]
-name = "frontend"
-path = "cmd/frontend.rs"
-
-[[bin]]
 name = "seed"
 path = "cmd/seed.rs"
 
 [workspace]
-members = ["crate-proto", "crate-utils", "extensions/*", "services/*"]
+members = ["crates/*", "services/*"]
 
 [profile.release]
 codegen-units = 1
@@ -104,7 +100,5 @@ test-log = { workspace = true }
 tokio-util = { workspace = true }
 clap = { workspace = true }
 axum = { workspace = true }
-frontend-authentication = { path = "extensions/frontend-authentication" }
-crate-proto = { path = "crate-proto" }
-base = { path = "extensions/base" }
+crate-proto = { path = "crates/crate-proto" }
 axum-extra = { workspace = true }

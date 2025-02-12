@@ -8,8 +8,8 @@ sqlx = { workspace = true }
 tokio = { workspace = true }
 tonic = { workspace = true }
 tokio-stream = { workspace = true }
-crate-proto = { path = "../../crate-proto" }
-crate-utils = { path = "../../crate-utils" }
+crate-proto = { path = "../../crates/crate-proto" }
+crate-utils = { path = "../../crates/crate-utils" }
 futures = { workspace = true }
 tempdir = "0.3.7"
 uuid = { workspace = true }

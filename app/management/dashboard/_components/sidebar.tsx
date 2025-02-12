@@ -29,7 +29,7 @@ const data = {
       name: "Acme Inc",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
-    },``
+    },
     {
       name: "Acme Corp.",
       logo: AudioWaveform,
