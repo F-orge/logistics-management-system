@@ -1,0 +1,24 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select \"auth\".\"basic_update_password\"($1,$2,$3)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "basic_update_password",
+        "type_info": "Void"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "8f3d88905a9eda605d7f98733d5cd029d6ef68427c88f01483349df029b6e17a"
+}

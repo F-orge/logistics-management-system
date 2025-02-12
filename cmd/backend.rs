@@ -30,25 +30,26 @@ fn setup_tracing() {
 
 #[tokio::main]
 async fn main() {
+    println!("Strarting!");
     setup_tracing();
 
-    let db_url = match std::env::var("DATABASE_URL") {
+    let db_url = match std::env::var("RUST_DATABASE_URL") {
         Ok(db_url) => db_url,
         Err(err) => {
-            tracing::error!("{}: DATABASE_URL", err);
+            tracing::error!("{}: RUST_DATABASE_URL", err);
             exit(1);
         }
     };
 
-    let jwt_key = match std::env::var("JWT_SECRET") {
+    let jwt_key = match std::env::var("RUST_JWT_SECRET") {
         Ok(jwt_key) => jwt_key,
         Err(err) => {
-            tracing::error!("{}: JWT_SECRET", err);
+            tracing::error!("{}: RUST_JWT_SECRET", err);
             exit(1);
         }
     };
 
-    let directory = match std::env::var("STORAGE_DIRECTORY_URL") {
+    let directory = match std::env::var("RUST_STORAGE_DIRECTORY_URL") {
         Ok(directory) => {
             let path = Path::new(&directory);
             if !path.exists() {
@@ -61,7 +62,7 @@ async fn main() {
             directory
         }
         Err(err) => {
-            tracing::error!("{}: STORAGE_DIRECTORY_URL", err);
+            tracing::error!("{}: RUST_STORAGE_DIRECTORY_URL", err);
             exit(1);
         }
     };
@@ -97,7 +98,7 @@ async fn main() {
 
     let app = grpc_server;
 
-    let host = match std::env::var("APP_ADDRESS") {
+    let host = match std::env::var("RUST_ADDRESS") {
         Ok(host) => host,
         Err(err) => {
             tracing::error!("{}: ADDRESS", err);
@@ -105,7 +106,7 @@ async fn main() {
         }
     };
 
-    let port = match std::env::var("APP_PORT") {
+    let port = match std::env::var("RUST_PORT") {
         Ok(port) => port,
         Err(err) => {
             tracing::error!("{}: PORT", err);

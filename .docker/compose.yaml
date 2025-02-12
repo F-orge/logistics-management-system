@@ -1,0 +1,23 @@
+services:
+  postgres:
+    build:
+      context: ../
+      dockerfile: .docker/postgres.dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+  nextjs:
+    build:
+      context: ../
+      dockerfile: .docker/nextjs.dockerfile
+    ports:
+      - "3000:3000"
+  rust:
+    build:
+      context: ../
+      dockerfile: .docker/rust.dockerfile
+    ports:
+      - "8000:8000"

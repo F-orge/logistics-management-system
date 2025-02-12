@@ -25,13 +25,20 @@ impl GrpcAuthService for AuthService {
     ) -> std::result::Result<tonic::Response<AuthResponse>, tonic::Status> {
         let payload = request.into_inner();
 
-        let token: String = match sqlx::query("select \"auth\".\"basic_login\" ($1,$2)")
-            .bind(payload.email)
-            .bind(payload.password)
-            .fetch_one(&self.db)
-            .await
+        let token = match sqlx::query!(
+            "select \"auth\".\"basic_login\" ($1,$2) as token",
+            payload.email,
+            payload.password
+        )
+        .fetch_one(&self.db)
+        .await
         {
-            Ok(row) => row.get(0),
+            Ok(row) => match row.token {
+                Some(token) => token,
+                None => {
+                    return Err(Status::invalid_argument("Invalid username or password"));
+                }
+            },
             Err(err) => {
                 tracing::error!("{}", err);
                 return Err(Status::invalid_argument("Invalid username or password"));
@@ -59,11 +66,11 @@ impl GrpcAuthService for AuthService {
             }
         };
 
-        let _ = match sqlx::query(
+        let _ = match sqlx::query!(
             "insert into \"auth\".\"basic_user\" (email,password) values ($1,$2)",
+            payload.email.clone(),
+            payload.password.clone()
         )
-        .bind(payload.email.clone())
-        .bind(payload.password.clone())
         .execute(&mut *trx)
         .await
         {
@@ -131,7 +138,7 @@ impl GrpcAuthService for AuthService {
             r#"select "auth"."basic_update_password"($1,$2,$3)"#,
             payload.email,
             payload.password,
-            payload.new_password
+            payload.new_password,
         )
         .execute(&mut *trx)
         .await
@@ -178,8 +185,8 @@ mod test {
             }
         };
 
-        let _ = sqlx::query("select set_config('app.jwt_secret','randompassword',false);")
-            .execute(&mut *trx)
+        let _ = sqlx::query!("select set_config('app.jwt_secret','randompassword',false);")
+            .fetch_one(&mut *trx)
             .await
             .unwrap();
 
@@ -215,8 +222,8 @@ mod test {
             }
         };
 
-        let _ = sqlx::query("select set_config('app.jwt_secret','randompassword',false);")
-            .execute(&mut *trx)
+        let _ = sqlx::query!("select set_config('app.jwt_secret','randompassword',false);")
+            .fetch_one(&mut *trx)
             .await
             .unwrap();
 

@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into \"auth\".\"basic_user\" (email,password) values ($1,$2)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "b17056e10503823ceb28d8eb4505d67e573eb8e97f25177645ced1fc66c4afa7"
+}

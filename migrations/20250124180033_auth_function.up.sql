@@ -1,3 +1,5 @@
+create extension pgjwt;
+
 -- Add up migration script here
 create function "auth"."basic_login"(email varchar,password varchar, out token text) as $$
 declare
@@ -10,7 +12,7 @@ begin
     raise invalid_password using message = 'Invalid email or password';
   end if;
   
-  select "pgjwt"."sign"(
+  select sign(
         row_to_json(r), current_setting('app.jwt_secret')
     ) as token
   from (
