@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package management;
+
+import "google/protobuf/empty.proto";
+
+message Employee {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    repeated string roles = 4;
+}
+
+message Team {
+    int32 id = 1;
+    string name = 2;
+    int32 leader_id = 3;
+    repeated int32 member_ids = 4;
+    int32 board_id = 5;
+}
+
+message TaskBoard {
+    int32 id = 1;
+    string name = 2;
+    int32 team_id = 3;
+    repeated Task tasks = 4;
+}
+
+message Task {
+    int32 id = 1;
+    string title = 2;
+    string description = 3;
+    int32 assignee_id = 4;    
+    TaskStatus status = 5;
+}
+
+enum TaskStatus {
+    TODO = 0;
+    IN_PROGRESS = 1;
+    DONE = 2;
+}
+
+service HRMService {
+    rpc CreateEmployee(CreateEmployeeRequest) returns (Employee);
+    rpc AddRoleToEmployee(AddRoleRequest) returns (Employee);
+    
+    rpc CreateTeam(CreateTeamRequest) returns (Team);
+    rpc AddTeamMember(AddTeamMemberRequest) returns (Team);
+    
+    rpc CreateBoard(CreateBoardRequest) returns (TaskBoard);
+
+    rpc CreateTask(CreateTaskRequest) returns (Task);
+    rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (Task);
+}
+
+message CreateEmployeeRequest {
+    string name = 1;
+    string email = 2;
+    repeated string roles = 3;
+}
+
+message AddRoleRequest {
+    int32 employee_id = 1;
+    string role = 2;
+}
+
+message CreateTeamRequest {
+    string name = 1;
+    int32 leader_id = 2; 
+}
+
+message AddTeamMemberRequest {
+    int32 team_id = 1;
+    int32 employee_id = 2;
+}
+
+message CreateBoardRequest {
+    string name = 1;
+    int32 team_id = 2;
+}
+
+message CreateTaskRequest {
+    int32 board_id = 1;
+    string title = 2;
+    string description = 3;
+    int32 assignee_id = 4;
+}
+
+message UpdateTaskStatusRequest {
+    int32 task_id = 1;
+    TaskStatus new_status = 2;
+}
