@@ -1,4 +1,3 @@
-create extension pgjwt;
 
 -- Add up migration script here
 create function "auth"."basic_login"(email varchar,password varchar, out token text) as $$

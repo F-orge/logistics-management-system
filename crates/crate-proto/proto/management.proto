@@ -2,91 +2,91 @@ syntax = "proto3";
 
 package management;
 
-import "google/protobuf/empty.proto";
+// import "google/protobuf/empty.proto";
+
+enum Role {
+  ROLE_SUPER_ADMIN = 0;
+  ROLE_MANAGER = 1;
+  ROLE_EMPLOYEE = 2;
+}
+
+enum ContractType {
+  CONTRACT_TYPE_FULL_TIME = 0;
+  CONTRACT_TYPE_PART_TIME = 1;
+}
 
 message Employee {
-    int32 id = 1;
-    string name = 2;
-    string email = 3;
-    repeated string roles = 4;
+  int32 id = 1;
+  string user_id = 2;
+  Role role = 3;
+  string full_name = 4;
+  string address = 5;
+  optional string avatar_file_id = 6;
+  optional string avatar_cover_photo_file_id = 7;
 }
 
 message Team {
-    int32 id = 1;
-    string name = 2;
-    int32 leader_id = 3;
-    repeated int32 member_ids = 4;
-    int32 board_id = 5;
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string leader_id = 4;
+  repeated string member_ids = 5;
 }
 
-message TaskBoard {
-    int32 id = 1;
-    string name = 2;
-    int32 team_id = 3;
-    repeated Task tasks = 4;
+message Board {
+  int32 id = 1;
+  string name = 2;
+  string team_id = 3;
+}
+
+message BoardSection {
+  string id = 1;
+  string name = 2;
+  string color = 3;
+  string description = 4;
+  bool hidden = 5;
+  int32 task_limit = 6;
+  string task_board_id = 7;
 }
 
 message Task {
-    int32 id = 1;
-    string title = 2;
-    string description = 3;
-    int32 assignee_id = 4;    
-    TaskStatus status = 5;
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  string board_section_id = 4;
+  repeated TaskField fields = 5;
+  repeated TaskLabel labels = 6;
+  repeated TaskComment comments = 7;
 }
 
-enum TaskStatus {
-    TODO = 0;
-    IN_PROGRESS = 1;
-    DONE = 2;
+enum TaskFieldType {
+  TASK_FIELD_TYPE_TEXT = 0;
+  TASK_FIELD_TYPE_NUMBER = 1;
+  TASK_FIELD_TYPE_DATE = 2;
 }
 
-service HRMService {
-    rpc CreateEmployee(CreateEmployeeRequest) returns (Employee);
-    rpc AddRoleToEmployee(AddRoleRequest) returns (Employee);
-    
-    rpc CreateTeam(CreateTeamRequest) returns (Team);
-    rpc AddTeamMember(AddTeamMemberRequest) returns (Team);
-    
-    rpc CreateBoard(CreateBoardRequest) returns (TaskBoard);
-
-    rpc CreateTask(CreateTaskRequest) returns (Task);
-    rpc UpdateTaskStatus(UpdateTaskStatusRequest) returns (Task);
+message TaskField {
+  string id = 1;
+  string name = 2;
+  TaskFieldType type = 3;
+  // NOTE TO CLIENTS: please convert this into proper data type before using it.
+  // you can check the type first before doing the conversion
+  string value = 4;
 }
 
-message CreateEmployeeRequest {
-    string name = 1;
-    string email = 2;
-    repeated string roles = 3;
+message TaskLabel {
+  string id = 1;
+  string name = 2;
+  string description = 3;
+  string color = 4;
 }
 
-message AddRoleRequest {
-    int32 employee_id = 1;
-    string role = 2;
-}
-
-message CreateTeamRequest {
-    string name = 1;
-    int32 leader_id = 2; 
-}
-
-message AddTeamMemberRequest {
-    int32 team_id = 1;
-    int32 employee_id = 2;
-}
-
-message CreateBoardRequest {
-    string name = 1;
-    int32 team_id = 2;
-}
-
-message CreateTaskRequest {
-    int32 board_id = 1;
-    string title = 2;
-    string description = 3;
-    int32 assignee_id = 4;
-}
-
-message UpdateTaskStatusRequest {
-    int32 task_id = 1;
-    TaskStatus new_status = 2;
+message TaskComment {
+  string id = 1;
+  // NOTE: this is a markdown compatible comment
+  string message = 2;
+  string sender_id = 3;
+  string task_id = 4;
+  // NOTE: this can be used to identify the order of the comments
+  string timestamp = 5;
 }
