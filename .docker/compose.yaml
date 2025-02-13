@@ -1,23 +1,37 @@
 services:
   postgres:
+    container_name: logistics-database
     build:
       context: ../
       dockerfile: .docker/postgres.dockerfile
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_DB=postgres
+    env_file:
+      - ../.env
   nextjs:
+    container_name: logistics-frontend
+    depends_on:
+      - rust
     build:
       context: ../
       dockerfile: .docker/nextjs.dockerfile
     ports:
       - "3000:3000"
+    env_file:
+      - ../.env
   rust:
+    container_name: logistics-backend
+    depends_on:
+      - postgres
     build:
       context: ../
       dockerfile: .docker/rust.dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - rust-storage:/app/storage
+    env_file:
+      - ../.env
+volumes:
+  rust-storage:
+  postgres-storage:

@@ -1,15 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM clux/muslrust:stable AS chef
-
-USER root
+FROM lukemathwalker/cargo-chef:latest-rust-1 as chef
 
 WORKDIR /app
 
 RUN apt update && \
   apt install protobuf-compiler -y
-
-RUN cargo install cargo-chef
 
 # ----------------------------
 
@@ -35,27 +31,26 @@ WORKDIR /app
 
 COPY --from=planner /app/recipe.json /app/recipe.json
 
-COPY cmd crates services .sqlx Cargo.toml Cargo.lock ./
+RUN cargo chef cook --release --recipe-path recipe.json
 
-RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path recipe.json
+COPY . .
 
-RUN cargo build --release --target x86_64-unknown-linux-musl --bin backend
+RUN cargo build --release --bin backend
 
 # ----------------------------
 
-FROM rust:alpine AS runtime
-
-RUN addgroup -S tonic-axum && adduser -S tonic-axum -G tonic-axum
+FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
-COPY --from=rust-builder /app/target/x86_64-unknown-linux-musl/release/backend /usr/local/bin/
+COPY --from=rust-builder /app/target/release/backend ./
 
-USER tonic-axum
+RUN apt-get update && apt install -y openssl
 
+ENV RUST_PORT=8000
 ENV RUST_ADDRESS=0.0.0.0
 ENV RUST_STORAGE_DIRECTORY_URL=./storage
 ENV RUST_DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres
 ENV RUST_JWT_SECRET=lPPZmlMsRRkCxwWE7jusVfHiaFfGEL6iSU6/h+TD4D8=
 
-CMD [ "/usr/local/bin/backend" ]
+CMD [ "./backend" ]
