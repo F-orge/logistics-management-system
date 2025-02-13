@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 package storage;
-option go_package = "./storage";
 
 import "google/protobuf/empty.proto";
 

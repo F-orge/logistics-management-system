@@ -2,7 +2,8 @@ syntax = "proto3";
 
 package management;
 
-// import "google/protobuf/empty.proto";
+import "storage.proto";
+import "google/protobuf/empty.proto";
 
 enum Role {
   ROLE_SUPER_ADMIN = 0;
@@ -21,8 +22,9 @@ message Employee {
   Role role = 3;
   string full_name = 4;
   string address = 5;
-  optional string avatar_file_id = 6;
-  optional string avatar_cover_photo_file_id = 7;
+  string position = 6;
+  storage.FileMetadata avatar_file_id = 7;
+  storage.FileMetadata cover_photo_file_id = 8;
 }
 
 message Team {
@@ -47,6 +49,8 @@ message BoardSection {
   bool hidden = 5;
   int32 task_limit = 6;
   string task_board_id = 7;
+  int32 order = 8;
+  repeated string task_ids = 10;
 }
 
 message Task {
@@ -54,9 +58,12 @@ message Task {
   string title = 2;
   string description = 3;
   string board_section_id = 4;
-  repeated TaskField fields = 5;
-  repeated TaskLabel labels = 6;
-  repeated TaskComment comments = 7;
+  int32 order = 5;
+  repeated TaskField fields = 6;
+  repeated string label_ids = 7;
+  repeated TaskComment comments = 8;
+  string issuer_id = 9;
+  repeated string assignee_ids = 10;
 }
 
 enum TaskFieldType {
@@ -72,6 +79,7 @@ message TaskField {
   // NOTE TO CLIENTS: please convert this into proper data type before using it.
   // you can check the type first before doing the conversion
   string value = 4;
+  string team_id = 5;
 }
 
 message TaskLabel {
@@ -79,6 +87,7 @@ message TaskLabel {
   string name = 2;
   string description = 3;
   string color = 4;
+  string team_id = 5;
 }
 
 message TaskComment {
@@ -87,6 +96,271 @@ message TaskComment {
   string message = 2;
   string sender_id = 3;
   string task_id = 4;
+  repeated storage.FileMetadata attachments = 5;
   // NOTE: this can be used to identify the order of the comments
-  string timestamp = 5;
+  string timestamp = 6;
+}
+
+message CreateEmployeeRequest {
+  string full_name = 1;
+  string address = 2;
+  Role role = 3;
+  string position = 4;
+  string email = 5;
+  optional string avatar_file_id = 6;
+  optional string avatar_cover_photo_file_id = 7;
+}
+
+message CreateEmployeeResponse {
+  string email = 1;
+  // NOTE: this is a auto-generate password for new employees
+  string password = 2;
+}
+
+message GetEmployeeRequest {
+  oneof request {
+    string employee_id = 1;
+    string user_id = 2;
+    Role role = 3;
+  }
+}
+
+message BatchGetEmployeesRequest { repeated string employee_ids = 1; }
+
+message UpdateEmployeeRequest {
+  oneof request {
+    Role role = 1;
+    string full_name = 2;
+    string address = 3;
+    string position = 4;
+    storage.FileMetadata avatar_file = 5;
+    storage.FileMetadata conver_photo_file = 6;
+  }
+}
+
+message RemoveEmployeeRequest { string employee_id = 1; }
+
+service EmployeeService {
+  rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
+  rpc GetEmployee(CreateEmployeeRequest) returns (stream Employee);
+  rpc BatchGetEmployees(BatchGetEmployeesRequest) returns (stream Employee);
+  rpc UpdateEmployee(UpdateEmployeeRequest) returns (Employee);
+  rpc RemoveEmployee(RemoveEmployeeRequest) returns (google.protobuf.Empty);
+}
+
+message CreateTeamRequest {
+  string name = 2;
+  string description = 3;
+  string leader_id = 4;
+}
+
+message AddTeamMemberRequest { string employee_id = 1; }
+
+message RemoveTeamMemberRequest { string employee_id = 1; }
+
+message GetTeamRequest {
+  oneof request {
+    string id = 1;
+    string name = 2;
+    string leader_id = 3;
+  }
+}
+
+message UpdateTeamRequest {
+  oneof request {
+    string name = 2;
+    string description = 3;
+    string leader_id = 4;
+  }
+}
+
+message RemoveTeamRequest { string team_id = 1; }
+
+service TeamService {
+  rpc CreateTeam(CreateTeamRequest) returns (Team);
+  rpc AddTeamMember(AddTeamMemberRequest) returns (Team);
+  rpc RemoveTeamMember(RemoveTeamMemberRequest) returns (Team);
+  rpc GetTeam(GetTeamRequest) returns (Team);
+  // NOTE: this will get all teams depending on the policies set in the
+  // database. `authorization` token will be used here.
+  rpc GetTeams(google.proto.Empty) returns (stream Team);
+  rpc UpdateTeam(UpdateTeamRequest) returns (Team);
+  rpc RemoveTeam(RemoveTeamRequest) returns (google.proto.Empty);
+}
+
+message CreateBoardRequest {
+  string name = 1;
+  string team_id = 2;
+}
+
+message GetBoardRequest {
+  oneof request {
+    string name = 1;
+    string team_id = 2;
+  }
+}
+
+message UpdateBoardRequest { string name = 1; }
+
+message RemoveBoardRequest { string board_id = 1; }
+
+message CreateBoardSectionRequest {
+  string name = 2;
+  string color = 3;
+  string description = 4;
+  int32 task_limit = 6;
+  string task_board_id = 7;
+}
+
+message GetBoardSectionRequest { string board_id = 1; }
+
+message UpdateBoardSectionRequest {
+  oneof request {
+    string name = 2;
+    string color = 3;
+    string description = 4;
+    bool hidden = 5;
+    int32 task_limit = 6;
+    int32 order = 7;
+  }
+}
+
+message RemoveBoardSectionRequest { string board_section_id = 1; }
+
+message CreateTaskRequest {
+  string title = 2;
+  string description = 3;
+  string board_section_id = 4;
+  string issuer_id = 8;
+}
+
+message AssignTaskRequest {
+  string task_id = 1;
+  string employee_id = 2;
+}
+
+message RemoveAssignTaskRequest {
+  string task_id = 1;
+  string employee_id = 2;
+}
+
+message GetTaskFromSectionRequest { string board_section_id = 1; }
+
+message GetTaskRequest {
+  oneof request {
+    string id = 1;
+    string issuer_id = 3;
+    string assignee_id = 4;
+  }
+}
+
+message MoveTaskToBoardRequest {
+  string task_id = 1;
+  string board_section_id = 2;
+}
+
+message UpdateTaskRequest {
+  oneof request {
+    string title = 2;
+    string description = 3;
+    string board_section_id = 4;
+    string issuer_id = 8;
+  }
+}
+
+message RemoveTaskRequest { string task_id = 1; }
+
+message CreateTaskLabelRequest {
+  string name = 2;
+  string description = 3;
+  string color = 4;
+  string team_id = 5;
+}
+
+message GetTaskLabelRequest {
+  oneof request {
+    string id = 1;
+    string task_id = 2;
+    string team_id = 3;
+  }
+}
+
+message UpdateTaskLabelRequest {
+  oneof request {
+    string name = 1;
+    string description = 2;
+    string color = 3;
+  }
+}
+
+message RemoveTaskLabelRequest { string task_label_id = 1; }
+
+message CreateTaskFieldRequest {
+  string name = 1;
+  TaskFieldType type = 2;
+  string value = 3;
+  string team_id = 4;
+}
+
+message GetTaskFieldRequest {
+  oneof request {
+    string id = 1;
+    string team_id = 2;
+    string task_id = 3;
+  }
+}
+
+message UpdateTaskFieldRequest {
+  oneof request {
+    string name = 1;
+    TaskFieldType type = 2;
+    string value = 3;
+    string team_id = 4;
+  }
+}
+
+message RemoveTaskFieldRequest { string task_field_id = 1; }
+
+service TaskService {
+  // board
+  rpc CreateBoard(CreateBoardRequest) returns (Board);
+  rpc GetBoard(GetBoardRequest) returns (Board);
+  rpc GetBoards(GetBoardRequest) returns (stream Board);
+  rpc UpdateBoard(UpdateBoardRequest) returns (Board);
+  rpc RemoveBoard(RemoveBoardRequest) returns (google.proto.Empty);
+
+  // board section
+  rpc CreateBoardSection(CreateBoardSectionRequest) returns (BoardSection);
+  rpc GetBoardSections(GetBoardSectionRequest) returns (stream BoardSection);
+  rpc UpdateBoardSection(UpdateBoardSectionRequest) returns (BoardSection);
+  rpc RemoveBoardSection(RemoveBoardSectionRequest)
+      returns (google.proto.Empty);
+
+  // task
+  rpc CreateTask(CreateTaskRequest) returns (Task);
+  rpc AssignTask(AssignTaskRequest) returns (Task);
+  rpc RemoveAssignTask(RemoveAssignTaskRequest) returns (Task);
+  rpc GetTasksFromSection(GetTaskFromSectionRequest) returns (stream Task);
+  rpc GetTask(GetTaskRequest) returns (Task);
+  rpc GetTasks(GetTaskRequest) returns (stream Task);
+  rpc MoveTaskToBoardSection(MoveTaskToBoardRequest)
+      returns (google.proto.Empty);
+  rpc UpdateTask(UpdateTaskRequest) returns (Task);
+  rpc RemoveTask(RemoveTaskRequest) returns (google.proto.Empty);
+
+  // task label
+  rpc CreateTaskLabel(CreateTaskLabelRequest) returns (TaskLabel);
+  rpc GetTaskLabel(GetTaskLabelRequest) returns (TaskLabel);
+  rpc GetTaskLabels(GetTaskLabelRequest) returns (stream TaskLabel);
+  rpc UpdateTaskLabel(UpdateTaskLabelRequest) returns (TaskLabel);
+  rpc RemoveTaskLabel(RemoveTaskLabelRequest) returns (google.protobuf.Empty);
+
+  // task field
+  rpc CreateTaskField(CreateTaskFieldRequest) returns (TaskField);
+  rpc GetTaskField(GetTaskFieldRequest) returns (TaskField);
+  rpc GetTaskFields(GetTaskFieldRequest) returns (stream TaskField);
+  rpc UpdateTaskField(UpdateTaskFieldRequest) returns (TaskField);
+  rpc RemoveTaskField(RemoveTaskFieldRequest) returns (google.proto.Empty);
+
+  // task comment
 }

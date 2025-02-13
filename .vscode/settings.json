@@ -1,0 +1,10 @@
+{
+  "protoc": {
+    "path": "/usr/bin/protoc",
+    "compile_on_save": false,
+    "options": [
+      "--proto_path=protos/v3",
+      "--proto_path=${workspaceRoot}/crates/crate-proto/proto",
+    ]
+  }
+}
