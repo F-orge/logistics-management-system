@@ -11,10 +11,6 @@ authors = [
 name = "backend"
 path = "cmd/backend.rs"
 
-[[bin]]
-name = "seed"
-path = "cmd/seed.rs"
-
 [workspace]
 members = [
   "crates/crate-proto",
