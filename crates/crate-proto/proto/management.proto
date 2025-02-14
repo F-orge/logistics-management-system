@@ -50,7 +50,7 @@ message BoardSection {
   int32 task_limit = 6;
   string task_board_id = 7;
   int32 order = 8;
-  repeated string task_ids = 10;
+  repeated string task_ids = 9;
 }
 
 message Task {
@@ -149,9 +149,9 @@ service EmployeeService {
 }
 
 message CreateTeamRequest {
-  string name = 2;
-  string description = 3;
-  string leader_id = 4;
+  string name = 1;
+  string description = 2;
+  string leader_id = 3;
 }
 
 message AddTeamMemberRequest { string employee_id = 1; }
@@ -168,9 +168,9 @@ message GetTeamRequest {
 
 message UpdateTeamRequest {
   oneof request {
-    string name = 2;
-    string description = 3;
-    string leader_id = 4;
+    string name = 1;
+    string description = 2;
+    string leader_id = 3;
   }
 }
 
@@ -183,9 +183,9 @@ service TeamService {
   rpc GetTeam(GetTeamRequest) returns (Team);
   // NOTE: this will get all teams depending on the policies set in the
   // database. `authorization` token will be used here.
-  rpc GetTeams(google.proto.Empty) returns (stream Team);
+  rpc GetTeams(google.protobuf.Empty) returns (stream Team);
   rpc UpdateTeam(UpdateTeamRequest) returns (Team);
-  rpc RemoveTeam(RemoveTeamRequest) returns (google.proto.Empty);
+  rpc RemoveTeam(RemoveTeamRequest) returns (google.protobuf.Empty);
 }
 
 message CreateBoardRequest {
@@ -205,33 +205,33 @@ message UpdateBoardRequest { string name = 1; }
 message RemoveBoardRequest { string board_id = 1; }
 
 message CreateBoardSectionRequest {
-  string name = 2;
-  string color = 3;
-  string description = 4;
-  int32 task_limit = 6;
-  string task_board_id = 7;
+  string name = 1;
+  string color = 2;
+  string description = 3;
+  int32 task_limit = 4;
+  string task_board_id = 5;
 }
 
 message GetBoardSectionRequest { string board_id = 1; }
 
 message UpdateBoardSectionRequest {
   oneof request {
-    string name = 2;
-    string color = 3;
-    string description = 4;
-    bool hidden = 5;
-    int32 task_limit = 6;
-    int32 order = 7;
+    string name = 1;
+    string color = 2;
+    string description = 3;
+    bool hidden = 4;
+    int32 task_limit = 5;
+    int32 order = 6;
   }
 }
 
 message RemoveBoardSectionRequest { string board_section_id = 1; }
 
 message CreateTaskRequest {
-  string title = 2;
-  string description = 3;
-  string board_section_id = 4;
-  string issuer_id = 8;
+  string title = 1;
+  string description = 2;
+  string board_section_id = 3;
+  string issuer_id = 4;
 }
 
 message AssignTaskRequest {
@@ -249,8 +249,8 @@ message GetTaskFromSectionRequest { string board_section_id = 1; }
 message GetTaskRequest {
   oneof request {
     string id = 1;
-    string issuer_id = 3;
-    string assignee_id = 4;
+    string issuer_id = 2;
+    string assignee_id = 3;
   }
 }
 
@@ -261,20 +261,20 @@ message MoveTaskToBoardRequest {
 
 message UpdateTaskRequest {
   oneof request {
-    string title = 2;
-    string description = 3;
-    string board_section_id = 4;
-    string issuer_id = 8;
+    string title = 1;
+    string description = 2;
+    string board_section_id = 3;
+    string issuer_id = 4;
   }
 }
 
 message RemoveTaskRequest { string task_id = 1; }
 
 message CreateTaskLabelRequest {
-  string name = 2;
-  string description = 3;
-  string color = 4;
-  string team_id = 5;
+  string name = 1;
+  string description = 2;
+  string color = 3;
+  string team_id = 4;
 }
 
 message GetTaskLabelRequest {
@@ -321,20 +321,29 @@ message UpdateTaskFieldRequest {
 
 message RemoveTaskFieldRequest { string task_field_id = 1; }
 
+message CreateTaskCommentRequest {
+  string message = 1;
+  string sender_id = 2;
+  string task_id = 3;
+  repeated storage.FileMetadata attachments = 4;
+}
+
+message GetTaskCommentsRequest { string task_id = 1; }
+
 service TaskService {
   // board
   rpc CreateBoard(CreateBoardRequest) returns (Board);
   rpc GetBoard(GetBoardRequest) returns (Board);
   rpc GetBoards(GetBoardRequest) returns (stream Board);
   rpc UpdateBoard(UpdateBoardRequest) returns (Board);
-  rpc RemoveBoard(RemoveBoardRequest) returns (google.proto.Empty);
+  rpc RemoveBoard(RemoveBoardRequest) returns (google.protobuf.Empty);
 
   // board section
   rpc CreateBoardSection(CreateBoardSectionRequest) returns (BoardSection);
   rpc GetBoardSections(GetBoardSectionRequest) returns (stream BoardSection);
   rpc UpdateBoardSection(UpdateBoardSectionRequest) returns (BoardSection);
   rpc RemoveBoardSection(RemoveBoardSectionRequest)
-      returns (google.proto.Empty);
+      returns (google.protobuf.Empty);
 
   // task
   rpc CreateTask(CreateTaskRequest) returns (Task);
@@ -344,9 +353,9 @@ service TaskService {
   rpc GetTask(GetTaskRequest) returns (Task);
   rpc GetTasks(GetTaskRequest) returns (stream Task);
   rpc MoveTaskToBoardSection(MoveTaskToBoardRequest)
-      returns (google.proto.Empty);
+      returns (google.protobuf.Empty);
   rpc UpdateTask(UpdateTaskRequest) returns (Task);
-  rpc RemoveTask(RemoveTaskRequest) returns (google.proto.Empty);
+  rpc RemoveTask(RemoveTaskRequest) returns (google.protobuf.Empty);
 
   // task label
   rpc CreateTaskLabel(CreateTaskLabelRequest) returns (TaskLabel);
@@ -360,7 +369,9 @@ service TaskService {
   rpc GetTaskField(GetTaskFieldRequest) returns (TaskField);
   rpc GetTaskFields(GetTaskFieldRequest) returns (stream TaskField);
   rpc UpdateTaskField(UpdateTaskFieldRequest) returns (TaskField);
-  rpc RemoveTaskField(RemoveTaskFieldRequest) returns (google.proto.Empty);
+  rpc RemoveTaskField(RemoveTaskFieldRequest) returns (google.protobuf.Empty);
 
   // task comment
+  rpc CreateTaskComment(CreateTaskCommentRequest) returns (TaskComment);
+  rpc GetTaskComments(GetTaskCommentsRequest) returns (stream TaskComment);
 }
