@@ -1,10 +1,9 @@
-use sqlx::Row;
 use sqlx::{Pool, Postgres};
 use tonic::{IntoRequest, Response, Status};
 
 use crate_proto::auth::{
-    AuthBasicLoginRequest, AuthBasicRegisterRequest, AuthResponse,
     auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
+    AuthBasicLoginRequest, AuthBasicRegisterRequest, AuthResponse,
 };
 
 pub struct AuthService {
@@ -166,12 +165,12 @@ impl GrpcAuthService for AuthService {
 mod test {
     #![allow(clippy::unwrap_used)]
     use sqlx::{Pool, Postgres};
-    use tonic::{Request, transport::Server};
+    use tonic::{transport::Server, Request};
 
     use super::*;
 
     use crate_proto::auth::{
-        AuthBasicRegisterRequest, AuthBasicUpdatePassword, auth_service_client::AuthServiceClient,
+        auth_service_client::AuthServiceClient, AuthBasicRegisterRequest, AuthBasicUpdatePassword,
     };
     use crate_utils::test::start_server;
 

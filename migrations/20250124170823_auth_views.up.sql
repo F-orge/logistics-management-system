@@ -10,3 +10,5 @@ create view "auth"."basic_user_view" as (
     "auth"."basic_user"
     inner join "auth"."user" on "auth"."user"."id" = "auth"."basic_user"."user_id"
 );
+
+grant select on "auth"."basic_user_view" to nextjs;

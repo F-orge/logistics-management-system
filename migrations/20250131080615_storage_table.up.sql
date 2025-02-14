@@ -20,4 +20,7 @@ create table "storage"."file_access" (
   foreign key (user_id) references "auth"."user"(id),
   created_at timestamp not null default current_timestamp,
   updated_at timestamp not null default current_timestamp
-)
+);
+
+grant all on "storage"."file" to nextjs;
+grant all on "storage"."file_access" to nextjs;

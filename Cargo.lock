@@ -2061,6 +2061,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "service-management"
+version = "0.1.0"
+dependencies = [
+ "crate-proto",
+ "crate-utils",
+ "futures",
+ "sqlx",
+ "tempdir",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tracing",
+ "uuid",
+]
+
+[[package]]
 name = "service-storage"
 version = "0.1.0"
 dependencies = [

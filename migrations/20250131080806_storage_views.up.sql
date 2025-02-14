@@ -8,3 +8,5 @@ create view "storage"."file_view" as (
     "storage"."file".owner_id
   from "storage"."file"
 );
+
+grant select on "storage"."file_view" to nextjs;

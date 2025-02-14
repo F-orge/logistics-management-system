@@ -10,7 +10,6 @@ import EmployeeInfoDialog from "./dialog";
 
 export default async function Page() {
   const employees = await GetEmployees();
-
   return (
     <Table>
       <TableHeader>

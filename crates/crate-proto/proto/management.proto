@@ -23,8 +23,9 @@ message Employee {
   string full_name = 4;
   string address = 5;
   string position = 6;
-  storage.FileMetadata avatar_file_id = 7;
-  storage.FileMetadata cover_photo_file_id = 8;
+  optional storage.FileMetadata avatar_file_id = 7;
+  optional storage.FileMetadata cover_photo_file_id = 8;
+  string birth_date = 9;
 }
 
 message Team {

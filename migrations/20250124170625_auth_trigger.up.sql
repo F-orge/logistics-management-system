@@ -24,7 +24,9 @@ begin
   -- update the `updated_at column`
   update "auth"."user" set updated_at = now() where id = new.user_id;
   
-  new.password := crypt(new.password, gen_salt('bf'));
+  if new.password is distinct from old.password then
+    new.password := crypt(new.password, gen_salt('bf'));
+  end if;
 
   return new;
 end;

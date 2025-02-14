@@ -17,6 +17,7 @@ members = [
   "crates/crate-utils",
   "services/authentication",
   "services/storage",
+  "services/management",
 ]
 
 

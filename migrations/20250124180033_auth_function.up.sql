@@ -38,3 +38,10 @@ begin
   update "auth"."basic_user" set password = crypt("basic_update_password"."new_password", gen_salt('bf')) where user_id = _user_id;
 end;
 $$ language plpgsql;
+
+create function "auth"."current_user"() returns json as $$
+declare
+begin
+  return (select payload from verify(current_setting('request.jwt'), current_setting('app.jwt_secret')));
+end;
+$$ language plpgsql;

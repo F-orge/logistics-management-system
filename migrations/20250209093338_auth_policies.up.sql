@@ -1,14 +1,12 @@
 -- Add up migration script here
 alter table "auth"."basic_user" enable row level security;
 
-create policy "User can update own password" on "auth"."basic_user" for update using (
-  user_id = (select (payload ->> 'id')::uuid from verify(current_setting('request.jwt'), current_setting('app.jwt_secret')))
-);
+create policy "nextjs can create users" on "auth"."basic_user" for insert to nextjs with check (true);
 
-create policy "User can delete own account" on "auth"."basic_user" for delete using (
-  user_id = (select (payload ->> 'id')::uuid from verify(current_setting('request.jwt'), current_setting('app.jwt_secret'))
-));
+create policy "nextjs can update users" on "auth"."basic_user" for update to nextjs using (true);
 
-create policy "User can read own account" on "auth"."basic_user" for select using (
-  user_id = (select (payload ->> 'id')::uuid from verify(current_setting('request.jwt'), current_setting('app.jwt_secret'))
-));
+create policy "nextjs can delete users" on "auth"."basic_user" for delete to nextjs using (true);
+
+create policy "nextjs can read users" on "auth"."basic_user" for select to nextjs using (true);
+
+grant select on "auth"."basic_user_view" to nextjs; 

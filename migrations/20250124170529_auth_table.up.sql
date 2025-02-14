@@ -12,3 +12,6 @@ create table "auth"."basic_user" (
   user_id uuid,
   foreign key (user_id) references "auth"."user"(id) on delete cascade
 );
+
+grant all on "auth"."user" to nextjs;
+grant all on "auth"."basic_user" to nextjs;
