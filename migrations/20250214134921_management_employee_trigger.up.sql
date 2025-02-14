@@ -40,10 +40,3 @@ $$ language plpgsql;
 create trigger "management_employee_after_update_trigger" after
 update
   on "management"."employee" for each row execute function "management"."update_management_employee_trigger_fn"();
-
--- test
-
-select * from "auth"."basic_user_view";
-select * from "management"."employee";
-select * from "auth"."basic_user" where email = 'doe.john.60758@example.com';
-select date_part('month',birth_date)::varchar || date_part('day',birth_date)::varchar || date_part('year',birth_date)::varchar || last_name from "management"."employee";

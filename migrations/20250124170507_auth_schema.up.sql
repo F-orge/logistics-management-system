@@ -2,6 +2,6 @@
 create schema "auth";
 create extension pgcrypto;
 create extension pgjwt;
-create user nextjs nobypassrls;
+-- create user nextjs nobypassrls;
 
 grant usage on schema "auth" to nextjs;
