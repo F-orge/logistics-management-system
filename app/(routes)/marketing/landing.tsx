@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Typography } from "antd";
+import Image from "next/image";
 
 export default function LandingSection() {
   return (
@@ -16,7 +17,7 @@ export default function LandingSection() {
           <Button type="dashed">About us</Button>
         </div>
       </div>
-      <img
+      <Image
         className="rounded-lg"
         src={"https://images.unsplash.com/photo-1665686377065-08ba896d16fd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=700&h=800&q=80"}
         height={800}

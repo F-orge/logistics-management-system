@@ -26,10 +26,14 @@ services:
       - internal
     env_file:
       - ../.env
+    environment:
+      - NEXTJS_GRPC_HOST_URL=rust:8000
   rust:
     build:
       context: ../
       dockerfile: .docker/rust.dockerfile
+    ports:
+      - "8000:8000"
     networks:
       - internal
     volumes:

@@ -17,7 +17,7 @@ enum ContractType {
 }
 
 message Employee {
-  int32 id = 1;
+  string id = 1;
   string user_id = 2;
   Role role = 3;
   string full_name = 4;

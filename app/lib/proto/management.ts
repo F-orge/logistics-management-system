@@ -18,9 +18,9 @@ import { FileMetadata } from "./storage";
  */
 export interface Employee {
     /**
-     * @generated from protobuf field: int32 id = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    id: number;
+    id: string;
     /**
      * @generated from protobuf field: string user_id = 2;
      */
@@ -1057,7 +1057,7 @@ export enum TaskFieldType {
 class Employee$Type extends MessageType<Employee> {
     constructor() {
         super("management.Employee", [
-            { no: 1, name: "id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 3, name: "role", kind: "enum", T: () => ["management.Role", Role, "ROLE_"] },
             { no: 4, name: "full_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
@@ -1069,7 +1069,7 @@ class Employee$Type extends MessageType<Employee> {
     }
     create(value?: PartialMessage<Employee>): Employee {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = 0;
+        message.id = "";
         message.userId = "";
         message.role = 0;
         message.fullName = "";
@@ -1084,8 +1084,8 @@ class Employee$Type extends MessageType<Employee> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* int32 id */ 1:
-                    message.id = reader.int32();
+                case /* string id */ 1:
+                    message.id = reader.string();
                     break;
                 case /* string user_id */ 2:
                     message.userId = reader.string();
@@ -1120,9 +1120,9 @@ class Employee$Type extends MessageType<Employee> {
         return message;
     }
     internalBinaryWrite(message: Employee, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* int32 id = 1; */
-        if (message.id !== 0)
-            writer.tag(1, WireType.Varint).int32(message.id);
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
         /* string user_id = 2; */
         if (message.userId !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.userId);
