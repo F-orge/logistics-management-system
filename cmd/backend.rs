@@ -30,11 +30,14 @@ fn setup_tracing() {
 
 #[tokio::main]
 async fn main() {
-    println!("Strarting!");
     setup_tracing();
+    tracing::info!("Starting Tonic server...");
 
     let db_url = match std::env::var("RUST_DATABASE_URL") {
-        Ok(db_url) => db_url,
+        Ok(db_url) => {
+            tracing::info!("RUST_DATABASE_URL: ok");
+            db_url
+        }
         Err(err) => {
             tracing::error!("{}: RUST_DATABASE_URL", err);
             exit(1);
@@ -42,7 +45,10 @@ async fn main() {
     };
 
     let jwt_key = match std::env::var("RUST_JWT_SECRET") {
-        Ok(jwt_key) => jwt_key,
+        Ok(jwt_key) => {
+            tracing::info!("RUST_JWT_SECRET: ok");
+            jwt_key
+        }
         Err(err) => {
             tracing::error!("{}: RUST_JWT_SECRET", err);
             exit(1);
@@ -51,7 +57,10 @@ async fn main() {
 
     let directory = match std::env::var("RUST_STORAGE_DIRECTORY_URL") {
         Ok(directory) => {
-            let path = Path::new(&directory);
+            let path = {
+                tracing::info!("RUST_STORAGE_DIRECTORY_URL: ok");
+                Path::new(&directory)
+            };
             if !path.exists() {
                 tracing::warn!("{} does not exist. Creating...", directory);
                 if let Err(err) = fs::create_dir(path).await {
@@ -68,7 +77,19 @@ async fn main() {
     };
 
     let db = match sqlx::PgPool::connect(&db_url).await {
-        Ok(value) => value,
+        Ok(value) => {
+            let _ = match sqlx::migrate!("./migrations").run(&value).await {
+                Ok(_) => {
+                    tracing::info!("SQL Migration: ok");
+                }
+                Err(err) => {
+                    tracing::error!("{}", err);
+                    exit(1);
+                }
+            };
+            tracing::info!("DATABASE CONNECTION: ok");
+            value
+        }
         Err(err) => {
             tracing::error!("{}", err);
             exit(1);
@@ -80,7 +101,9 @@ async fn main() {
         .execute(&db)
         .await
     {
-        Ok(_) => {}
+        Ok(_) => {
+            tracing::info!("SETTING UP POSTGRES JWT KEY: ok");
+        }
         Err(err) => {
             tracing::error!("{}", err);
             exit(1)
@@ -99,7 +122,10 @@ async fn main() {
     let app = grpc_server;
 
     let host = match std::env::var("RUST_ADDRESS") {
-        Ok(host) => host,
+        Ok(host) => {
+            tracing::info!("RUST_ADDRESS: ok");
+            host
+        }
         Err(err) => {
             tracing::error!("{}: ADDRESS", err);
             exit(1);
@@ -107,7 +133,10 @@ async fn main() {
     };
 
     let port = match std::env::var("RUST_PORT") {
-        Ok(port) => port,
+        Ok(port) => {
+            tracing::info!("RUST_PORT: ok");
+            port
+        }
         Err(err) => {
             tracing::error!("{}: PORT", err);
             exit(1);
@@ -115,7 +144,10 @@ async fn main() {
     };
 
     let listener = match TcpListener::bind(format!("{}:{}", host, port)).await {
-        Ok(listener) => listener,
+        Ok(listener) => {
+            tracing::info!("Listening to {}:{}", host, port);
+            listener
+        }
         Err(err) => {
             tracing::error!("{}", err);
             exit(1);

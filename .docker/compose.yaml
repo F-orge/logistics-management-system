@@ -1,15 +1,20 @@
 services:
   postgres:
-    container_name: logistics-database
     build:
       context: ../
       dockerfile: .docker/postgres.dockerfile
-    ports:
-      - "5432:5432"
     env_file:
       - ../.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+    volumes:
+      - postgres-storage:/var/lib/postgresql/data
   nextjs:
-    container_name: logistics-frontend
     depends_on:
       - rust
     build:
@@ -17,21 +22,25 @@ services:
       dockerfile: .docker/nextjs.dockerfile
     ports:
       - "3000:3000"
+    networks:
+      - internal
     env_file:
       - ../.env
   rust:
-    container_name: logistics-backend
-    depends_on:
-      - postgres
     build:
       context: ../
       dockerfile: .docker/rust.dockerfile
-    ports:
-      - "8000:8000"
+    networks:
+      - internal
     volumes:
       - rust-storage:/app/storage
     env_file:
       - ../.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+networks:
+  internal:
 volumes:
   rust-storage:
   postgres-storage:

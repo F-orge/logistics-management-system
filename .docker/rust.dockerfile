@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1
+# syntax=docker.io/docker/dockerfile:1.7-labs
 
 FROM lukemathwalker/cargo-chef:latest-rust-1 as chef
 
@@ -11,15 +11,7 @@ RUN apt update && \
 
 FROM chef AS planner
 
-COPY cmd ./cmd
-
-COPY crates ./crates
-
-COPY services ./services
-
-COPY .sqlx ./sqlx
-
-COPY Cargo.toml Cargo.lock ./
+COPY --parents cmd/ crates/ services/ .sqlx/ Cargo.toml Cargo.lock ./
 
 RUN cargo chef prepare --recipe-path recipe.json
 
@@ -33,7 +25,7 @@ COPY --from=planner /app/recipe.json /app/recipe.json
 
 RUN cargo chef cook --release --recipe-path recipe.json
 
-COPY . .
+COPY --parents cmd/ crates/ services/ .sqlx/ migrations/ Cargo.toml Cargo.lock ./
 
 RUN cargo build --release --bin backend
 
@@ -43,9 +35,9 @@ FROM debian:bookworm-slim AS runtime
 
 WORKDIR /app
 
-COPY --from=rust-builder /app/target/release/backend ./
-
 RUN apt-get update && apt install -y openssl
+
+COPY --from=rust-builder /app/target/release/backend ./
 
 ENV RUST_PORT=8000
 ENV RUST_ADDRESS=0.0.0.0

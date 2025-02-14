@@ -1,4 +1,4 @@
-# syntax=docker.io/docker/dockerfile:1
+# syntax=docker.io/docker/dockerfile:1.7-labs
 
 FROM oven/bun:canary-alpine AS base
 
@@ -20,7 +20,7 @@ WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 
-COPY . .
+COPY --parents app/ public/ eslint.config.mjs next.config.ts postcss.config.mjs tailwind.config.ts tsconfig.json package.json ./
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
