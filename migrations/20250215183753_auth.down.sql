@@ -1,2 +1,2 @@
 -- Add down migration script here
-drop schema "management" cascade;
+drop schema auth cascade;
