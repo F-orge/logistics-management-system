@@ -1,26 +1,30 @@
+/* plpgsql-language-server:disable validation */
 -- Add up migration script here
-create table "storage"."file" (
-  id uuid primary key default gen_random_uuid(),
-  name varchar not null,
-  type varchar not null,
-  size int not null,
-  owner_id uuid,
-  is_public boolean not null default false,
-  foreign key (owner_id) references "auth"."user"(id) on delete cascade,
-  created_at timestamp not null default current_timestamp,
-  updated_at timestamp not null default current_timestamp
-);
+create table
+  "storage"."file" (
+    id uuid primary key default gen_random_uuid (),
+    name varchar not null,
+    type varchar not null,
+    size int not null,
+    owner_id uuid,
+    is_public boolean not null default false,
+    foreign key (owner_id) references "auth"."user" (id) on delete cascade,
+    created_at timestamp not null default current_timestamp,
+    updated_at timestamp not null default current_timestamp
+  );
 
 -- NOTE: this is where we can do file sharing to other users
-create table "storage"."file_access" (
-  id uuid primary key default gen_random_uuid(),
-  file_id uuid not null,
-  user_id uuid not null,
-  foreign key (file_id) references "storage"."file"(id) on delete cascade,
-  foreign key (user_id) references "auth"."user"(id) on delete cascade,
-  created_at timestamp not null default current_timestamp,
-  updated_at timestamp not null default current_timestamp
-);
+create table
+  "storage"."file_access" (
+    id uuid primary key default gen_random_uuid (),
+    file_id uuid not null,
+    user_id uuid not null,
+    foreign key (file_id) references "storage"."file" (id) on delete cascade,
+    foreign key (user_id) references "auth"."user" (id) on delete cascade,
+    created_at timestamp not null default current_timestamp,
+    updated_at timestamp not null default current_timestamp
+  );
 
 grant all on "storage"."file" to nextjs;
+
 grant all on "storage"."file_access" to nextjs;

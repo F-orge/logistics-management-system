@@ -17,6 +17,8 @@ pub struct Employee {
     pub avatar_file_id: ::core::option::Option<super::storage::FileMetadata>,
     #[prost(message, optional, tag = "8")]
     pub cover_photo_file_id: ::core::option::Option<super::storage::FileMetadata>,
+    #[prost(string, tag = "9")]
+    pub birth_date: ::prost::alloc::string::String,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct Team {

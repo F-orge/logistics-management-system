@@ -1,3 +1,4 @@
+/* plpgsql-language-server:disable validation */
 -- Add up migration script here
 create schema "storage";
 

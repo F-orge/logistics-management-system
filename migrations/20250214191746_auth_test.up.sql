@@ -39,7 +39,6 @@ begin
     raise exception 'user is not deleted';
   end if;
 
-
   -- re insert again
   insert into "auth"."basic_user"(email,password) values ('sample@email.com','random password');
 

@@ -1,3 +1,4 @@
+/* plpgsql-language-server:disable validation */
 -- Add down migration script here
 drop trigger "auth_basic_user_before_insert_trigger" on "auth"."basic_user";
 
