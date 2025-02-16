@@ -2,8 +2,6 @@
 
 create schema management;
 
-
-
 -- reference: https://www.indeed.com/recruitment/c/info/employee-information-form
 -- reference: https://in.indeed.com/career-advice/starting-new-job/employee-information-form
 create type management.employee_marital_status as enum ('Single','Married','Divorced', 'Widowed', 'Separated');
@@ -14,12 +12,22 @@ create table management.employee
     -- note:
     -- full name must be unique so no duplicate information will be processed
     full_name            varchar(255)   not null unique,
-    tel_number           varchar(255)   null,
-    mobile_number        varchar(255)   null,
+    -- references: https://en.wikipedia.org/wiki/Telephone_numbers_in_the_Philippines#:~:text=Mobile%20phone%20numbers%20are%20always,a%20seven%2Ddigit%20number).
+    tel_number           varchar(10)    null,
+    /*
+        Mobile numbers in the Philippines are 10 or 12 digits long.
+        Local mobile numbers
+            Can be 11 digits long, such as 09171234567
+            Can be 12 digits long, such as 639181234567
+            Do not include special characters like + - . #
+    */
+    mobile_number        varchar(12)    null check (mobile_number ~ '^(09[0-9]{9}|639[0-9]{9})$'),
     -- note:
     -- this will be the same in auth.basic_user. if auth_type is different use any email
     email                varchar(255)   not null unique check ( email ~ '^.+@.+\..+$' ),
-    phil_nat_id          varchar(12)    not null,
+    -- note:
+    -- philippine national id format is xxxx-xxxx-xxxx-xxxx
+    phil_nat_id          varchar(16)    not null check (phil_nat_id ~ '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
     birth_date           date           not null check ( birth_date <= current_date - interval '18 years' ),
     special_interests    varchar(255)[] null,
     learning_institution varchar(255)[] not null,
@@ -48,7 +56,7 @@ create table management.job_information
     department_id uuid         not null references management.department (id),
     supervisor_id uuid         not null references management.employee (id),
     work_location varchar(255) not null,
-    start_date    date         not null,
+    start_date    date         not null check ( start_date >= current_date ),
     salary        money        not null,
     currency      varchar(3)   not null check ( length(currency) = 3 ),
     created_at    timestamp    not null default current_timestamp,
@@ -60,7 +68,17 @@ create table management.emergency_information
     id                uuid primary key default gen_random_uuid(),
     employee_id       uuid           not null references management.employee (id),
     address           varchar(255),
-    contact_number    varchar(255)   not null,
+    -- references: https://en.wikipedia.org/wiki/Telephone_numbers_in_the_Philippines#:~:text=Mobile%20phone%20numbers%20are%20always,a%20seven%2Ddigit%20number).
+    tel_number        varchar(10)    null check (tel_number ~ '^0[0-9]{2}-[0-9]{3}-[0-9]{4}$' or
+                                                 tel_number ~ '^02-[0-9]{4}-[0-9]{4}$'),
+    /*
+        Mobile numbers in the Philippines are 10 or 12 digits long.
+        Local mobile numbers
+            Can be 11 digits long, such as 09171234567
+            Can be 12 digits long, such as 639181234567
+            Do not include special characters like + - . #
+    */
+    mobile_number     varchar(12)    null check (mobile_number ~ '^(09[0-9]{9}|639[0-9]{9})$'),
     relationship      varchar(255)   not null,
     health_conditions varchar(255)[] null
 );
