@@ -14,7 +14,7 @@ create table auth.users
 
 create table auth.basic_user
 (
-    email      varchar(255) not null check ( email ~ '^.+@.+\..+$'),
+    email      varchar(255) not null unique check ( email ~ '^.+@.+\..+$'),
     password   varchar(128) not null check ( length(password) > 8 and password ~ '[A-Z]' and password ~ '[0-9]' and
                                              password ~ '[^a-zA-Z0-9]' ),
     user_id    uuid references auth.users (id) on delete cascade,
