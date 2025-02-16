@@ -27,7 +27,7 @@ create table management.employee
     email                varchar(255)   not null unique check ( email ~ '^.+@.+\..+$' ),
     -- note:
     -- philippine national id format is xxxx-xxxx-xxxx-xxxx
-    phil_nat_id          varchar(16)    not null check (phil_nat_id ~ '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
+    phil_nat_id          varchar(19)    not null check (phil_nat_id ~ '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
     birth_date           date           not null check ( birth_date <= current_date - interval '18 years' ),
     special_interests    varchar(255)[] null,
     learning_institution varchar(255)[] not null,
