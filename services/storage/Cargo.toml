@@ -10,6 +10,7 @@ tonic = { workspace = true }
 tokio-stream = { workspace = true }
 crate-proto = { path = "../../crates/crate-proto" }
 crate-utils = { path = "../../crates/crate-utils" }
+service-authentication = { path = "../authentication" }
 futures = { workspace = true }
 tempdir = "0.3.7"
 uuid = { workspace = true }

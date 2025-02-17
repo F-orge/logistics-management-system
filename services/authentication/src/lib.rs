@@ -35,7 +35,7 @@ impl GrpcAuthService for AuthService {
             Ok(row) => match row.token {
                 Some(token) => token,
                 None => {
-                    return Err(Status::invalid_argument("No token avaiable"));
+                    return Err(Status::invalid_argument("No token available"));
                 }
             },
             Err(err) => {

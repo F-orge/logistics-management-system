@@ -2084,6 +2084,7 @@ dependencies = [
  "crate-proto",
  "crate-utils",
  "futures",
+ "service-authentication",
  "sqlx",
  "tempdir",
  "tokio",
