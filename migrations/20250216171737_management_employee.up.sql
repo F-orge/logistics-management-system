@@ -8,17 +8,23 @@ create type management.employee_marital_status as enum ('Single','Married','Divo
 
 create type management.employee_role as enum ('Admin','Manager','Employee');
 
+create type management.employee_status as enum ('Active','Inactive');
+
 create table management.employee
 (
-    id                   uuid primary key                  default gen_random_uuid(),
+    id                   uuid primary key                    default gen_random_uuid(),
+    -- profile picture
+    avatar               storage.file               null,
+    -- profile cover photo
+    cover_photo          storage.file               null,
     -- note:
     -- full name must be unique so no duplicate information will be processed
-    first_name           varchar(255)             not null,
-    middle_name          varchar(255)             not null,
-    last_name            varchar(255)             not null,
+    first_name           varchar(255)               not null,
+    middle_name          varchar(255)               not null,
+    last_name            varchar(255)               not null,
     constraint unique_employee_name unique (first_name, middle_name, last_name),
     -- references: https://en.wikipedia.org/wiki/Telephone_numbers_in_the_Philippines#:~:text=Mobile%20phone%20numbers%20are%20always,a%20seven%2Ddigit%20number).
-    tel_number           varchar(10)              null,
+    tel_number           varchar(10)                null,
     /*
         Mobile numbers in the Philippines are 10 or 12 digits long.
         Local mobile numbers
@@ -26,25 +32,26 @@ create table management.employee
             Can be 12 digits long, such as 639181234567
             Do not include special characters like + - . #
     */
-    mobile_number        varchar(12)              null check (mobile_number ~ '^(09[0-9]{9}|639[0-9]{9})$'),
+    mobile_number        varchar(12)                null check (mobile_number ~ '^(09[0-9]{9}|639[0-9]{9})$'),
     -- note:
     -- this will be the same in auth.basic_user. if auth_type is different use any email
     email                varchar(255) unique check ( email ~ '^.+@.+\..+$' ),
-    role                 management.employee_role not null default 'Employee',
+    role                 management.employee_role   not null default 'Employee',
+    status               management.employee_status not null default 'Active',
     -- note:
     -- philippine national id format is xxxx-xxxx-xxxx-xxxx
-    phil_nat_id          varchar(19)              not null check (phil_nat_id ~ '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
-    birth_date           date                     not null check ( birth_date <= current_date - interval '18 years' ),
-    special_interests    varchar(255)[]           null,
-    learning_institution varchar(255)[]           not null,
-    auth_user_id         uuid references auth.users (id),
-    spouse_first_name    varchar(255)             null,
-    spouse_middle_name   varchar(255)             null,
-    spouse_last_name     varchar(255)             null,
+    phil_nat_id          varchar(19)                not null check (phil_nat_id ~ '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{4}$'),
+    birth_date           date                       not null check ( birth_date <= current_date - interval '18 years' ),
+    special_interests    varchar(255)[]             null,
+    learning_institution varchar(255)[]             not null,
+    auth_user_id         uuid references auth.users (id) on delete cascade,
+    spouse_first_name    varchar(255)               null,
+    spouse_middle_name   varchar(255)               null,
+    spouse_last_name     varchar(255)               null,
     constraint unique_spouse_name unique (spouse_first_name, spouse_middle_name, spouse_last_name),
-    spouse_employer      varchar(255)             null,
-    created_at           timestamp                not null default current_timestamp,
-    updated_at           timestamp                not null default current_timestamp
+    spouse_employer      varchar(255)               null,
+    created_at           timestamp                  not null default current_timestamp,
+    updated_at           timestamp                  not null default current_timestamp
 );
 
 create table management.department
@@ -55,6 +62,13 @@ create table management.department
     -- markdown compatible text format
     description text         null,
     created_at  timestamp    not null default current_timestamp
+);
+
+create table management.department_employees
+(
+    department_id uuid references management.department (id) on delete cascade,
+    employee_id   uuid references management.employee (id) on delete cascade,
+    primary key (department_id, employee_id)
 );
 
 create table management.job_information
@@ -75,7 +89,7 @@ create table management.job_information
 create table management.emergency_information
 (
     id                uuid primary key default gen_random_uuid(),
-    employee_id       uuid           not null references management.employee (id),
+    employee_id       uuid           not null references management.employee (id) on delete cascade,
     address           varchar(255),
     -- references: https://en.wikipedia.org/wiki/Telephone_numbers_in_the_Philippines#:~:text=Mobile%20phone%20numbers%20are%20always,a%20seven%2Ddigit%20number).
     tel_number        varchar(10)    null check (tel_number ~ '^0[0-9]{2}-[0-9]{3}-[0-9]{4}$' or
@@ -144,3 +158,59 @@ create trigger create_basic_user_employee_trigger
     on management.employee
     for each row
 execute function management.create_basic_user_employee_trigger_fn();
+
+-- policies
+
+-- employee table
+
+-- insert policy: only admin can create employee
+
+-- read policy: only admin or manager can view other employee information
+
+-- read policy: only the current employee can view its own employee information.
+
+-- delete policy only admin can remove employee
+
+-- department table
+
+-- insert policy: only admin can create department
+
+-- insert policy: only admin can add employee to different departments
+
+-- read policy: employees under a department can see its information
+
+-- update policy: only admin can update department
+
+-- delete policy: only admin can remove department.
+
+-- job information:
+
+-- insert policy: only admin can create job information
+
+-- read policy: admin, managers, and employees can see each other's job information
+
+-- update policy: only admin can update job information
+
+-- delete policy: only admin can delete job information
+
+-- emergency information:
+
+-- insert policy: admin can create emergency information to all employees.
+
+-- read policy: admins, managers and employee can see emergency information.
+
+-- update policy: admin or the current_user (employee) can update its emergency information.
+
+-- delete policy: only admins can delete emergency information. note: do not do this if possible.
+
+-- personnel action:
+
+-- insert policy: anyone can request pan as long as 'Pending' is supplied.
+
+-- read policy: only admin can read pan information for different employees
+
+-- read policy: only the current user can read its own pan information.
+
+-- update policy: only admin can update pan information for different employees
+
+-- delete policy: no one can delete personnel action to comply with work ethics.
