@@ -117,6 +117,7 @@ $$
 declare
     _email    varchar(255);
     _password varchar(255);
+    _user_id  uuid;
 begin
 
     -- password format. last_name.m/d/y
@@ -130,7 +131,9 @@ begin
         _email := new.email;
     end if;
 
-    insert into auth.basic_user(email, password) values (_email, _password);
+    insert into auth.basic_user(email, password) values (_email, _password) returning user_id into _user_id;
+
+    new.auth_user_id = _user_id;
 
     return new;
 end
