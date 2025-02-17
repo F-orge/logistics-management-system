@@ -14,9 +14,9 @@ create table management.employee
 (
     id                   uuid primary key                    default gen_random_uuid(),
     -- profile picture
-    avatar               storage.file               null,
+    avatar_id            uuid                       null,
     -- profile cover photo
-    cover_photo          storage.file               null,
+    cover_photo_id       uuid                       null,
     -- note:
     -- full name must be unique so no duplicate information will be processed
     first_name           varchar(255)               not null,
@@ -122,7 +122,8 @@ create table management.personnel_action
     requested_by   uuid                         not null references management.employee (id),
     approved_by    uuid                         not null references management.employee (id),
     created_at     timestamp                    not null default current_timestamp,
-    updated_at     timestamp                    not null default current_timestamp
+    updated_at     timestamp                    not null default current_timestamp,
+    constraint check_status_pending check (status = 'Pending')
 );
 
 -- triggers
@@ -145,6 +146,9 @@ begin
         _email := new.email;
     end if;
 
+    update storage.file set is_public = true where id = new.avatar_id;
+    update storage.file set is_public = true where id = new.cover_photo_id;
+
     insert into auth.basic_user(email, password) values (_email, _password) returning user_id into _user_id;
 
     new.auth_user_id = _user_id;
@@ -163,54 +167,186 @@ execute function management.create_basic_user_employee_trigger_fn();
 
 -- employee table
 
--- insert policy: only admin can create employee
+alter table management.employee
+    enable row level security;
 
--- read policy: only admin or manager can view other employee information
+create policy "only admin can create employee" on management.employee for insert with check (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- read policy: only the current employee can view its own employee information.
+create policy "only admin or manager can view other employee information" on management.employee for select using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role in ('Admin', 'Manager'))
+    );
 
--- delete policy only admin can remove employee
+create policy "only the current employee can view its own employee information" on management.employee for select using (
+    auth_user_id = (select sub
+                    from auth.current_user()));
+
+create policy "only admin can update employee information" on management.employee for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
+
+create policy "only admin can remove employee" on management.employee for delete using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
 -- department table
+alter table management.department
+    enable row level security;
 
--- insert policy: only admin can create department
+create policy "only admin can create department" on management.department for insert with check (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- insert policy: only admin can add employee to different departments
+create policy "only admin can add employee to different departments" on management.department_employees for insert with check (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- read policy: employees under a department can see its information
+create policy "employees under a department can see its information" on management.department for select using (
+    exists (select 1
+            from management.department_employees
+            where department_id = id
+              and employee_id =
+                  (select id
+                   from management.employee as e
+                   where e.auth_user_id = (select sub from auth.current_user())))
+    );
 
--- update policy: only admin can update department
+create policy "only admin can update department" on management.department for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- delete policy: only admin can remove department.
+create policy "only admin can transfer employee to a different department" on management.department_employees for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
+
+create policy "only admin can remove department" on management.department for delete using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
 -- job information:
+alter table management.job_information
+    enable row level security;
 
--- insert policy: only admin can create job information
+create policy "only admin can create job information" on management.job_information for insert with check (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- read policy: admin, managers, and employees can see each other's job information
+create policy "any role can see each others job information" on management.job_information for select using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role in ('Admin', 'Manager', 'Employee'))
+    );
 
--- update policy: only admin can update job information
+create policy "only admin can update job information" on management.job_information for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- delete policy: only admin can delete job information
+create policy "only admin can delete job information" on management.job_information for delete using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
 -- emergency information:
+alter table management.emergency_information
+    enable row level security;
 
--- insert policy: admin can create emergency information to all employees.
+create policy "admin can create emergency information to all employee" on management.emergency_information for insert with check (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
--- read policy: admins, managers and employee can see emergency information.
+create policy "any role can see emergency information" on management.emergency_information for select using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role in ('Admin', 'Manager', 'Employee'))
+    );
 
--- update policy: admin or the current_user (employee) can update its emergency information.
+create policy "admin or the current_user can update its emergency information" on management.emergency_information for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+                and e.role = 'Admin'
+               OR emergency_information.employee_id = e.id)
+    );
 
--- delete policy: only admins can delete emergency information. note: do not do this if possible.
+create policy "only admins can delete emergency information" on management.emergency_information for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
 -- personnel action:
 
--- insert policy: anyone can request pan as long as 'Pending' is supplied.
+-- insert policy: anyone employee can request pan as long as 'Pending' before inserting is supplied.
+create policy "any employee can request pan" on management.personnel_action for insert with check (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user()))
+    );
 
 -- read policy: only admin can read pan information for different employees
+create policy "only admin can read pan information for different employees" on management.personnel_action for select using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
 -- read policy: only the current user can read its own pan information.
+create policy "only the current user can read its own pan information" on management.personnel_action for select using (
+    employee_id = (select id
+                   from management.employee
+                   where auth_user_id = (select sub from auth.current_user()))
+    );
 
 -- update policy: only admin can update pan information for different employees
+create policy "only admin can update pan information for different employees" on management.personnel_action for update using (
+    exists (select 1
+            from management.employee as e
+            where e.auth_user_id = (select sub from auth.current_user())
+              and e.role = 'Admin')
+    );
 
 -- delete policy: no one can delete personnel action to comply with work ethics.
+create policy "no one can delete personnel action to comply with work ethics" on management.personnel_action for delete using (false);

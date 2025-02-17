@@ -8,16 +8,40 @@ create extension pgcrypto;
 
 create extension pgjwt;
 
-create user developer
-    with
-    encrypted password 'developer@password' superuser;
+do $$
+begin
+    if not exists (select 1 from pg_roles where rolname = 'developer') then
+        create user developer
+            with
+            encrypted password 'developer@password' superuser;
+    end if;
+end
+$$;
 
-create user migration
-    with
-    encrypted password 'migration@password' superuser;
+do $$
+begin
+    if not exists (select 1 from pg_roles where rolname = 'migration') then
+        create user migration
+            with
+            encrypted password 'migration@password' superuser;
+    end if;
+end
+$$;
 
-create role web
-    with
-    login password 'web@password' createrole;
+do $$
+begin
+    if not exists (select 1 from pg_roles where rolname = 'web') then
+        create role web
+            with
+            login password 'web@password' createrole;
+    end if;
+end
+$$;
 
-create role anon nologin;
+do $$
+begin
+    if not exists (select 1 from pg_roles where rolname = 'anon') then
+        create role anon nologin;
+    end if;
+end
+$$;

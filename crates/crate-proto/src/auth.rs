@@ -3,8 +3,6 @@
 pub struct AuthResponse {
     #[prost(string, tag = "1")]
     pub access_token: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub refresh_token: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
     pub token_type: ::prost::alloc::string::String,
     #[prost(int64, tag = "4")]
@@ -16,22 +14,6 @@ pub struct AuthBasicLoginRequest {
     pub email: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub password: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuthBasicRegisterRequest {
-    #[prost(string, tag = "1")]
-    pub email: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub password: ::prost::alloc::string::String,
-}
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct AuthBasicUpdatePassword {
-    #[prost(string, tag = "1")]
-    pub email: ::prost::alloc::string::String,
-    #[prost(string, tag = "2")]
-    pub password: ::prost::alloc::string::String,
-    #[prost(string, tag = "3")]
-    pub new_password: ::prost::alloc::string::String,
 }
 /// Generated client implementations.
 pub mod auth_service_client {
@@ -145,48 +127,6 @@ pub mod auth_service_client {
                 .insert(GrpcMethod::new("auth.AuthService", "BasicLogin"));
             self.inner.unary(req, path, codec).await
         }
-        pub async fn basic_register(
-            &mut self,
-            request: impl tonic::IntoRequest<super::AuthBasicRegisterRequest>,
-        ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/auth.AuthService/BasicRegister",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("auth.AuthService", "BasicRegister"));
-            self.inner.unary(req, path, codec).await
-        }
-        pub async fn basic_update_password(
-            &mut self,
-            request: impl tonic::IntoRequest<super::AuthBasicUpdatePassword>,
-        ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::unknown(
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
-            let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/auth.AuthService/BasicUpdatePassword",
-            );
-            let mut req = request.into_request();
-            req.extensions_mut()
-                .insert(GrpcMethod::new("auth.AuthService", "BasicUpdatePassword"));
-            self.inner.unary(req, path, codec).await
-        }
     }
 }
 /// Generated server implementations.
@@ -206,14 +146,6 @@ pub mod auth_service_server {
             &self,
             request: tonic::Request<super::AuthBasicLoginRequest>,
         ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status>;
-        async fn basic_register(
-            &self,
-            request: tonic::Request<super::AuthBasicRegisterRequest>,
-        ) -> std::result::Result<tonic::Response<super::AuthResponse>, tonic::Status>;
-        async fn basic_update_password(
-            &self,
-            request: tonic::Request<super::AuthBasicUpdatePassword>,
-        ) -> std::result::Result<tonic::Response<()>, tonic::Status>;
     }
     #[derive(Debug)]
     pub struct AuthServiceServer<T> {
@@ -321,97 +253,6 @@ pub mod auth_service_server {
                     let inner = self.inner.clone();
                     let fut = async move {
                         let method = BasicLoginSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/auth.AuthService/BasicRegister" => {
-                    #[allow(non_camel_case_types)]
-                    struct BasicRegisterSvc<T: AuthService>(pub Arc<T>);
-                    impl<
-                        T: AuthService,
-                    > tonic::server::UnaryService<super::AuthBasicRegisterRequest>
-                    for BasicRegisterSvc<T> {
-                        type Response = super::AuthResponse;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::AuthBasicRegisterRequest>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as AuthService>::basic_register(&inner, request).await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = BasicRegisterSvc(inner);
-                        let codec = tonic::codec::ProstCodec::default();
-                        let mut grpc = tonic::server::Grpc::new(codec)
-                            .apply_compression_config(
-                                accept_compression_encodings,
-                                send_compression_encodings,
-                            )
-                            .apply_max_message_size_config(
-                                max_decoding_message_size,
-                                max_encoding_message_size,
-                            );
-                        let res = grpc.unary(method, req).await;
-                        Ok(res)
-                    };
-                    Box::pin(fut)
-                }
-                "/auth.AuthService/BasicUpdatePassword" => {
-                    #[allow(non_camel_case_types)]
-                    struct BasicUpdatePasswordSvc<T: AuthService>(pub Arc<T>);
-                    impl<
-                        T: AuthService,
-                    > tonic::server::UnaryService<super::AuthBasicUpdatePassword>
-                    for BasicUpdatePasswordSvc<T> {
-                        type Response = ();
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
-                        fn call(
-                            &mut self,
-                            request: tonic::Request<super::AuthBasicUpdatePassword>,
-                        ) -> Self::Future {
-                            let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as AuthService>::basic_update_password(&inner, request)
-                                    .await
-                            };
-                            Box::pin(fut)
-                        }
-                    }
-                    let accept_compression_encodings = self.accept_compression_encodings;
-                    let send_compression_encodings = self.send_compression_encodings;
-                    let max_decoding_message_size = self.max_decoding_message_size;
-                    let max_encoding_message_size = self.max_encoding_message_size;
-                    let inner = self.inner.clone();
-                    let fut = async move {
-                        let method = BasicUpdatePasswordSvc(inner);
                         let codec = tonic::codec::ProstCodec::default();
                         let mut grpc = tonic::server::Grpc::new(codec)
                             .apply_compression_config(

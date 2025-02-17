@@ -2056,6 +2056,7 @@ dependencies = [
  "crate-utils",
  "serde",
  "sqlx",
+ "test-log",
  "tonic",
  "tracing",
 ]

@@ -6,11 +6,15 @@ drop user developer;
 
 drop user migration;
 
-drop role web;
-
 drop role anon;
 
 drop extension pgjwt;
 
 drop extension pgcrypto;
+
+reassign owned by web to postgres;
+
+drop owned by web;
+
+drop role web;
 

@@ -10,3 +10,4 @@ sqlx = { workspace = true }
 serde = { workspace = true }
 tonic = { workspace = true }
 tracing = { workspace = true }
+test-log = { workspace = true }
