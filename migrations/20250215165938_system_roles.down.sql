@@ -17,4 +17,3 @@ reassign owned by web to postgres;
 drop owned by web;
 
 drop role web;
-

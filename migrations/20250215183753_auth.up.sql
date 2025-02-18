@@ -87,7 +87,7 @@ begin
 end
 $$ language plpgsql;
 
-create function auth.current_user () returns table (
+create function auth.user () returns table (
     sub uuid,
     iss name,
     aud varchar,
@@ -130,7 +130,7 @@ create function auth.uid () returns uuid as $$
 declare
     _payload json;
 begin 
-    return (select sub from auth."current_user"());
+    return (select sub from auth."user"());
 end $$ language plpgsql;
 
 grant all privileges on schema auth to web;
@@ -138,14 +138,44 @@ grant all privileges on schema auth to web;
 grant all on table auth.basic_user,
 auth.users to web;
 
--- test
-/*
-set role web;
-insert into auth.basic_user(email, password)
-values ('sample@email.com', 'RandomPassword1!');
+alter table auth.users enable row level security;
 
-select set_config('request.jwt.token', auth.basic_user_login('sample@email.com', 'RandomPassword1!'), false);
-select *
-from auth.current_user();
-set role postgres;
- */
+alter table auth.basic_user enable row level security;
+
+-- insert policy: web can insert users
+create policy "web can insert user" on auth.users for insert
+with
+    check (current_user = 'web');
+
+-- insert policy: web can insert basic_user
+create policy "web can insert basic_user" on auth.basic_user for insert
+with
+    check (current_user = 'web');
+
+-- read policy: web can read basic_user
+create policy "web can read basic_user" on auth.basic_user for
+select
+    using (current_user = 'web');
+
+-- read policy: web can read users
+create policy "web can read users" on auth.users for
+select
+    using (current_user = 'web');
+
+-- update policy: web can update basic_user information
+create policy "web can update user information" on auth.basic_user for
+update using (current_user = 'web');
+
+-- update policy: web can update users information
+create policy "web can update users information" on auth.users for
+update using (current_user = 'web');
+
+-- update policy: current user can update its own information
+create policy "current user can update its own information" on auth.basic_user for
+update using (user_id = auth.uid ());
+
+-- delete policy: web can delete user
+create policy "web can delete user" on auth.users for delete using (current_user = 'web');
+
+-- delete policy: current user can delete its own account
+create policy "current user can delete its own account" on auth.users for delete using (id = auth.uid ());

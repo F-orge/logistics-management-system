@@ -54,6 +54,13 @@ pub mod db {
            set "app.jwt.issuer" to 'web';
            set "app.jwt.expiry" to '3600';
         */
+
+        sqlx::query!("set role web").execute(trx.as_mut()).await?;
+
+        sqlx::query!("select set_config('app.jwt.issuer',current_user,true)")
+            .fetch_one(trx.as_mut())
+            .await?;
+
         if let Ok(secret) = std::env::var("RUST_POSTGRES_JWT_SECRET") {
             sqlx::query!("select set_config('app.jwt.secret',$1,true)", secret)
                 .fetch_one(trx.as_mut())
@@ -64,9 +71,6 @@ pub mod db {
                 .fetch_one(trx.as_mut())
                 .await?;
         }
-        sqlx::query!("select set_config('app.jwt.issuer',current_user,true)")
-            .fetch_one(trx.as_mut())
-            .await?;
         if let Ok(expiry) = std::env::var("RUST_POSTGRES_JWT_EXPIRY") {
             sqlx::query!("select set_config('app.jwt.expiry',$1,true)", expiry)
                 .fetch_one(trx.as_mut())

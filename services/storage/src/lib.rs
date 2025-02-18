@@ -80,7 +80,7 @@ impl GRPCStorageService for StorageService {
             };
 
             if !has_inserted_to_db {
-                if let Ok(record) = sqlx::query!(
+                let record = match sqlx::query!(
                         r#"insert into "storage"."file" (name, type, size) values ($1, $2, $3) returning id"#,
                         create_metadata.name,
                         create_metadata.r#type,
@@ -88,18 +88,26 @@ impl GRPCStorageService for StorageService {
                     )
                     .fetch_one(&mut *trx)
                     .await {
-                    has_inserted_to_db = true;
-                    let record = sqlx::query!("select * from storage.file where id = $1",record.id).fetch_one(&mut *trx).await.unwrap();
-                        
-                    metadata = FileMetadata {
-                        id:record.id.to_string(),
-                        name:record.name,
-                        r#type:record.r#type,
-                        size:record.size as u32,
-                        is_public:record.is_public,
-                        owner_id:record.owner_id.unwrap().to_string(),
+                        Ok(record) => record,
+                        Err(err) => {
+                            println!("{}",err);
+                            return Err(Status::internal("Unable to insert file"))
+                        }
                     };
-                }
+                has_inserted_to_db = true;
+                let record = sqlx::query!("select * from storage.file where id = $1", record.id)
+                    .fetch_one(&mut *trx)
+                    .await
+                    .unwrap();
+
+                metadata = FileMetadata {
+                    id: record.id.to_string(),
+                    name: record.name,
+                    r#type: record.r#type,
+                    size: record.size as u32,
+                    is_public: record.is_public,
+                    owner_id: record.owner_id.unwrap().to_string(),
+                };
             }
             match file_request.chunk {
                 Some(bytes) => chunks.push(bytes.chunk),
@@ -113,6 +121,7 @@ impl GRPCStorageService for StorageService {
 
         // check if file chunks have the same size as metadata.size
         if file_contents.len() != metadata.size as usize {
+            println!("{} {} {}", metadata.id, file_contents.len(), metadata.size);
             return Err(Status::data_loss("Invalid file size"));
         }
 
@@ -182,20 +191,25 @@ impl GRPCStorageService for StorageService {
         let file_id = match request.into_inner().id.parse::<Uuid>() {
             Ok(file_id) => file_id,
             Err(err) => {
-                tracing::error!("{}",err);
+                tracing::error!("{}", err);
                 return Err(Status::invalid_argument("Cannot parse Uuid"));
             }
         };
 
-        if let Err(err) = sqlx::query!("select * from storage.file where id = $1",file_id).fetch_one(&mut *trx).await {
-            tracing::error!("{}",err);
+        if let Err(err) = sqlx::query!("select * from storage.file where id = $1", file_id)
+            .fetch_one(&mut *trx)
+            .await
+        {
+            tracing::error!("{}", err);
             return Err(Status::not_found("File not found"));
         };
 
         let file_path = self.directory.join(format!("{}", file_id));
 
         if !file_path.exists() {
-            let delete_request = DeleteFileRequest { id: file_id.to_string() };
+            let delete_request = DeleteFileRequest {
+                id: file_id.to_string(),
+            };
             match self.delete_file(Request::new(delete_request)).await {
                 Ok(_) => return Err(Status::not_found("File not found on disk")),
                 Err(err) => {
@@ -275,7 +289,7 @@ impl GRPCStorageService for StorageService {
                 };
 
                 let record =
-                    match sqlx::query!(r#"SELECT * FROM "storage"."file" WHERE id = $1"#, file_id)
+                    match sqlx::query!(r#"select * from storage.file where id = $1"#, file_id)
                         .fetch_one(&mut *trx)
                         .await
                     {
@@ -354,7 +368,7 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        if let Err(err) = sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, file_id)
+        if let Err(err) = sqlx::query!(r#"delete from storage.file where id = $1"#, file_id)
             .execute(&mut *trx)
             .await
         {
@@ -365,7 +379,7 @@ impl GRPCStorageService for StorageService {
                 return Err(Status::internal("Unable to rollback delete operation"));
             }
 
-            return Err(Status::internal("Failed to delete file from database"));
+            return Err(Status::not_found("Failed to delete file from database"));
         }
 
         if let Err(err) = trx.commit().await {
@@ -655,7 +669,8 @@ mod test {
 
         assert!(
             get_response.is_err(),
-            "File should not exist after deletion"
+            "File should not exist after deletion {:#?}",
+            get_response.ok()
         );
         assert_eq!(get_response.unwrap_err().code(), tonic::Code::NotFound);
     }
