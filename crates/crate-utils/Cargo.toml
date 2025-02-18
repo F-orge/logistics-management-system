@@ -9,3 +9,5 @@ tonic = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
 tower = { workspace = true }
+sqlx = { workspace = true }
+tracing = { workspace = true }

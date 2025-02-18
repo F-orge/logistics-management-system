@@ -67,6 +67,11 @@ begin
     where auth.basic_user_view.email = basic_user_login.email
       and auth.basic_user_view.password = crypt(basic_user_login.password, auth.basic_user_view.password)
     into _user_id;
+
+    if _user_id is null then 
+        raise invalid_authorization_specification using message = 'invalid email or password';
+    end if;
+
     select sign(
                    payload := row_to_json(r),
                    secret := current_setting('app.jwt.secret')
@@ -108,6 +113,10 @@ begin
         raise invalid_authorization_specification using message = 'token has expired';
     end if;
 
+    if _payload ->> 'sub' is null then 
+        raise invalid_authorization_specification using message = 'no token provided'; 
+    end if;
+
     return query (select (_payload ->> 'sub')::uuid      as sub,
                          (_payload ->> 'iss')::name      as iss,
                          (_payload ->> 'aud')::varchar   as aud,
@@ -116,6 +125,13 @@ begin
                          (_payload ->> 'jti')::uuid      as jti);
 end
 $$ language plpgsql;
+
+create function auth.uid () returns uuid as $$
+declare
+    _payload json;
+begin 
+    return (select sub from auth."current_user"());
+end $$ language plpgsql;
 
 grant all privileges on schema auth to web;
 

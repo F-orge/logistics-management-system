@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "insert into \"storage\".\"file\" (id ,name, type, size) values ($1, $2, $3, $4) returning *",
+  "query": "insert into \"storage\".\"file\" (name, type, size) values ($1, $2, $3) returning *",
   "describe": {
     "columns": [
       {
@@ -46,7 +46,6 @@
     ],
     "parameters": {
       "Left": [
-        "Uuid",
         "Varchar",
         "Varchar",
         "Int4"
@@ -63,5 +62,5 @@
       false
     ]
   },
-  "hash": "3954c3eb8bc34e1af6640c763002d2f9e92cf515f524ab5a9d2d6223297a0b0b"
+  "hash": "f42d5f683ac9db6cfcd9e84adcbfa2c07102574dc499fdb42d6bba151deabb4f"
 }

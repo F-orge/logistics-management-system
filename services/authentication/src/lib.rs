@@ -1,5 +1,5 @@
-use sqlx::{Pool, Postgres};
-use tonic::{IntoRequest, Response, Status};
+use sqlx::{Acquire, Pool, Postgres};
+use tonic::{Response, Status};
 
 use crate_proto::auth::{
     auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
@@ -22,6 +22,27 @@ impl GrpcAuthService for AuthService {
         &self,
         request: tonic::Request<AuthBasicLoginRequest>,
     ) -> std::result::Result<tonic::Response<AuthResponse>, tonic::Status> {
+        let mut conn = match self.db.acquire().await {
+            Ok(conn) => conn,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to aquire connection"));
+            }
+        };
+
+        let mut trx = match conn.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to start transaction"));
+            }
+        };
+
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Unable to setup database"));
+        }
+
         let payload = request.into_inner();
 
         let token = match sqlx::query!(
@@ -29,7 +50,7 @@ impl GrpcAuthService for AuthService {
             payload.email,
             payload.password
         )
-        .fetch_one(&self.db)
+        .fetch_one(&mut *trx)
         .await
         {
             Ok(row) => match row.token {
@@ -55,10 +76,9 @@ impl GrpcAuthService for AuthService {
 #[cfg(test)]
 mod test {
     #![allow(clippy::unwrap_used)]
-    use std::process::exit;
 
-    use sqlx::{Executor, Pool, Postgres};
-    use tonic::{transport::Server, Request};
+    use sqlx::{Pool, Postgres};
+    use tonic::{metadata::MetadataMap, transport::Server};
 
     use super::*;
 
@@ -74,16 +94,9 @@ mod test {
             }
         };
 
-        db.execute(
-            r#"
-                select set_config('app.jwt.secret','secret',false);
-                select set_config('app.jwt.issuer',current_user,false);
-                select set_config('app.jwt.audience','management',false);
-                select set_config('app.jwt.expiry','3600',false);
-        "#,
-        )
-        .await
-        .unwrap();
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
+            panic!("{}", err);
+        }
 
         if let Err(err) = sqlx::query!(
             "insert into auth.basic_user(email,password) values ($1,$2)",

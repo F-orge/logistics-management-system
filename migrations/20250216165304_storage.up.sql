@@ -35,18 +35,18 @@ execute function public.update_timestamp ();
 
 create function storage.insert_owner_id_trigger_fn () returns trigger as $$
 begin 
-    new.owner_id := (select sub from auth.current_user());
+    new.owner_id = auth.uid();
     return new;
 end 
 $$ language plpgsql;
 
-create trigger storage_file_insert_owner_id_trigger
-after insert on storage.file for each row
+create trigger storage_file_insert_owner_id_trigger before insert on storage.file for each row
 execute function storage.insert_owner_id_trigger_fn ();
 
 create function storage.insert_allow_access_trigger_fn () returns trigger as $$
 begin
-    insert into storage.file_access(user_id, file_id) values ((select sub from auth."current_user"()), new.id);
+    insert into storage.file_access(user_id, file_id) values (auth.uid(), new.id);
+    return new;
 end
 $$ language plpgsql;
 
@@ -60,7 +60,7 @@ storage.file_access to web;
 -- policies
 alter table storage.file enable row level security;
 
-alter table storage.file enable row level security;
+alter table storage.file_access enable row level security;
 
 -- insert policy. only web can upload files to the system
 create policy "only web can update files to the system" on storage.file for insert

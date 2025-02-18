@@ -450,10 +450,12 @@ name = "crate-utils"
 version = "0.1.0"
 dependencies = [
  "hyper-util",
+ "sqlx",
  "tokio",
  "tokio-stream",
  "tonic",
  "tower 0.5.2",
+ "tracing",
 ]
 
 [[package]]

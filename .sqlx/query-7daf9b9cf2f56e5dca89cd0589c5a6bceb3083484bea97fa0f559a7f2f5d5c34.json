@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select set_config('request.jwt.token',$1,false)",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "set_config",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "7daf9b9cf2f56e5dca89cd0589c5a6bceb3083484bea97fa0f559a7f2f5d5c34"
+}

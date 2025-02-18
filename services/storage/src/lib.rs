@@ -1,7 +1,7 @@
 use std::path::{Path, PathBuf};
 
 use futures::StreamExt;
-use sqlx::{types::Uuid, Acquire, Executor, Pool, Postgres};
+use sqlx::{types::Uuid, Acquire, PgPool, Pool, Postgres};
 use tokio::{fs, sync::mpsc};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
@@ -14,7 +14,7 @@ use crate_proto::storage::{
 };
 
 pub struct StorageService {
-    db: Pool<Postgres>,
+    db: PgPool,
     directory: PathBuf,
 }
 
@@ -45,17 +45,6 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        let auth_key = match request.metadata().get("authorization") {
-            Some(header_val) => match header_val.to_str() {
-                Ok(value) => value.to_string(),
-                Err(err) => {
-                    tracing::error!("{}", err);
-                    return Err(Status::invalid_argument("Invalid Authorization key format"));
-                }
-            },
-            None => return Err(Status::unauthenticated("No Authorization Header")),
-        };
-
         let mut trx = match conn.begin().await {
             Ok(trx) => trx,
             Err(err) => {
@@ -64,29 +53,10 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        if let Err(err) = sqlx::query!(
-            r#"select set_config('request.jwt.token',$1,false)"#,
-            auth_key
-        )
-        .fetch_one(&mut *trx)
-        .await
-        {
-            println!("{}", err);
-            return Err(Status::internal("Cannot set JWT Token"));
-        }
-
-        if let Err(err) = trx.commit().await {
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
-            return Err(Status::internal("Unable to commit transaction"));
-        };
-
-        let mut trx = match conn.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to start transaction"));
-            }
-        };
+            return Err(Status::internal("Unable to setup database"));
+        }
 
         // refer to this documentation. https://github.com/hyperium/tonic/blob/master/examples/routeguide-tutorial.md
         // under client side streaming section.
@@ -99,52 +69,42 @@ impl GRPCStorageService for StorageService {
         let mut has_inserted_to_db = false;
 
         while let Some(chunk) = stream.next().await {
-            // get the first chunk and get its metadata
-            let file_chunk = match chunk {
-                Ok(file_request) => {
-                    metadata = match file_request.metadata {
-                        Some(metadata) => {
-                            if !has_inserted_to_db {
-                                match sqlx::query!(
-                                r#"insert into "storage"."file" (name, type, size) values ($1, $2, $3) returning *"#,
-                                metadata.name,
-                                metadata.r#type,
-                                metadata.size as i32
-                            )
-                            .fetch_one(&mut *trx)
-                            .await
-                            {
-                                Ok(record) => {
-                                    has_inserted_to_db = true;
-                                    FileMetadata {
-                                        id:record.id.to_string(),
-                                        name:record.name,
-                                        r#type:record.r#type,
-                                        size:record.size as u32,
-                                        is_public:record.is_public,
-                                        owner_id:record.owner_id.to_string(),
-                                    }
-                                },
-                                Err(err) => {
-                                    println!("{}",err);
-                                    return Err(Status::internal("Cannot insert file to database"))
-                                },
-                            }
-                            } else {
-                                FileMetadata::default()
-                            }
-                        }
-
-                        None => return Err(Status::invalid_argument("Cannot get file metadata")),
-                    };
-                    match file_request.chunk {
-                        Some(chunk) => chunk.chunk,
-                        None => return Err(Status::data_loss("Cannot get chunk")),
-                    }
-                }
+            let file_request = match chunk {
+                Ok(file_request) => file_request,
                 Err(err) => return Err(err),
             };
-            chunks.push(file_chunk);
+
+            let create_metadata = match file_request.metadata {
+                Some(metadata) => metadata,
+                None => return Err(Status::invalid_argument("Cannot get file metadata")),
+            };
+
+            if !has_inserted_to_db {
+                if let Ok(record) = sqlx::query!(
+                        r#"insert into "storage"."file" (name, type, size) values ($1, $2, $3) returning id"#,
+                        create_metadata.name,
+                        create_metadata.r#type,
+                        create_metadata.size as i32
+                    )
+                    .fetch_one(&mut *trx)
+                    .await {
+                    has_inserted_to_db = true;
+                    let record = sqlx::query!("select * from storage.file where id = $1",record.id).fetch_one(&mut *trx).await.unwrap();
+                        
+                    metadata = FileMetadata {
+                        id:record.id.to_string(),
+                        name:record.name,
+                        r#type:record.r#type,
+                        size:record.size as u32,
+                        is_public:record.is_public,
+                        owner_id:record.owner_id.unwrap().to_string(),
+                    };
+                }
+            }
+            match file_request.chunk {
+                Some(bytes) => chunks.push(bytes.chunk),
+                None => return Err(Status::data_loss("Cannot get chunk")),
+            }
         }
 
         let file_contents = chunks.into_iter().flatten().collect::<Vec<u8>>();
@@ -158,7 +118,10 @@ impl GRPCStorageService for StorageService {
 
         match fs::write(file_path, file_contents).await {
             Ok(_) => {}
-            Err(_) => return Err(Status::internal("Cannot write file to the server")),
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Cannot write file to the server"));
+            }
         };
 
         if let Err(err) = trx.commit().await {
@@ -195,31 +158,44 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<DownloadFileRequest>,
     ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status> {
-        // extract metadata before moving request
-        let auth_header = match request.metadata().get("authorization") {
-            Some(auth_header) => auth_header.clone(),
-            None => return Err(Status::unauthenticated("No Authorization header")),
+        let mut conn = match self.db.acquire().await {
+            Ok(conn) => conn,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to aquire connection"));
+            }
         };
 
-        let file_id = request.into_inner().id;
+        let mut trx = match conn.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to start transaction"));
+            }
+        };
 
-        let mut metadata_request = Request::new(FileMetadataRequest {
-            request: Some(file_metadata_request::Request::Id(file_id.clone())),
-        });
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+            tracing::error!("{}", err);
+            return Err(Status::internal("Unable to setup database"));
+        }
 
-        metadata_request
-            .metadata_mut()
-            .append("authorization", auth_header);
+        let file_id = match request.into_inner().id.parse::<Uuid>() {
+            Ok(file_id) => file_id,
+            Err(err) => {
+                tracing::error!("{}",err);
+                return Err(Status::invalid_argument("Cannot parse Uuid"));
+            }
+        };
 
-        // NOTE: this will automatically return a error response if we can't get file metadata thus not downloading the file that the client requested.
-        let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
+        if let Err(err) = sqlx::query!("select * from storage.file where id = $1",file_id).fetch_one(&mut *trx).await {
+            tracing::error!("{}",err);
+            return Err(Status::not_found("File not found"));
+        };
 
-        let file_path = self
-            .directory
-            .join(format!("{}-{}", file_id, metadata.name));
+        let file_path = self.directory.join(format!("{}", file_id));
 
         if !file_path.exists() {
-            let delete_request = DeleteFileRequest { id: file_id };
+            let delete_request = DeleteFileRequest { id: file_id.to_string() };
             match self.delete_file(Request::new(delete_request)).await {
                 Ok(_) => return Err(Status::not_found("File not found on disk")),
                 Err(err) => {
@@ -238,20 +214,21 @@ impl GRPCStorageService for StorageService {
         tokio::spawn(async move {
             let file_contents = match fs::read(file_path).await {
                 Ok(contents) => contents,
-                Err(_) => {
+                Err(err) => {
+                    tracing::error!("{}", err);
                     let _ = tx.send(Err(Status::internal("Failed to read file"))).await;
                     return;
                 }
             };
 
             for chunk in file_contents.chunks(chunk_size) {
-                if tx
+                if let Err(err) = tx
                     .send(Ok(FileChunk {
                         chunk: chunk.to_vec(),
                     }))
                     .await
-                    .is_err()
                 {
+                    tracing::error!("{}", err);
                     break;
                 }
             }
@@ -264,34 +241,28 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<FileMetadataRequest>,
     ) -> std::result::Result<tonic::Response<FileMetadata>, tonic::Status> {
-        let mut trx = match self.db.begin().await {
-            Ok(trx) => trx,
+        let mut conn = match self.db.acquire().await {
+            Ok(conn) => conn,
             Err(err) => {
                 tracing::error!("{}", err);
-                return Err(Status::internal("Cannot start transaction"));
+                return Err(Status::internal("Unable to aquire connection"));
             }
         };
 
-        let auth_key = match request.metadata().get("authorization") {
-            Some(header_val) => match header_val.to_str() {
-                Ok(value) => value.to_string(),
-                Err(err) => {
-                    tracing::error!("{}", err);
-                    return Err(Status::invalid_argument("Invalid Authorization key format"));
-                }
-            },
-            None => return Err(Status::unauthenticated("No Authorization Header")),
+        let mut trx = match conn.begin().await {
+            Ok(trx) => trx,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to start transaction"));
+            }
         };
 
-        let payload = request.into_inner();
-
-        if let Err(err) = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
-            .fetch_one(&mut *trx)
-            .await
-        {
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
-            return Err(Status::internal("Cannot set JWT Token"));
+            return Err(Status::internal("Unable to setup database"));
         }
+
+        let payload = request.into_inner();
 
         let metadata = match payload.request {
             Some(file_metadata_request::Request::Id(id)) => {
@@ -319,7 +290,7 @@ impl GRPCStorageService for StorageService {
                     name: record.name,
                     r#type: record.r#type,
                     is_public: record.is_public,
-                    owner_id: record.owner_id.to_string(),
+                    owner_id: record.owner_id.unwrap().to_string(),
                     size: record.size as u32,
                 }
             }
@@ -335,7 +306,7 @@ impl GRPCStorageService for StorageService {
                     name: record.name,
                     r#type: record.r#type,
                     is_public: record.is_public,
-                    owner_id: record.owner_id.to_string(),
+                    owner_id: record.owner_id.unwrap().to_string(),
                     size: record.size as u32,
                 }
             }
@@ -354,54 +325,36 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<DeleteFileRequest>,
     ) -> Result<Response<()>, Status> {
-        let mut trx = match self.db.begin().await {
+        let mut conn = match self.db.acquire().await {
+            Ok(conn) => conn,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::internal("Unable to aquire connection"));
+            }
+        };
+
+        let mut trx = match conn.begin().await {
             Ok(trx) => trx,
             Err(err) => {
                 tracing::error!("{}", err);
-                return Err(Status::internal("Cannot start transaction"));
+                return Err(Status::internal("Unable to start transaction"));
             }
         };
 
-        let auth_header = match request.metadata().get("authorization") {
-            Some(auth_header) => auth_header.clone(),
-            None => return Err(Status::unauthenticated("No Authorization header")),
-        };
-
-        let file_id = request.into_inner().id;
-
-        // create metadata request with authorization
-        let mut metadata_request = Request::new(FileMetadataRequest {
-            request: Some(file_metadata_request::Request::Id(file_id.clone())),
-        });
-
-        metadata_request
-            .metadata_mut()
-            .append("authorization", auth_header.clone());
-
-        let auth_key = match auth_header.to_str() {
-            Ok(value) => value.to_string(),
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::invalid_argument("Invalid Authorization key format"));
-            }
-        };
-
-        if let Err(err) = sqlx::query!("SELECT set_config('request.jwt', $1, false)", auth_key)
-            .fetch_one(&mut *trx)
-            .await
-        {
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
-            return Err(Status::internal("Cannot set JWT Token"));
+            return Err(Status::internal("Unable to setup database"));
         }
 
-        // before deleting, we need to make sure that we get file metadata using existing method
-        let metadata = self.get_file_metadata(metadata_request).await?.into_inner();
+        let file_id = match request.into_inner().id.parse::<Uuid>() {
+            Ok(uuid) => uuid,
+            Err(err) => {
+                tracing::error!("{}", err);
+                return Err(Status::invalid_argument("Unable to parse Uuid"));
+            }
+        };
 
-        // delete from database
-        let uuid = Uuid::parse_str(&file_id)
-            .map_err(|_| Status::invalid_argument("Invalid UUID format"))?;
-
-        if let Err(err) = sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, uuid)
+        if let Err(err) = sqlx::query!(r#"DELETE FROM storage.file WHERE id = $1"#, file_id)
             .execute(&mut *trx)
             .await
         {
@@ -420,9 +373,7 @@ impl GRPCStorageService for StorageService {
             return Err(Status::internal("Unable to commit delete operation"));
         }
 
-        let file_path = self
-            .directory
-            .join(format!("{}-{}", file_id, metadata.name));
+        let file_path = self.directory.join(format!("{}", file_id));
 
         // delete from filesystem
         if let Err(err) = fs::remove_file(&file_path).await {
@@ -439,10 +390,9 @@ mod test {
     #![allow(clippy::unwrap_used)]
 
     use futures::TryStreamExt;
-    use sqlx::Executor;
     use tempdir::TempDir;
     use tonic::{
-        metadata::MetadataValue,
+        metadata::{MetadataMap, MetadataValue},
         service::interceptor::InterceptedService,
         transport::{Channel, Server},
         Request,
@@ -450,10 +400,7 @@ mod test {
 
     use crate_proto::{
         auth::{self, auth_service_client::AuthServiceClient, AuthBasicLoginRequest},
-        storage::{
-            file_metadata_request, storage_service_client::StorageServiceClient, CreateFileRequest,
-            DeleteFileRequest, DownloadFileRequest, FileMetadataRequest,
-        },
+        storage::{storage_service_client::StorageServiceClient, CreateFileRequest},
     };
 
     use service_authentication::AuthService;
@@ -463,35 +410,35 @@ mod test {
     use super::*;
 
     async fn create_dummy_user(db: &Pool<Postgres>) {
-        let mut pool_con = match db.acquire().await {
-            Ok(pool_con) => pool_con,
+        let mut trx = match db.begin().await {
+            Ok(trx) => trx,
             Err(err) => {
                 panic!("{}", err);
             }
         };
 
-        let conn = match pool_con.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                panic!("{}", err);
-            }
-        };
+        if let Err(err) = crate_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
+            panic!("{}", err);
+        }
 
-        if let Err(err) = sqlx::query!(
-            "insert into auth.basic_user(email,password) values ($1,$2)",
-            "sample@email.com",
-            "Randompassword1!"
-        )
-        .execute(conn)
-        .await
+        if let Err(err) = sqlx::query("insert into auth.basic_user(email,password) values ($1,$2)")
+            .bind("sample@email.com")
+            .bind("Randompassword1!")
+            .execute(&mut *trx)
+            .await
         {
+            panic!("{}", err);
+        }
+
+        if let Err(err) = trx.commit().await {
             panic!("{}", err);
         }
     }
 
     async fn setup_actor(db: &Pool<Postgres>) -> Result<auth::AuthResponse, tonic::Status> {
-        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(db))).await;
         create_dummy_user(db).await;
+
+        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(db))).await;
 
         let mut client = AuthServiceClient::new(channel);
 
@@ -540,6 +487,7 @@ mod test {
         >,
     ) -> FileMetadata {
         let file_content = b"Test file content";
+
         let request = CreateFileRequest {
             metadata: Some(crate_proto::storage::CreateFileMetadataRequest {
                 name: "test_file.txt".into(),
@@ -562,22 +510,10 @@ mod test {
 
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_storage_create_file(db: Pool<Postgres>) {
-        let mut conn = match db.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                panic!("{}", err);
-            }
-        };
-        db.execute(
-            r#"
-                select set_config('app.jwt.secret','secret',false);
-                select set_config('app.jwt.issuer',current_user,false);
-                select set_config('app.jwt.audience','management',false);
-                select set_config('app.jwt.expiry','3600',false);
-        "#,
-        )
-        .await
-        .unwrap();
+        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
+        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
+        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
+        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
 
         let actor = setup_actor(&db).await.unwrap();
 
@@ -605,7 +541,7 @@ mod test {
 
         let response = response.unwrap().into_inner();
 
-        assert_eq!(response.name, "my_file");
+        assert_eq!(response.name, "test_file.txt");
         assert_eq!(response.r#type, "text/plain");
         assert_eq!(response.size, file_content.len() as u32);
 
@@ -616,21 +552,26 @@ mod test {
         // check if we really store it in the file system.
         assert!(entry.is_some());
     }
-    /*
+
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_storage_download_file(db: Pool<Postgres>) {
-        let (_tmp_dir, mut client) = setup_test_client(&db).await;
+        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
+        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
+        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
+        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+
+        let actor = setup_actor(&db).await.unwrap();
+
+        let (_temp_dir, mut client) = setup_test_client(&db, actor.clone()).await;
 
         // create a file
         let metadata = create_test_file(&mut client).await;
 
-        let mut metadata_request = Request::new(DownloadFileRequest {
-            id: metadata.id.unwrap(),
-        });
+        let mut metadata_request = Request::new(DownloadFileRequest { id: metadata.id });
 
         metadata_request
             .metadata_mut()
-            .append("authorization", "hello-token".parse().unwrap());
+            .append("authorization", actor.access_token.parse().unwrap());
 
         // download file
         let response = client.download_file(metadata_request).await.unwrap();
@@ -647,7 +588,14 @@ mod test {
 
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_storage_get_file_metadata(db: Pool<Postgres>) {
-        let (_tmp_dir, mut client) = setup_test_client(&db).await;
+        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
+        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
+        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
+        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+
+        let actor = setup_actor(&db).await.unwrap();
+
+        let (_temp_dir, mut client) = setup_test_client(&db, actor.clone()).await;
 
         // create a file
         let metadata = create_test_file(&mut client).await;
@@ -658,7 +606,7 @@ mod test {
 
         metadata_request
             .metadata_mut()
-            .append("authorization", "hello-token".parse().unwrap());
+            .append("authorization", actor.access_token.parse().unwrap());
 
         // download file
         let response = client.get_file_metadata(metadata_request).await;
@@ -675,19 +623,28 @@ mod test {
 
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_delete_file(db: Pool<Postgres>) {
-        let (_tmp_dir, mut client) = setup_test_client(&db).await;
+        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
+        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
+        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
+        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
 
-        // Create a file first
+        let actor = setup_actor(&db).await.unwrap();
+
+        let (_temp_dir, mut client) = setup_test_client(&db, actor.clone()).await;
+
+        // create a file
         let metadata = create_test_file(&mut client).await;
 
         // Delete the file
         let file_id = metadata.id.clone();
-        assert!(client
+
+        let response = client
             .delete_file(Request::new(DeleteFileRequest {
                 id: file_id.clone(),
             }))
-            .await
-            .is_ok());
+            .await;
+
+        assert!(response.is_ok(), "{:#?}", response.err());
 
         // try to get the deleted file - should return not found
         let get_response = client
@@ -702,5 +659,4 @@ mod test {
         );
         assert_eq!(get_response.unwrap_err().code(), tonic::Code::NotFound);
     }
-    */
 }
