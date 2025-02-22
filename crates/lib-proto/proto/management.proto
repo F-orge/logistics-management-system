@@ -34,6 +34,11 @@ enum EmployeePanActionStatus {
   EMPLOYEE_PAN_ACTION_STATUS_REJECTED = 2;
 }
 
+enum EmployeeStatus {
+  EMPLOYEE_STATUS_ACTIVE = 0;
+  EMPLOYEE_STATUS_INACTIVE = 1;
+}
+
 enum EmployeeContractType {
   CONTRACT_TYPE_FULL_TIME = 0;
   CONTRACT_TYPE_PART_TIME = 1;
@@ -41,361 +46,420 @@ enum EmployeeContractType {
 
 message Employee {
   string id = 1;
-  string user_id = 2;
-  Role role = 3;
-  string full_name = 4;
-  string address = 5;
-  string position = 6;
-  optional storage.FileMetadata avatar_file_id = 7;
-  optional storage.FileMetadata cover_photo_file_id = 8;
-  string birth_date = 9;
+  optional storage.file avatar_photo = 2;
+  optional storage.file cover_photo = 3;
+  string first_name = 4;
+  string middle_name = 5;
+  string last_name = 6;
+  optional string tel_number = 7;
+  optional string mobile_Number = 8;
+  string email = 9;
+  EmployeeRole role = 10;
+  EmployeeStatus status = 11;
+  EmployeeContractType contract_type = 12;
+  string phil_nat_id = 13;
+  string birth_date = 14;
+  repeated string special_interests = 15;
+  repeated string learning_institutions = 16;
+  string auth_user_id = 17;
+  optional string spouse_first_name = 18;
+  optional string spouse_middle_name = 19;
+  optional string spouse_last_name = 20;
+  optional string spouse_employer = 21;
 }
 
-message Team {
+message Department {
   string id = 1;
   string name = 2;
-  string description = 3;
-  string leader_id = 4;
-  repeated string member_ids = 5;
+  optional string description = 3;
+  repeated string employee_ids = 4;
 }
 
-message Board {
-  int32 id = 1;
-  string name = 2;
-  string team_id = 3;
-}
-
-message BoardSection {
-  string id = 1;
-  string name = 2;
-  string color = 3;
-  string description = 4;
-  bool hidden = 5;
-  int32 task_limit = 6;
-  string task_board_id = 7;
-  int32 order = 8;
-  repeated string task_ids = 9;
-}
-
-message Task {
+message JobInformation {
   string id = 1;
   string title = 2;
-  string description = 3;
-  string board_section_id = 4;
-  int32 order = 5;
-  repeated TaskField fields = 6;
-  repeated string label_ids = 7;
-  repeated TaskComment comments = 8;
-  string issuer_id = 9;
-  repeated string assignee_ids = 10;
+  string employee_id = 3;
+  string department_id = 4;
+  string supervisor_id = 5;
+  string work_location = 6;
+  string start_date = 7;
+  string salary = 8;
+  string currency = 9;
 }
 
-enum TaskFieldType {
-  TASK_FIELD_TYPE_TEXT = 0;
-  TASK_FIELD_TYPE_NUMBER = 1;
-  TASK_FIELD_TYPE_DATE = 2;
-}
-
-message TaskField {
+message EmployeeEmergencyInformation {
   string id = 1;
-  string name = 2;
-  TaskFieldType type = 3;
-  // NOTE TO CLIENTS: please convert this into proper data type before using it.
-  // you can check the type first before doing the conversion
-  string value = 4;
-  string team_id = 5;
+  string employee_id = 2;
+  string address = 3;
+  optional string tel_number = 4;
+  optional string mobile_number = 5;
+  repeated string health_conditions = 6;
+  string contact_name = 7;
 }
 
-message TaskLabel {
+message PersonnelAction {
   string id = 1;
-  string name = 2;
-  string description = 3;
-  string color = 4;
-  string team_id = 5;
-}
-
-message TaskComment {
-  string id = 1;
-  // NOTE: this is a markdown compatible comment
-  string message = 2;
-  string sender_id = 3;
-  string task_id = 4;
-  repeated storage.FileMetadata attachments = 5;
-  // NOTE: this can be used to identify the order of the comments
-  string timestamp = 6;
+  string employee_id = 2;
+  EmployeePanActionType action_type = 3;
+  string old_value = 3;
+  string new_value = 4;
+  string effective_date = 5;
+  EmployeePanActionStatus status = 6;
+  string requested_by = 7;
+  string approved_by = 8;
 }
 
 message CreateEmployeeRequest {
-  string full_name = 1;
-  string address = 2;
-  Role role = 3;
-  string position = 4;
-  string email = 5;
-  optional string avatar_file_id = 6;
-  optional string avatar_cover_photo_file_id = 7;
+  optional storage.file avatar_photo = 1;
+  optional storage.file cover_photo = 2;
+  string first_name = 3;
+  string middle_name = 4;
+  string last_name = 5;
+  optional string tel_number = 6;
+  optional string mobile_Number = 7;
+  string email = 8;
+  EmployeeStatus status = 9;
+  EmployeeContractType contract_type = 10;
+  string phil_nat_id = 11;
+  string birth_date = 12;
+  repeated string special_interests = 13;
+  repeated string learning_institutions = 14;
+  optional string spouse_first_name = 15;
+  optional string spouse_middle_name = 16;
+  optional string spouse_last_name = 17;
+  optional string spouse_employer = 18;
 }
 
-message CreateEmployeeResponse {
-  string email = 1;
-  // NOTE: this is a auto-generate password for new employees
-  string password = 2;
+message GetEmployeeRequest { string id = 1; }
+
+message GetEmployeesByDepartmentRequest { string department_id = 1; }
+
+message ChangeEmployeeAvatarRequest { storage.file avatar_photo = 1; }
+
+message ChangeEmployeeAvatarRequest { storage.file cover_photo = 1; }
+
+message ChangeEmployeeFirstNameRequest { string first_name = 1; }
+
+message ChangeEmployeeMiddleNameRequest { string middle_name = 1; }
+
+message ChangeEmployeeLastNameRequest { string last_name = 1; }
+
+message ChangeEmployeeTelNumberRequest { string tel_number = 1; }
+
+message ChangeEmployeeMobileNumberRequest { string mobile_number = 1; }
+
+message ChangeEmployeeEmailRequest { string email = 1; }
+
+message ChangeEmployeeRoleRequest { EmployeeRole role = 1; }
+
+message ChangeEmployeeStatusRequest { EmployeeStatus status = 1; }
+
+message ChangeEmployeeContractTypeRequest {
+  EmployeeContractType contract_type = 1;
 }
 
-message GetEmployeeRequest {
-  oneof request {
-    string employee_id = 1;
-    string user_id = 2;
-    Role role = 3;
-  }
-}
+message ChangePhilNatIDRequest { string phil_nat_id = 1; }
 
-message BatchGetEmployeesRequest { repeated string employee_ids = 1; }
+message ChangeBirthDateRequest { string birth_date = 1; }
 
-message UpdateEmployeeRequest {
-  oneof request {
-    Role role = 1;
-    string full_name = 2;
-    string address = 3;
-    string position = 4;
-    storage.FileMetadata avatar_file = 5;
-    storage.FileMetadata conver_photo_file = 6;
-  }
-}
+message AddSpecialInterestRequest { string special_interest = 1; }
 
-message RemoveEmployeeRequest { string employee_id = 1; }
+message RemoveSpecialInterestRequest { string special_interest = 1; }
 
-service EmployeeService {
-  rpc CreateEmployee(CreateEmployeeRequest) returns (CreateEmployeeResponse);
-  rpc GetEmployee(CreateEmployeeRequest) returns (stream Employee);
-  rpc BatchGetEmployees(BatchGetEmployeesRequest) returns (stream Employee);
-  rpc UpdateEmployee(UpdateEmployeeRequest) returns (Employee);
-  rpc RemoveEmployee(RemoveEmployeeRequest) returns (google.protobuf.Empty);
-}
+message AddLearningInstitutionRequest { string learning_institution = 1; }
 
-message CreateTeamRequest {
+message RemoveLearningInstitutionRequest { string learning_institution = 1; }
+
+message ChangeSpouseFirstNameRequest { string spouse_first_name = 1; }
+
+message ChangeSpouseMiddleNameRequest { string spouse_middle_name = 1; }
+
+message ChangeSpouseLastNameRequest { string spouse_last_name = 1; }
+
+message ChangeSpouseEmployerRequest { string spouse_employer = 1; }
+
+message RemoveEmployeeRequest { string id = 1; }
+
+message CreateDepartmentRequest {
   string name = 1;
-  string description = 2;
-  string leader_id = 3;
+  optional string description = 2;
 }
 
-message AddTeamMemberRequest { string employee_id = 1; }
-
-message RemoveTeamMemberRequest { string employee_id = 1; }
-
-message GetTeamRequest {
-  oneof request {
-    string id = 1;
-    string name = 2;
-    string leader_id = 3;
-  }
+message AddEmployeeToDepartmentRequest {
+  string employee_id = 1;
+  string department_id = 2;
 }
 
-message UpdateTeamRequest {
-  oneof request {
-    string name = 1;
-    string description = 2;
-    string leader_id = 3;
-  }
+message RemoveEmployeeFromDepartmentRequest {
+  string employee_id = 1;
+  string department_id = 2;
 }
 
-message RemoveTeamRequest { string team_id = 1; }
+message GetDepartmentRequest { string id = 1; }
 
-service TeamService {
-  rpc CreateTeam(CreateTeamRequest) returns (Team);
-  rpc AddTeamMember(AddTeamMemberRequest) returns (Team);
-  rpc RemoveTeamMember(RemoveTeamMemberRequest) returns (Team);
-  rpc GetTeam(GetTeamRequest) returns (Team);
-  // NOTE: this will get all teams depending on the policies set in the
-  // database. `authorization` token will be used here.
-  rpc GetTeams(google.protobuf.Empty) returns (stream Team);
-  rpc UpdateTeam(UpdateTeamRequest) returns (Team);
-  rpc RemoveTeam(RemoveTeamRequest) returns (google.protobuf.Empty);
-}
+message UpdateDepartmentNameRequest { string name = 1; }
 
-message CreateBoardRequest {
-  string name = 1;
-  string team_id = 2;
-}
+message UpdateDepartmentDescriptionRequest { string description = 1; }
 
-message GetBoardRequest {
-  oneof request {
-    string name = 1;
-    string team_id = 2;
-  }
-}
+message RemoveDepartmentRequest { string id = 1; }
 
-message UpdateBoardRequest { string name = 1; }
-
-message RemoveBoardRequest { string board_id = 1; }
-
-message CreateBoardSectionRequest {
-  string name = 1;
-  string color = 2;
-  string description = 3;
-  int32 task_limit = 4;
-  string task_board_id = 5;
-}
-
-message GetBoardSectionRequest { string board_id = 1; }
-
-message UpdateBoardSectionRequest {
-  oneof request {
-    string name = 1;
-    string color = 2;
-    string description = 3;
-    bool hidden = 4;
-    int32 task_limit = 5;
-    int32 order = 6;
-  }
-}
-
-message RemoveBoardSectionRequest { string board_section_id = 1; }
-
-message CreateTaskRequest {
+message CreateJobInformationRequest {
   string title = 1;
-  string description = 2;
-  string board_section_id = 3;
-  string issuer_id = 4;
-}
-
-message AssignTaskRequest {
-  string task_id = 1;
   string employee_id = 2;
+  string department_id = 3;
+  string supervisor_id = 4;
+  string work_location = 5;
+  string start_date = 6;
+  string salary = 7;
+  string currency = 8;
 }
 
-message RemoveAssignTaskRequest {
-  string task_id = 1;
-  string employee_id = 2;
+message GetJobInformationRequest { string id = 1; }
+
+message ChangeJobTitleRequest { string title = 1; }
+
+message ChangeJobDepartmentRequest { string department_id = 1; }
+
+message ChangeJobSupervisorRequest { string supervisor_id = 1; }
+
+message ChangeJobWorkLocationRequest { string work_location = 1; }
+
+message ChangeJobStartDateRequest { string start_date = 1; }
+
+message ChangeJobSalaryRequest { string salary = 1; }
+
+message ChangeJobCurrencyRequest { string currency = 1; }
+
+message RemoveJobInformationRequest { string id = 1; }
+
+message CreateEmergencyInformationRequest {
+  string employee_id = 1;
+  string address = 2;
+  optional string tel_number = 3;
+  optional string mobile_number = 4;
+  repeated string health_conditions = 5;
+  string contact_name = 6;
 }
 
-message GetTaskFromSectionRequest { string board_section_id = 1; }
+message GetEmergencyInformationRequest { string employee_id = 1; }
 
-message GetTaskRequest {
-  oneof request {
-    string id = 1;
-    string issuer_id = 2;
-    string assignee_id = 3;
-  }
+message ChangeEmergencyInformationAddressRequest { string address = 1; }
+
+message ChangeEmergencyInformationTelNumberRequest { string tel_number = 1; }
+
+message ChangeEmergencyInformationMobileNumberRequest {
+  string mobile_number = 1;
 }
 
-message MoveTaskToBoardRequest {
-  string task_id = 1;
-  string board_section_id = 2;
+message ChangeEmergencyInformationContactNameRequest {
+  string contact_name = 1;
 }
 
-message UpdateTaskRequest {
-  oneof request {
-    string title = 1;
-    string description = 2;
-    string board_section_id = 3;
-    string issuer_id = 4;
-  }
+message RemoveEmergencyInformationRequest { string employee_id = 1; }
+
+message AddEmergencyInformationHealthConditionRequest {
+  string health_condition = 1;
 }
 
-message RemoveTaskRequest { string task_id = 1; }
-
-message CreateTaskLabelRequest {
-  string name = 1;
-  string description = 2;
-  string color = 3;
-  string team_id = 4;
+message RemoveEmergencyInformationHealthConditionRequest {
+  string health_condition = 1;
 }
 
-message GetTaskLabelRequest {
-  oneof request {
-    string id = 1;
-    string task_id = 2;
-    string team_id = 3;
-  }
+message CreatePANRequest {
+  string employee_id = 1;
+  EmployeePanActionType action_type = 2;
+  string old_value = 3;
+  string new_value = 4;
+  string effective_date = 5;
+  EmployeePanActionStatus status = 6;
 }
 
-message UpdateTaskLabelRequest {
-  oneof request {
-    string name = 1;
-    string description = 2;
-    string color = 3;
-  }
+message GetPANInformationRequest { string id = 1; }
+
+message ChangePANActionTypeRequest {
+  string id = 1;
+  EmployeePanActionType action_type = 1;
 }
 
-message RemoveTaskLabelRequest { string task_label_id = 1; }
-
-message CreateTaskFieldRequest {
-  string name = 1;
-  TaskFieldType type = 2;
-  string value = 3;
-  string team_id = 4;
+message ChangePANOldValueRequest {
+  string id = 1;
+  string old_value = 1;
 }
 
-message GetTaskFieldRequest {
-  oneof request {
-    string id = 1;
-    string team_id = 2;
-    string task_id = 3;
-  }
+message ChangePANNewValueRequest {
+  string id = 1;
+  string new_value = 1;
 }
 
-message UpdateTaskFieldRequest {
-  oneof request {
-    string name = 1;
-    TaskFieldType type = 2;
-    string value = 3;
-    string team_id = 4;
-  }
+message ChangePANEffectiveDateRequest {
+  string id = 1;
+  string effective_date = 1;
 }
 
-message RemoveTaskFieldRequest { string task_field_id = 1; }
+message ApprovePANRequest { string id = 1; }
 
-message CreateTaskCommentRequest {
-  string message = 1;
-  string sender_id = 2;
-  string task_id = 3;
-  repeated storage.FileMetadata attachments = 4;
-}
+message RejectPANRequest { string id = 1; }
 
-message GetTaskCommentsRequest { string task_id = 1; }
+message RemovePANInformationRequest { string id = 1; }
 
-service TaskService {
-  // board
-  rpc CreateBoard(CreateBoardRequest) returns (Board);
-  rpc GetBoard(GetBoardRequest) returns (Board);
-  rpc GetBoards(GetBoardRequest) returns (stream Board);
-  rpc UpdateBoard(UpdateBoardRequest) returns (Board);
-  rpc RemoveBoard(RemoveBoardRequest) returns (google.protobuf.Empty);
+service HumanResourceService {
 
-  // board section
-  rpc CreateBoardSection(CreateBoardSectionRequest) returns (BoardSection);
-  rpc GetBoardSections(GetBoardSectionRequest) returns (stream BoardSection);
-  rpc UpdateBoardSection(UpdateBoardSectionRequest) returns (BoardSection);
-  rpc RemoveBoardSection(RemoveBoardSectionRequest)
+  // employee
+
+  // -- insert
+  rpc CreateEmployee(CreateEmployeeRequest) returns (google.protobuf.Empty);
+  rpc CreateManager(CreateEmployeeRequest) returns (google.protobuf.Empty);
+  rpc CreateAdmin(CreateEmployeeRequest) returns (google.protobuf.Empty);
+  rpc AddSpecialInterest(AddSpecialInterestRequest)
+      returns (google.protobuf.Empty);
+  rpc AddLearningInstitution(AddLearningInstitutionRequest)
       returns (google.protobuf.Empty);
 
-  // task
-  rpc CreateTask(CreateTaskRequest) returns (Task);
-  rpc AssignTask(AssignTaskRequest) returns (Task);
-  rpc RemoveAssignTask(RemoveAssignTaskRequest) returns (Task);
-  rpc GetTasksFromSection(GetTaskFromSectionRequest) returns (stream Task);
-  rpc GetTask(GetTaskRequest) returns (Task);
-  rpc GetTasks(GetTaskRequest) returns (stream Task);
-  rpc MoveTaskToBoardSection(MoveTaskToBoardRequest)
+  // -- read
+  rpc GetEmployee(GetEmployeeRequest) returns (Employee);
+  rpc GetEmployeesByDepartment(GetEmployeesByDepartmentRequest)
+      returns (stream Employee);
+
+  // -- update
+  rpc ChangeEmployeeAvatar(ChangeEmployeeAvatarRequest)
       returns (google.protobuf.Empty);
-  rpc UpdateTask(UpdateTaskRequest) returns (Task);
-  rpc RemoveTask(RemoveTaskRequest) returns (google.protobuf.Empty);
+  rpc ChangeEmployeeCoverPhoto(ChangeEmployeeAvatarRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeFirstName(ChangeEmployeeFirstNameRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeMiddleName(ChangeEmployeeMiddleNameRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeLastName(ChangeEmployeeLastNameRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeTelNumber(ChangeEmployeeTelNumberRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeMobileNumber(ChangeEmployeeMobileNumberRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeEmail(ChangeEmployeeEmailRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeRole(ChangeEmployeeRoleRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeStatus(ChangeEmployeeStatusRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmployeeContractType(ChangeEmployeeContractTypeRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangePhilNatID(ChangePhilNatIDRequest) returns (google.protobuf.Empty);
+  rpc ChangeBirthDate(ChangeBirthDateRequest) returns (google.protobuf.Empty);
+  rpc ChangeSpouseFirstName(ChangeSpouseFirstNameRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeSpouseMiddleName(ChangeSpouseMiddleNameRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeSpouseLastName(ChangeSpouseLastNameRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeSpouseEmployer(ChangeSpouseEmployerRequest)
+      returns (google.protobuf.Empty);
 
-  // task label
-  rpc CreateTaskLabel(CreateTaskLabelRequest) returns (TaskLabel);
-  rpc GetTaskLabel(GetTaskLabelRequest) returns (TaskLabel);
-  rpc GetTaskLabels(GetTaskLabelRequest) returns (stream TaskLabel);
-  rpc UpdateTaskLabel(UpdateTaskLabelRequest) returns (TaskLabel);
-  rpc RemoveTaskLabel(RemoveTaskLabelRequest) returns (google.protobuf.Empty);
+  // -- delete
+  rpc RemoveEmployee(RemoveEmployeeRequest) returns (google.protobuf.Empty);
+  rpc RemoveSpecialInterest(RemoveSpecialInterestRequest)
+      returns (google.protobuf.Empty);
+  rpc RemoveLearningInstitition(RemoveLearningInstitutionRequest)
+      returns (google.protobuf.Empty);
 
-  // task field
-  rpc CreateTaskField(CreateTaskFieldRequest) returns (TaskField);
-  rpc GetTaskField(GetTaskFieldRequest) returns (TaskField);
-  rpc GetTaskFields(GetTaskFieldRequest) returns (stream TaskField);
-  rpc UpdateTaskField(UpdateTaskFieldRequest) returns (TaskField);
-  rpc RemoveTaskField(RemoveTaskFieldRequest) returns (google.protobuf.Empty);
+  // department
 
-  // task comment
-  rpc CreateTaskComment(CreateTaskCommentRequest) returns (TaskComment);
-  rpc GetTaskComments(GetTaskCommentsRequest) returns (stream TaskComment);
+  // -- insert
+  rpc CreateDepartment(CreateDepartmentRequest) returns (google.protobuf.Empty);
+  rpc AddEmployeeToDepartment(AddEmployeeToDepartmentRequest)
+      returns (google.protobuf.Empty);
+
+  // -- read
+  rpc GetDepartment(GetDepartmentRequest) returns (Department);
+
+  // -- update
+  rpc UpdateDepartmentName(UpdateDepartmentNameRequest)
+      returns (google.protobuf.Empty);
+  rpc UpdateDepartmentDescription(UpdateDepartmentDescriptionRequest)
+      returns (google.protobuf.Empty);
+
+  // -- delete
+  rpc RemoveDepartment(RemoveDepartmentRequest) returns ();
+  rpc RemoveEmployeeToDepartment(RemoveEmployeeFromDepartmentRequest)
+      returns (google.protobuf.Empty);
+
+  // job information
+  // -- insert
+  rpc CreateJobInformation(CreateJobInformationRequest)
+      returns (google.protobuf.Empty);
+
+  // -- read
+  rpc GetJobInformation(GetJobInformationRequest) returns (JobInformation);
+
+  // -- update
+  rpc ChangeJobTitle(ChangeJobTitleRequest) returns (google.protobuf.Empty);
+  rpc ChangeJobDepartment(ChangeJobDepartmentRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeJobSupervisor(ChangeJobSupervisorRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeJobWorkLocation(ChangeJobWorkLocationRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeJobStartDate(ChangeJobStartDateRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeJobSalary(ChangeJobSalaryRequest) returns (google.protobuf.Empty);
+  rpc ChangeJobCurrency(ChangeJobCurrencyRequest)
+      returns (google.protobuf.Empty);
+
+  // -- delete
+  rpc RemoveJobInformation(RemoveJobInformationRequest)
+      returns (google.protobuf.Empty);
+
+  // emergency information
+
+  // -- insert
+  rpc CreateEmergencyInformation(CreateEmergencyInformationRequest)
+      returns (google.protobuf.Empty);
+  rpc AddEmergencyInformationHealthCondition(
+      AddEmergencyInformationHealthConditionRequest)
+      returns (google.protobuf.Empty);
+
+  // -- read
+  rpc GetEmergencyInformation(GetEmergencyInformationRequest)
+      returns (EmployeeEmergencyInformation);
+
+  // -- update
+  rpc ChangeEmergencyInformationAddress(
+      ChangeEmergencyInformationAddressRequest) returns (google.protobuf.Empty);
+  rpc ChangeEmergencyInformationTelNumber(
+      ChangeEmergencyInformationTelNumberRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmergencyInformationMobileNumber(
+      ChangeEmergencyInformationMobileNumberRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangeEmergencyInformationContactName(
+      ChangeEmergencyInformationContactNameRequest)
+      returns (google.protobuf.Empty);
+
+  // -- delete
+  rpc RemoveEmergencyInformation(RemoveEmergencyInformationRequest)
+      returns (google.protobuf.Empty);
+  rpc RemoveEmergencyInformationHealthCondition(
+      RemoveEmergencyInformationHealthConditionRequest)
+      returns (google.protobuf.Empty);
+
+  // personnel action notice
+
+  // -- insert
+  rpc CreatePANEmployeeRequest(CreatePANRequest)
+      returns (google.protobuf.Empty);
+
+  // -- read
+  rpc GetPANInformation(GetPANInformation) returns (PersonnelAction);
+  // -- update
+  rpc ChangePANActionType(ChangePANActionTypeRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangePANOldValue(ChangePANOldValueRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangePANNewValue(ChangePANNewValueRequest)
+      returns (google.protobuf.Empty);
+  rpc ChangePANEffectiveDate(ChangePANEffectiveDateRequest)
+      returns (google.protobuf.Empty);
+  rpc ApprovePANRequest(ApprovePANRequest) returns (google.protobuf.Empty);
+  rpc RejectPANRequest(RejectPANRequest) returns (google.protobuf.Empty);
+  rpc RemovePANInformation(RemovePANInformationRequest)
+      returns (google.protobuf.Empty);
 }
