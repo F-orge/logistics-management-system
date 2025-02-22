@@ -1,4 +1,4 @@
-use crate_proto::management::{
+use lib_proto::management::{
     employee_service_server::EmployeeService as GrpcEmployeeService, Employee,
 };
 use sqlx::{Pool, Postgres};
@@ -16,9 +16,9 @@ impl GrpcEmployeeService for EmployeeService {
 
     async fn create_employee(
         &self,
-        request: tonic::Request<crate_proto::management::CreateEmployeeRequest>,
+        request: tonic::Request<lib_proto::management::CreateEmployeeRequest>,
     ) -> std::result::Result<
-        tonic::Response<crate_proto::management::CreateEmployeeResponse>,
+        tonic::Response<lib_proto::management::CreateEmployeeResponse>,
         tonic::Status,
     > {
         unimplemented!()
@@ -26,29 +26,28 @@ impl GrpcEmployeeService for EmployeeService {
 
     async fn get_employee(
         &self,
-        request: tonic::Request<crate_proto::management::CreateEmployeeRequest>,
+        request: tonic::Request<lib_proto::management::CreateEmployeeRequest>,
     ) -> std::result::Result<tonic::Response<Self::GetEmployeeStream>, tonic::Status> {
         unimplemented!()
     }
 
     async fn batch_get_employees(
         &self,
-        request: tonic::Request<crate_proto::management::BatchGetEmployeesRequest>,
+        request: tonic::Request<lib_proto::management::BatchGetEmployeesRequest>,
     ) -> std::result::Result<tonic::Response<Self::BatchGetEmployeesStream>, tonic::Status> {
         unimplemented!()
     }
 
     async fn update_employee(
         &self,
-        request: tonic::Request<crate_proto::management::UpdateEmployeeRequest>,
-    ) -> std::result::Result<tonic::Response<crate_proto::management::Employee>, tonic::Status>
-    {
+        request: tonic::Request<lib_proto::management::UpdateEmployeeRequest>,
+    ) -> std::result::Result<tonic::Response<lib_proto::management::Employee>, tonic::Status> {
         unimplemented!()
     }
 
     async fn remove_employee(
         &self,
-        request: tonic::Request<crate_proto::management::RemoveEmployeeRequest>,
+        request: tonic::Request<lib_proto::management::RemoveEmployeeRequest>,
     ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
         unimplemented!()
     }

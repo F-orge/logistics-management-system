@@ -64,25 +64,25 @@ alter table storage.file enable row level security;
 
 alter table storage.file_access enable row level security;
 
--- insert policy. only web can upload files to the system
-create policy "only web can insert files" on storage.file for insert
+-- insert policy. web can upload files to the system
+create policy "web can insert files" on storage.file as permissive for insert to web
 with
-    check (current_user = 'web');
+    check (true);
 
 -- read policy. users can read public files
-create policy "users can read public files" on storage.file for
+create policy "users can read public files" on storage.file as permissive for
 select
-    using (is_public = true);
+    to web using (is_public = true);
 
 -- read policy. users can read their own files
-create policy "users can read their own files" on storage.file for
+create policy "users can read their own files" on storage.file as permissive for
 select
-    using (owner_id = auth.uid ());
+    to web using (owner_id = auth.uid ());
 
 -- read policy. users can read shared files to them
-create policy "users can read shared files" on storage.file for
+create policy "users can read shared files" on storage.file as permissive for
 select
-    using (
+    to web using (
         exists (
             select
                 1
@@ -94,27 +94,27 @@ select
         )
     );
 
--- update policy. only web can update files
-create policy "only web can update files" on storage.file for
-update using (current_user = 'web');
+-- update policy. web can update files
+create policy "only web can update files" on storage.file as permissive for
+update to web using (true);
 
--- delete policy. only web can delete files
-create policy "only web can delete files" on storage.file for delete using (current_user = 'web');
+-- delete policy. web can delete files
+create policy "only web can delete files" on storage.file as permissive for delete to web using (true);
 
 -- insert policy: web can insert file access
-create policy "web can insert file access" on storage.file_access for insert
+create policy "web can insert file access" on storage.file_access as permissive for insert to web
 with
-    check (current_user = 'web');
+    check (true);
 
 -- insert policy: current user can share its own file to others
-create policy "current user can share own files" on storage.file_access for insert
+create policy "current user can share own files" on storage.file_access as permissive for insert to web
 with
     check (user_id = auth.uid ());
 
 -- read policy: users can read shared file access to them
-create policy "users can read shared file access" on storage.file_access for
+create policy "users can read shared file access" on storage.file_access as permissive for
 select
-    using (user_id = auth.uid ());
+    to web using (user_id = auth.uid ());
 
 -- delete policy: web can delete file access to a file
-create policy "web can delete file access" on storage.file_access for delete using (current_user = 'web');
+create policy "web can delete file access" on storage.file_access as permissive for delete to web using (true);

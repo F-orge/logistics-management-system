@@ -5,13 +5,36 @@ package management;
 import "storage.proto";
 import "google/protobuf/empty.proto";
 
-enum Role {
+enum EmployeeMaritalStatus {
+  MARITAl_STATUS_SINGLE = 0;
+  MARITAl_STATUS_MARRIED = 1;
+  MARITAl_STATUS_DIVORCED = 2;
+  MARITAl_STATUS_WIDOWED = 3;
+  MARITAl_STATUS_SEPERATED = 4;
+}
+
+enum EmployeeRole {
   ROLE_SUPER_ADMIN = 0;
   ROLE_MANAGER = 1;
   ROLE_EMPLOYEE = 2;
 }
 
-enum ContractType {
+enum EmployeePanActionType {
+  EMPLOYEE_PAN_ACTION_TYPE_HIRE = 0;
+  EMPLOYEE_PAN_ACTION_TYPE_PROMOTION = 1;
+  EMPLOYEE_PAN_ACTION_TYPE_SALARY_ADJUSTMENT = 2;
+  EMPLOYEE_PAN_ACTION_TYPE_TERMINATION = 3;
+  EMPLOYEE_PAN_ACTION_TYPE_LEAVE = 4;
+  EMPLOYEE_PAN_ACTION_TYPE_TRANSFER = 5;
+}
+
+enum EmployeePanActionStatus {
+  EMPLOYEE_PAN_ACTION_STATUS_PENDING = 0;
+  EMPLOYEE_PAN_ACTION_STATUS_APPROVED = 1;
+  EMPLOYEE_PAN_ACTION_STATUS_REJECTED = 2;
+}
+
+enum EmployeeContractType {
   CONTRACT_TYPE_FULL_TIME = 0;
   CONTRACT_TYPE_PART_TIME = 1;
 }

@@ -6,7 +6,7 @@ use tokio::{fs, sync::mpsc};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
-use crate_proto::storage::{
+use lib_proto::storage::{
     file_metadata_request,
     storage_service_server::{StorageService as GRPCStorageService, StorageServiceServer},
     CreateFileRequest, DeleteFileRequest, DownloadFileRequest, FileChunk, FileMetadata,
@@ -53,7 +53,7 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
             return Err(Status::internal("Unable to setup database"));
         }
@@ -157,9 +157,8 @@ impl GRPCStorageService for StorageService {
 
     async fn share_file(
         &self,
-        request: tonic::Request<crate_proto::storage::ShareFileRequest>,
-    ) -> std::result::Result<tonic::Response<crate_proto::storage::FileMetadata>, tonic::Status>
-    {
+        request: tonic::Request<lib_proto::storage::ShareFileRequest>,
+    ) -> std::result::Result<tonic::Response<lib_proto::storage::FileMetadata>, tonic::Status> {
         unimplemented!()
     }
 
@@ -183,7 +182,7 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
             return Err(Status::internal("Unable to setup database"));
         }
@@ -271,7 +270,7 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
             return Err(Status::internal("Unable to setup database"));
         }
@@ -355,7 +354,7 @@ impl GRPCStorageService for StorageService {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
             return Err(Status::internal("Unable to setup database"));
         }
@@ -412,14 +411,14 @@ mod test {
         Request,
     };
 
-    use crate_proto::{
+    use lib_proto::{
         auth::{self, auth_service_client::AuthServiceClient, AuthBasicLoginRequest},
         storage::{storage_service_client::StorageServiceClient, CreateFileRequest},
     };
 
     use service_authentication::AuthService;
 
-    use crate_utils::test::start_server;
+    use lib_utils::test::start_server;
 
     use super::*;
 
@@ -431,7 +430,7 @@ mod test {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
             panic!("{}", err);
         }
 
@@ -503,7 +502,7 @@ mod test {
         let file_content = b"Test file content";
 
         let request = CreateFileRequest {
-            metadata: Some(crate_proto::storage::CreateFileMetadataRequest {
+            metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
                 name: "test_file.txt".into(),
                 r#type: "text/plain".into(),
                 is_public: false,
@@ -537,7 +536,7 @@ mod test {
         let file_content = b"HELLO MY NAME IS JOHN DOE. i am a file!!! :3";
 
         let file_metadata = CreateFileRequest {
-            metadata: Some(crate_proto::storage::CreateFileMetadataRequest {
+            metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
                 name: "test_file.txt".into(),
                 r#type: "text/plain".into(),
                 is_public: false,

@@ -13,7 +13,7 @@ create table
 
 create table
     auth.basic_user (
-        email varchar(255) not null unique check (email ~ '^.+@.+\..+$'),
+        email varchar(255) not null unique check (email ~ '^[^@]+@[^@]+\.[^@]+$'),
         password varchar(128) not null check (
             length(password) > 8
             and password ~ '[A-Z]'
@@ -142,40 +142,40 @@ alter table auth.users enable row level security;
 
 alter table auth.basic_user enable row level security;
 
--- insert policy: web can insert users
-create policy "web can insert user" on auth.users for insert
+-- insert policy: current user can insert users
+create policy "web can insert user" on auth.users as permissive for insert to web
 with
-    check (current_user = 'web');
+    check (true);
 
 -- insert policy: web can insert basic_user
-create policy "web can insert basic_user" on auth.basic_user for insert
+create policy "web can insert basic_user" on auth.basic_user as permissive for insert to web
 with
-    check (current_user = 'web');
+    check (true);
 
 -- read policy: web can read basic_user
-create policy "web can read basic_user" on auth.basic_user for
+create policy "web can read basic_user" on auth.basic_user as permissive for
 select
-    using (current_user = 'web');
+    to web using (true);
 
 -- read policy: web can read users
-create policy "web can read users" on auth.users for
+create policy "web can read users" on auth.users as permissive for
 select
-    using (current_user = 'web');
+    to web using (true);
 
 -- update policy: web can update basic_user information
-create policy "web can update user information" on auth.basic_user for
-update using (current_user = 'web');
+create policy "web can update user information" on auth.basic_user as permissive for
+update to web using (true);
 
 -- update policy: web can update users information
-create policy "web can update users information" on auth.users for
-update using (current_user = 'web');
+create policy "web can update users information" on auth.users as permissive for
+update to web using (true);
 
 -- update policy: current user can update its own information
-create policy "current user can update its own information" on auth.basic_user for
-update using (user_id = auth.uid ());
+create policy "current user can update its own information" on auth.basic_user as permissive for
+update to web using (user_id = auth.uid ());
 
 -- delete policy: web can delete user
-create policy "web can delete user" on auth.users for delete using (current_user = 'web');
+create policy "web can delete user" on auth.users as permissive for delete to web using (true);
 
 -- delete policy: current user can delete its own account
-create policy "current user can delete its own account" on auth.users for delete using (id = auth.uid ());
+create policy "current user can delete its own account" on auth.users as permissive for delete to web using (id = auth.uid ());

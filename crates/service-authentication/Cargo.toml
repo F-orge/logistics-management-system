@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-crate-proto = { path = "../../crates/crate-proto" }
-crate-utils = { path = "../../crates/crate-utils" }
+lib-proto = { path = "../../crates/lib-proto" }
+lib-utils = { path = "../../crates/lib-utils" }
 sqlx = { workspace = true }
 serde = { workspace = true }
 tonic = { workspace = true }

@@ -86,10 +86,10 @@ pub mod storage_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     #[derive(Debug, Clone)]
     pub struct StorageServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -133,8 +133,9 @@ pub mod storage_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             StorageServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -173,11 +174,18 @@ pub mod storage_service_client {
             &mut self,
             request: impl tonic::IntoStreamingRequest<Message = super::CreateFileRequest>,
         ) -> std::result::Result<tonic::Response<super::FileMetadata>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/storage.StorageService/CreateFile");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/CreateFile",
+            );
             let mut req = request.into_streaming_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "CreateFile"));
@@ -190,12 +198,18 @@ pub mod storage_service_client {
             tonic::Response<tonic::codec::Streaming<super::FileMetadata>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/storage.StorageService/ListOwnedFiles");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/ListOwnedFiles",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "ListOwnedFiles"));
@@ -208,12 +222,18 @@ pub mod storage_service_client {
             tonic::Response<tonic::codec::Streaming<super::FileMetadata>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/storage.StorageService/ListSharedFiles");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/ListSharedFiles",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "ListSharedFiles"));
@@ -226,11 +246,18 @@ pub mod storage_service_client {
             tonic::Response<tonic::codec::Streaming<super::FileChunk>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/storage.StorageService/DownloadFile");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/DownloadFile",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "DownloadFile"));
@@ -240,12 +267,18 @@ pub mod storage_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::FileMetadataRequest>,
         ) -> std::result::Result<tonic::Response<super::FileMetadata>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/storage.StorageService/GetFileMetadata");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/GetFileMetadata",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "GetFileMetadata"));
@@ -255,11 +288,18 @@ pub mod storage_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::ShareFileRequest>,
         ) -> std::result::Result<tonic::Response<super::FileMetadata>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/storage.StorageService/ShareFile");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/ShareFile",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "ShareFile"));
@@ -269,11 +309,18 @@ pub mod storage_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::DeleteFileRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/storage.StorageService/DeleteFile");
+            let path = http::uri::PathAndQuery::from_static(
+                "/storage.StorageService/DeleteFile",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("storage.StorageService", "DeleteFile"));
@@ -288,7 +335,7 @@ pub mod storage_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with StorageServiceServer.
@@ -301,30 +348,42 @@ pub mod storage_service_server {
         /// Server streaming response type for the ListOwnedFiles method.
         type ListOwnedFilesStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::FileMetadata, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn list_owned_files(
             &self,
             request: tonic::Request<()>,
-        ) -> std::result::Result<tonic::Response<Self::ListOwnedFilesStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::ListOwnedFilesStream>,
+            tonic::Status,
+        >;
         /// Server streaming response type for the ListSharedFiles method.
         type ListSharedFilesStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::FileMetadata, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn list_shared_files(
             &self,
             request: tonic::Request<()>,
-        ) -> std::result::Result<tonic::Response<Self::ListSharedFilesStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::ListSharedFilesStream>,
+            tonic::Status,
+        >;
         /// Server streaming response type for the DownloadFile method.
         type DownloadFileStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::FileChunk, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn download_file(
             &self,
             request: tonic::Request<super::DownloadFileRequest>,
-        ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::DownloadFileStream>,
+            tonic::Status,
+        >;
         async fn get_file_metadata(
             &self,
             request: tonic::Request<super::FileMetadataRequest>,
@@ -359,7 +418,10 @@ pub mod storage_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -414,15 +476,20 @@ pub mod storage_service_server {
                 "/storage.StorageService/CreateFile" => {
                     #[allow(non_camel_case_types)]
                     struct CreateFileSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService>
-                        tonic::server::ClientStreamingService<super::CreateFileRequest>
-                        for CreateFileSvc<T>
-                    {
+                    impl<
+                        T: StorageService,
+                    > tonic::server::ClientStreamingService<super::CreateFileRequest>
+                    for CreateFileSvc<T> {
                         type Response = super::FileMetadata;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
-                            request: tonic::Request<tonic::Streaming<super::CreateFileRequest>>,
+                            request: tonic::Request<
+                                tonic::Streaming<super::CreateFileRequest>,
+                            >,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
@@ -456,15 +523,19 @@ pub mod storage_service_server {
                 "/storage.StorageService/ListOwnedFiles" => {
                     #[allow(non_camel_case_types)]
                     struct ListOwnedFilesSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService> tonic::server::ServerStreamingService<()> for ListOwnedFilesSvc<T> {
+                    impl<T: StorageService> tonic::server::ServerStreamingService<()>
+                    for ListOwnedFilesSvc<T> {
                         type Response = super::FileMetadata;
                         type ResponseStream = T::ListOwnedFilesStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(&mut self, request: tonic::Request<()>) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as StorageService>::list_owned_files(&inner, request).await
+                                <T as StorageService>::list_owned_files(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -494,15 +565,19 @@ pub mod storage_service_server {
                 "/storage.StorageService/ListSharedFiles" => {
                     #[allow(non_camel_case_types)]
                     struct ListSharedFilesSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService> tonic::server::ServerStreamingService<()> for ListSharedFilesSvc<T> {
+                    impl<T: StorageService> tonic::server::ServerStreamingService<()>
+                    for ListSharedFilesSvc<T> {
                         type Response = super::FileMetadata;
                         type ResponseStream = T::ListSharedFilesStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(&mut self, request: tonic::Request<()>) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as StorageService>::list_shared_files(&inner, request).await
+                                <T as StorageService>::list_shared_files(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -532,14 +607,16 @@ pub mod storage_service_server {
                 "/storage.StorageService/DownloadFile" => {
                     #[allow(non_camel_case_types)]
                     struct DownloadFileSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService>
-                        tonic::server::ServerStreamingService<super::DownloadFileRequest>
-                        for DownloadFileSvc<T>
-                    {
+                    impl<
+                        T: StorageService,
+                    > tonic::server::ServerStreamingService<super::DownloadFileRequest>
+                    for DownloadFileSvc<T> {
                         type Response = super::FileChunk;
                         type ResponseStream = T::DownloadFileStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::DownloadFileRequest>,
@@ -576,18 +653,23 @@ pub mod storage_service_server {
                 "/storage.StorageService/GetFileMetadata" => {
                     #[allow(non_camel_case_types)]
                     struct GetFileMetadataSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService> tonic::server::UnaryService<super::FileMetadataRequest>
-                        for GetFileMetadataSvc<T>
-                    {
+                    impl<
+                        T: StorageService,
+                    > tonic::server::UnaryService<super::FileMetadataRequest>
+                    for GetFileMetadataSvc<T> {
                         type Response = super::FileMetadata;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::FileMetadataRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as StorageService>::get_file_metadata(&inner, request).await
+                                <T as StorageService>::get_file_metadata(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -617,9 +699,15 @@ pub mod storage_service_server {
                 "/storage.StorageService/ShareFile" => {
                     #[allow(non_camel_case_types)]
                     struct ShareFileSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService> tonic::server::UnaryService<super::ShareFileRequest> for ShareFileSvc<T> {
+                    impl<
+                        T: StorageService,
+                    > tonic::server::UnaryService<super::ShareFileRequest>
+                    for ShareFileSvc<T> {
                         type Response = super::FileMetadata;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::ShareFileRequest>,
@@ -656,9 +744,15 @@ pub mod storage_service_server {
                 "/storage.StorageService/DeleteFile" => {
                     #[allow(non_camel_case_types)]
                     struct DeleteFileSvc<T: StorageService>(pub Arc<T>);
-                    impl<T: StorageService> tonic::server::UnaryService<super::DeleteFileRequest> for DeleteFileSvc<T> {
+                    impl<
+                        T: StorageService,
+                    > tonic::server::UnaryService<super::DeleteFileRequest>
+                    for DeleteFileSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::DeleteFileRequest>,
@@ -692,19 +786,23 @@ pub mod storage_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => Box::pin(async move {
-                    let mut response = http::Response::new(empty_body());
-                    let headers = response.headers_mut();
-                    headers.insert(
-                        tonic::Status::GRPC_STATUS,
-                        (tonic::Code::Unimplemented as i32).into(),
-                    );
-                    headers.insert(
-                        http::header::CONTENT_TYPE,
-                        tonic::metadata::GRPC_CONTENT_TYPE,
-                    );
-                    Ok(response)
-                }),
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
             }
         }
     }

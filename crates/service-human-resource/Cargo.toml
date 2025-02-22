@@ -1,5 +1,5 @@
 [package]
-name = "service-storage"
+name = "service-human-resource"
 version = "0.1.0"
 edition = "2021"
 
@@ -8,9 +8,8 @@ sqlx = { workspace = true }
 tokio = { workspace = true }
 tonic = { workspace = true }
 tokio-stream = { workspace = true }
-crate-proto = { path = "../../crates/crate-proto" }
-crate-utils = { path = "../../crates/crate-utils" }
-service-authentication = { path = "../authentication" }
+lib-proto = { path = "../../crates/lib-proto" }
+lib-utils = { path = "../../crates/lib-utils" }
 futures = { workspace = true }
 tempdir = "0.3.7"
 uuid = { workspace = true }

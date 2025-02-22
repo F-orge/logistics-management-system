@@ -437,28 +437,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "crate-proto"
-version = "0.1.0"
-dependencies = [
- "prost",
- "tonic",
- "tonic-build",
-]
-
-[[package]]
-name = "crate-utils"
-version = "0.1.0"
-dependencies = [
- "hyper-util",
- "sqlx",
- "tokio",
- "tokio-stream",
- "tonic",
- "tower 0.5.2",
- "tracing",
-]
-
-[[package]]
 name = "crc"
 version = "3.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1265,6 +1243,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "lib-core"
+version = "0.1.0"
+
+[[package]]
+name = "lib-proto"
+version = "0.2.0"
+dependencies = [
+ "prost",
+ "tonic",
+ "tonic-build",
+]
+
+[[package]]
+name = "lib-utils"
+version = "0.1.0"
+dependencies = [
+ "hyper-util",
+ "sqlx",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tower 0.5.2",
+ "tracing",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.169"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1316,13 +1320,13 @@ checksum = "04cbf5b083de1c7e0222a7a51dbfdba1cbe1c6ab0b15e29fff3f6c077fd9cd9f"
 
 [[package]]
 name = "logistics-management-system"
-version = "0.4.1"
+version = "0.5.0"
 dependencies = [
  "axum",
  "axum-extra",
  "clap",
- "crate-proto",
  "dotenv",
+ "lib-proto",
  "service-authentication",
  "service-storage",
  "sqlx",
@@ -2054,8 +2058,8 @@ dependencies = [
 name = "service-authentication"
 version = "0.1.0"
 dependencies = [
- "crate-proto",
- "crate-utils",
+ "lib-proto",
+ "lib-utils",
  "serde",
  "sqlx",
  "test-log",
@@ -2064,12 +2068,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "service-management"
+name = "service-human-resource"
 version = "0.1.0"
 dependencies = [
- "crate-proto",
- "crate-utils",
  "futures",
+ "lib-proto",
+ "lib-utils",
  "sqlx",
  "tempdir",
  "tokio",
@@ -2083,9 +2087,9 @@ dependencies = [
 name = "service-storage"
 version = "0.1.0"
 dependencies = [
- "crate-proto",
- "crate-utils",
  "futures",
+ "lib-proto",
+ "lib-utils",
  "service-authentication",
  "sqlx",
  "tempdir",

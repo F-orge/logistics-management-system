@@ -15,6 +15,8 @@ create type management.employee_role as enum('Admin', 'Manager', 'Employee');
 
 create type management.employee_status as enum('Active', 'Inactive');
 
+create type management.employee_contract_type as enum('FullTime', 'PartTime');
+
 create table
     management.employee (
         id uuid primary key default gen_random_uuid (),
@@ -43,6 +45,7 @@ create table
         email varchar(255) unique check (email ~ '^.+@.+\..+$'),
         role management.employee_role not null default 'Employee',
         status management.employee_status not null default 'Active',
+        contact_type management.employee_contract_type not null,
         -- note:
         -- philippine national id format is xxxx-xxxx-xxxx-xxxx
         phil_nat_id varchar(19) not null check (
@@ -50,7 +53,7 @@ create table
         ),
         birth_date date not null check (birth_date <= current_date - interval '18 years'),
         special_interests varchar(255) [] null,
-        learning_institution varchar(255) [] not null,
+        learning_institutions varchar(255) [] not null,
         auth_user_id uuid references auth.users (id) on delete cascade,
         spouse_first_name varchar(255) null,
         spouse_middle_name varchar(255) null,
@@ -72,7 +75,8 @@ create table
         -- note:
         -- markdown compatible text format
         description text null,
-        created_at timestamp not null default current_timestamp
+        created_at timestamp not null default current_timestamp,
+        updated_at timestamp not null default current_timestamp
     );
 
 create table
@@ -115,7 +119,7 @@ create table
         Do not include special characters like + - . #
          */
         mobile_number varchar(12) null check (mobile_number ~ '^(09[0-9]{9}|639[0-9]{9})$'),
-        relationship varchar(255) not null,
+        contact_name varchar(255) not null,
         health_conditions varchar(255) [] null
     );
 
@@ -124,7 +128,7 @@ create table
 create type management.pan_action_type as enum(
     'Hire',
     'Promotion',
-    'Salary Adjustment',
+    'SalaryAdjustment',
     'Termination',
     'Leave',
     'Transfer'
@@ -137,6 +141,7 @@ create table
         id uuid primary key default gen_random_uuid (),
         employee_id uuid references management.employee (id),
         action_type management.pan_action_type not null,
+        -- note: old_value and new_value are json strings
         old_value text,
         new_value text,
         effective_date date not null,

@@ -1,7 +1,7 @@
 use sqlx::{Acquire, Pool, Postgres};
 use tonic::{Response, Status};
 
-use crate_proto::auth::{
+use lib_proto::auth::{
     auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
     AuthBasicLoginRequest, AuthResponse,
 };
@@ -38,7 +38,7 @@ impl GrpcAuthService for AuthService {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, request.metadata()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
             tracing::error!("{}", err);
             return Err(Status::internal("Unable to setup database"));
         }
@@ -82,8 +82,8 @@ mod test {
 
     use super::*;
 
-    use crate_proto::auth::auth_service_client::AuthServiceClient;
-    use crate_utils::test::start_server;
+    use lib_proto::auth::auth_service_client::AuthServiceClient;
+    use lib_utils::test::start_server;
 
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_auth_basic_login(db: Pool<Postgres>) {
@@ -94,7 +94,7 @@ mod test {
             }
         };
 
-        if let Err(err) = crate_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
+        if let Err(err) = lib_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
             panic!("{}", err);
         }
 

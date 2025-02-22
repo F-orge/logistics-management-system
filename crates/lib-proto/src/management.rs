@@ -146,7 +146,9 @@ pub struct CreateEmployeeRequest {
     #[prost(string, optional, tag = "6")]
     pub avatar_file_id: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag = "7")]
-    pub avatar_cover_photo_file_id: ::core::option::Option<::prost::alloc::string::String>,
+    pub avatar_cover_photo_file_id: ::core::option::Option<
+        ::prost::alloc::string::String,
+    >,
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct CreateEmployeeResponse {
@@ -316,10 +318,7 @@ pub struct GetBoardSectionRequest {
 }
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct UpdateBoardSectionRequest {
-    #[prost(
-        oneof = "update_board_section_request::Request",
-        tags = "1, 2, 3, 4, 5, 6"
-    )]
+    #[prost(oneof = "update_board_section_request::Request", tags = "1, 2, 3, 4, 5, 6")]
     pub request: ::core::option::Option<update_board_section_request::Request>,
 }
 /// Nested message and enum types in `UpdateBoardSectionRequest`.
@@ -632,10 +631,10 @@ pub mod employee_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     #[derive(Debug, Clone)]
     pub struct EmployeeServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -679,8 +678,9 @@ pub mod employee_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             EmployeeServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -718,19 +718,25 @@ pub mod employee_service_client {
         pub async fn create_employee(
             &mut self,
             request: impl tonic::IntoRequest<super::CreateEmployeeRequest>,
-        ) -> std::result::Result<tonic::Response<super::CreateEmployeeResponse>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+        ) -> std::result::Result<
+            tonic::Response<super::CreateEmployeeResponse>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.EmployeeService/CreateEmployee");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.EmployeeService/CreateEmployee",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.EmployeeService",
-                "CreateEmployee",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.EmployeeService", "CreateEmployee"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_employee(
@@ -740,12 +746,18 @@ pub mod employee_service_client {
             tonic::Response<tonic::codec::Streaming<super::Employee>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.EmployeeService/GetEmployee");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.EmployeeService/GetEmployee",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.EmployeeService", "GetEmployee"));
@@ -758,52 +770,65 @@ pub mod employee_service_client {
             tonic::Response<tonic::codec::Streaming<super::Employee>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/management.EmployeeService/BatchGetEmployees",
             );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.EmployeeService",
-                "BatchGetEmployees",
-            ));
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("management.EmployeeService", "BatchGetEmployees"),
+                );
             self.inner.server_streaming(req, path, codec).await
         }
         pub async fn update_employee(
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateEmployeeRequest>,
         ) -> std::result::Result<tonic::Response<super::Employee>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.EmployeeService/UpdateEmployee");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.EmployeeService/UpdateEmployee",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.EmployeeService",
-                "UpdateEmployee",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.EmployeeService", "UpdateEmployee"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn remove_employee(
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveEmployeeRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.EmployeeService/RemoveEmployee");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.EmployeeService/RemoveEmployee",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.EmployeeService",
-                "RemoveEmployee",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.EmployeeService", "RemoveEmployee"));
             self.inner.unary(req, path, codec).await
         }
     }
@@ -815,10 +840,10 @@ pub mod team_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     #[derive(Debug, Clone)]
     pub struct TeamServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -862,8 +887,9 @@ pub mod team_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             TeamServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -902,11 +928,18 @@ pub mod team_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateTeamRequest>,
         ) -> std::result::Result<tonic::Response<super::Team>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TeamService/CreateTeam");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/CreateTeam",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TeamService", "CreateTeam"));
@@ -916,12 +949,18 @@ pub mod team_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::AddTeamMemberRequest>,
         ) -> std::result::Result<tonic::Response<super::Team>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TeamService/AddTeamMember");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/AddTeamMember",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TeamService", "AddTeamMember"));
@@ -931,28 +970,39 @@ pub mod team_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveTeamMemberRequest>,
         ) -> std::result::Result<tonic::Response<super::Team>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TeamService/RemoveTeamMember");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/RemoveTeamMember",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TeamService",
-                "RemoveTeamMember",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TeamService", "RemoveTeamMember"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_team(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTeamRequest>,
         ) -> std::result::Result<tonic::Response<super::Team>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TeamService/GetTeam");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/GetTeam",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TeamService", "GetTeam"));
@@ -963,13 +1013,22 @@ pub mod team_service_client {
         pub async fn get_teams(
             &mut self,
             request: impl tonic::IntoRequest<()>,
-        ) -> std::result::Result<tonic::Response<tonic::codec::Streaming<super::Team>>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::Team>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TeamService/GetTeams");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/GetTeams",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TeamService", "GetTeams"));
@@ -979,11 +1038,18 @@ pub mod team_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateTeamRequest>,
         ) -> std::result::Result<tonic::Response<super::Team>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TeamService/UpdateTeam");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/UpdateTeam",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TeamService", "UpdateTeam"));
@@ -993,11 +1059,18 @@ pub mod team_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveTeamRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TeamService/RemoveTeam");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TeamService/RemoveTeam",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TeamService", "RemoveTeam"));
@@ -1012,10 +1085,10 @@ pub mod task_service_client {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
-    use tonic::codegen::http::Uri;
     use tonic::codegen::*;
+    use tonic::codegen::http::Uri;
     #[derive(Debug, Clone)]
     pub struct TaskServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -1059,8 +1132,9 @@ pub mod task_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
-                Into<StdError> + std::marker::Send + std::marker::Sync,
+            <T as tonic::codegen::Service<
+                http::Request<tonic::body::BoxBody>,
+            >>::Error: Into<StdError> + std::marker::Send + std::marker::Sync,
         {
             TaskServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -1100,11 +1174,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateBoardRequest>,
         ) -> std::result::Result<tonic::Response<super::Board>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/CreateBoard");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/CreateBoard",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "CreateBoard"));
@@ -1114,11 +1195,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetBoardRequest>,
         ) -> std::result::Result<tonic::Response<super::Board>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/GetBoard");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetBoard",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetBoard"));
@@ -1131,11 +1219,18 @@ pub mod task_service_client {
             tonic::Response<tonic::codec::Streaming<super::Board>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/GetBoards");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetBoards",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetBoards"));
@@ -1145,11 +1240,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateBoardRequest>,
         ) -> std::result::Result<tonic::Response<super::Board>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/UpdateBoard");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/UpdateBoard",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "UpdateBoard"));
@@ -1159,11 +1261,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveBoardRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/RemoveBoard");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/RemoveBoard",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "RemoveBoard"));
@@ -1174,17 +1283,21 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateBoardSectionRequest>,
         ) -> std::result::Result<tonic::Response<super::BoardSection>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/CreateBoardSection");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/CreateBoardSection",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "CreateBoardSection",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TaskService", "CreateBoardSection"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_board_sections(
@@ -1194,51 +1307,63 @@ pub mod task_service_client {
             tonic::Response<tonic::codec::Streaming<super::BoardSection>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/GetBoardSections");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetBoardSections",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "GetBoardSections",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TaskService", "GetBoardSections"));
             self.inner.server_streaming(req, path, codec).await
         }
         pub async fn update_board_section(
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateBoardSectionRequest>,
         ) -> std::result::Result<tonic::Response<super::BoardSection>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/UpdateBoardSection");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/UpdateBoardSection",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "UpdateBoardSection",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TaskService", "UpdateBoardSection"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn remove_board_section(
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveBoardSectionRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/RemoveBoardSection");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/RemoveBoardSection",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "RemoveBoardSection",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TaskService", "RemoveBoardSection"));
             self.inner.unary(req, path, codec).await
         }
         /// task
@@ -1246,11 +1371,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/CreateTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/CreateTask",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "CreateTask"));
@@ -1260,11 +1392,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::AssignTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/AssignTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/AssignTask",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "AssignTask"));
@@ -1274,46 +1413,65 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveAssignTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/RemoveAssignTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/RemoveAssignTask",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "RemoveAssignTask",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TaskService", "RemoveAssignTask"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_tasks_from_section(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTaskFromSectionRequest>,
-        ) -> std::result::Result<tonic::Response<tonic::codec::Streaming<super::Task>>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::Task>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/GetTasksFromSection");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTasksFromSection",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "GetTasksFromSection",
-            ));
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("management.TaskService", "GetTasksFromSection"),
+                );
             self.inner.server_streaming(req, path, codec).await
         }
         pub async fn get_task(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/GetTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTask",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTask"));
@@ -1322,13 +1480,22 @@ pub mod task_service_client {
         pub async fn get_tasks(
             &mut self,
             request: impl tonic::IntoRequest<super::GetTaskRequest>,
-        ) -> std::result::Result<tonic::Response<tonic::codec::Streaming<super::Task>>, tonic::Status>
-        {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+        ) -> std::result::Result<
+            tonic::Response<tonic::codec::Streaming<super::Task>>,
+            tonic::Status,
+        > {
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/GetTasks");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTasks",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTasks"));
@@ -1338,29 +1505,41 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::MoveTaskToBoardRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static(
                 "/management.TaskService/MoveTaskToBoardSection",
             );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "MoveTaskToBoardSection",
-            ));
+            req.extensions_mut()
+                .insert(
+                    GrpcMethod::new("management.TaskService", "MoveTaskToBoardSection"),
+                );
             self.inner.unary(req, path, codec).await
         }
         pub async fn update_task(
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateTaskRequest>,
         ) -> std::result::Result<tonic::Response<super::Task>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/UpdateTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/UpdateTask",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "UpdateTask"));
@@ -1370,11 +1549,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveTaskRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/RemoveTask");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/RemoveTask",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "RemoveTask"));
@@ -1385,12 +1571,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateTaskLabelRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskLabel>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/CreateTaskLabel");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/CreateTaskLabel",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "CreateTaskLabel"));
@@ -1400,11 +1592,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetTaskLabelRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskLabel>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/GetTaskLabel");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTaskLabel",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTaskLabel"));
@@ -1417,12 +1616,18 @@ pub mod task_service_client {
             tonic::Response<tonic::codec::Streaming<super::TaskLabel>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/GetTaskLabels");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTaskLabels",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTaskLabels"));
@@ -1432,12 +1637,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateTaskLabelRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskLabel>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/UpdateTaskLabel");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/UpdateTaskLabel",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "UpdateTaskLabel"));
@@ -1447,12 +1658,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveTaskLabelRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/RemoveTaskLabel");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/RemoveTaskLabel",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "RemoveTaskLabel"));
@@ -1463,12 +1680,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateTaskFieldRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskField>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/CreateTaskField");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/CreateTaskField",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "CreateTaskField"));
@@ -1478,11 +1701,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetTaskFieldRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskField>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static("/management.TaskService/GetTaskField");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTaskField",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTaskField"));
@@ -1495,12 +1725,18 @@ pub mod task_service_client {
             tonic::Response<tonic::codec::Streaming<super::TaskField>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/GetTaskFields");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTaskFields",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTaskFields"));
@@ -1510,12 +1746,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::UpdateTaskFieldRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskField>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/UpdateTaskField");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/UpdateTaskField",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "UpdateTaskField"));
@@ -1525,12 +1767,18 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::RemoveTaskFieldRequest>,
         ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/RemoveTaskField");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/RemoveTaskField",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "RemoveTaskField"));
@@ -1541,17 +1789,21 @@ pub mod task_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::CreateTaskCommentRequest>,
         ) -> std::result::Result<tonic::Response<super::TaskComment>, tonic::Status> {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/CreateTaskComment");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/CreateTaskComment",
+            );
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new(
-                "management.TaskService",
-                "CreateTaskComment",
-            ));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("management.TaskService", "CreateTaskComment"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn get_task_comments(
@@ -1561,12 +1813,18 @@ pub mod task_service_client {
             tonic::Response<tonic::codec::Streaming<super::TaskComment>>,
             tonic::Status,
         > {
-            self.inner.ready().await.map_err(|e| {
-                tonic::Status::unknown(format!("Service was not ready: {}", e.into()))
-            })?;
+            self.inner
+                .ready()
+                .await
+                .map_err(|e| {
+                    tonic::Status::unknown(
+                        format!("Service was not ready: {}", e.into()),
+                    )
+                })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path =
-                http::uri::PathAndQuery::from_static("/management.TaskService/GetTaskComments");
+            let path = http::uri::PathAndQuery::from_static(
+                "/management.TaskService/GetTaskComments",
+            );
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("management.TaskService", "GetTaskComments"));
@@ -1581,7 +1839,7 @@ pub mod employee_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with EmployeeServiceServer.
@@ -1590,25 +1848,36 @@ pub mod employee_service_server {
         async fn create_employee(
             &self,
             request: tonic::Request<super::CreateEmployeeRequest>,
-        ) -> std::result::Result<tonic::Response<super::CreateEmployeeResponse>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<super::CreateEmployeeResponse>,
+            tonic::Status,
+        >;
         /// Server streaming response type for the GetEmployee method.
         type GetEmployeeStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Employee, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_employee(
             &self,
             request: tonic::Request<super::CreateEmployeeRequest>,
-        ) -> std::result::Result<tonic::Response<Self::GetEmployeeStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::GetEmployeeStream>,
+            tonic::Status,
+        >;
         /// Server streaming response type for the BatchGetEmployees method.
         type BatchGetEmployeesStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Employee, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn batch_get_employees(
             &self,
             request: tonic::Request<super::BatchGetEmployeesRequest>,
-        ) -> std::result::Result<tonic::Response<Self::BatchGetEmployeesStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::BatchGetEmployeesStream>,
+            tonic::Status,
+        >;
         async fn update_employee(
             &self,
             request: tonic::Request<super::UpdateEmployeeRequest>,
@@ -1639,7 +1908,10 @@ pub mod employee_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -1694,19 +1966,23 @@ pub mod employee_service_server {
                 "/management.EmployeeService/CreateEmployee" => {
                     #[allow(non_camel_case_types)]
                     struct CreateEmployeeSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<T: EmployeeService>
-                        tonic::server::UnaryService<super::CreateEmployeeRequest>
-                        for CreateEmployeeSvc<T>
-                    {
+                    impl<
+                        T: EmployeeService,
+                    > tonic::server::UnaryService<super::CreateEmployeeRequest>
+                    for CreateEmployeeSvc<T> {
                         type Response = super::CreateEmployeeResponse;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateEmployeeRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as EmployeeService>::create_employee(&inner, request).await
+                                <T as EmployeeService>::create_employee(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -1736,14 +2012,16 @@ pub mod employee_service_server {
                 "/management.EmployeeService/GetEmployee" => {
                     #[allow(non_camel_case_types)]
                     struct GetEmployeeSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<T: EmployeeService>
-                        tonic::server::ServerStreamingService<super::CreateEmployeeRequest>
-                        for GetEmployeeSvc<T>
-                    {
+                    impl<
+                        T: EmployeeService,
+                    > tonic::server::ServerStreamingService<super::CreateEmployeeRequest>
+                    for GetEmployeeSvc<T> {
                         type Response = super::Employee;
                         type ResponseStream = T::GetEmployeeStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateEmployeeRequest>,
@@ -1780,21 +2058,25 @@ pub mod employee_service_server {
                 "/management.EmployeeService/BatchGetEmployees" => {
                     #[allow(non_camel_case_types)]
                     struct BatchGetEmployeesSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<T: EmployeeService>
-                        tonic::server::ServerStreamingService<super::BatchGetEmployeesRequest>
-                        for BatchGetEmployeesSvc<T>
-                    {
+                    impl<
+                        T: EmployeeService,
+                    > tonic::server::ServerStreamingService<
+                        super::BatchGetEmployeesRequest,
+                    > for BatchGetEmployeesSvc<T> {
                         type Response = super::Employee;
                         type ResponseStream = T::BatchGetEmployeesStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::BatchGetEmployeesRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as EmployeeService>::batch_get_employees(&inner, request).await
+                                <T as EmployeeService>::batch_get_employees(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -1824,19 +2106,23 @@ pub mod employee_service_server {
                 "/management.EmployeeService/UpdateEmployee" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateEmployeeSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<T: EmployeeService>
-                        tonic::server::UnaryService<super::UpdateEmployeeRequest>
-                        for UpdateEmployeeSvc<T>
-                    {
+                    impl<
+                        T: EmployeeService,
+                    > tonic::server::UnaryService<super::UpdateEmployeeRequest>
+                    for UpdateEmployeeSvc<T> {
                         type Response = super::Employee;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateEmployeeRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as EmployeeService>::update_employee(&inner, request).await
+                                <T as EmployeeService>::update_employee(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -1866,19 +2152,23 @@ pub mod employee_service_server {
                 "/management.EmployeeService/RemoveEmployee" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveEmployeeSvc<T: EmployeeService>(pub Arc<T>);
-                    impl<T: EmployeeService>
-                        tonic::server::UnaryService<super::RemoveEmployeeRequest>
-                        for RemoveEmployeeSvc<T>
-                    {
+                    impl<
+                        T: EmployeeService,
+                    > tonic::server::UnaryService<super::RemoveEmployeeRequest>
+                    for RemoveEmployeeSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveEmployeeRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as EmployeeService>::remove_employee(&inner, request).await
+                                <T as EmployeeService>::remove_employee(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -1905,19 +2195,23 @@ pub mod employee_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => Box::pin(async move {
-                    let mut response = http::Response::new(empty_body());
-                    let headers = response.headers_mut();
-                    headers.insert(
-                        tonic::Status::GRPC_STATUS,
-                        (tonic::Code::Unimplemented as i32).into(),
-                    );
-                    headers.insert(
-                        http::header::CONTENT_TYPE,
-                        tonic::metadata::GRPC_CONTENT_TYPE,
-                    );
-                    Ok(response)
-                }),
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
             }
         }
     }
@@ -1946,7 +2240,7 @@ pub mod team_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with TeamServiceServer.
@@ -1971,7 +2265,8 @@ pub mod team_service_server {
         /// Server streaming response type for the GetTeams method.
         type GetTeamsStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Team, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         /// NOTE: this will get all teams depending on the policies set in the
         /// database. `authorization` token will be used here.
@@ -2009,7 +2304,10 @@ pub mod team_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -2064,9 +2362,15 @@ pub mod team_service_server {
                 "/management.TeamService/CreateTeam" => {
                     #[allow(non_camel_case_types)]
                     struct CreateTeamSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::UnaryService<super::CreateTeamRequest> for CreateTeamSvc<T> {
+                    impl<
+                        T: TeamService,
+                    > tonic::server::UnaryService<super::CreateTeamRequest>
+                    for CreateTeamSvc<T> {
                         type Response = super::Team;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateTeamRequest>,
@@ -2103,11 +2407,15 @@ pub mod team_service_server {
                 "/management.TeamService/AddTeamMember" => {
                     #[allow(non_camel_case_types)]
                     struct AddTeamMemberSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::UnaryService<super::AddTeamMemberRequest>
-                        for AddTeamMemberSvc<T>
-                    {
+                    impl<
+                        T: TeamService,
+                    > tonic::server::UnaryService<super::AddTeamMemberRequest>
+                    for AddTeamMemberSvc<T> {
                         type Response = super::Team;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::AddTeamMemberRequest>,
@@ -2144,18 +2452,23 @@ pub mod team_service_server {
                 "/management.TeamService/RemoveTeamMember" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveTeamMemberSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::UnaryService<super::RemoveTeamMemberRequest>
-                        for RemoveTeamMemberSvc<T>
-                    {
+                    impl<
+                        T: TeamService,
+                    > tonic::server::UnaryService<super::RemoveTeamMemberRequest>
+                    for RemoveTeamMemberSvc<T> {
                         type Response = super::Team;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveTeamMemberRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TeamService>::remove_team_member(&inner, request).await
+                                <T as TeamService>::remove_team_member(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -2185,16 +2498,23 @@ pub mod team_service_server {
                 "/management.TeamService/GetTeam" => {
                     #[allow(non_camel_case_types)]
                     struct GetTeamSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::UnaryService<super::GetTeamRequest> for GetTeamSvc<T> {
+                    impl<
+                        T: TeamService,
+                    > tonic::server::UnaryService<super::GetTeamRequest>
+                    for GetTeamSvc<T> {
                         type Response = super::Team;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTeamRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { <T as TeamService>::get_team(&inner, request).await };
+                            let fut = async move {
+                                <T as TeamService>::get_team(&inner, request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -2223,15 +2543,19 @@ pub mod team_service_server {
                 "/management.TeamService/GetTeams" => {
                     #[allow(non_camel_case_types)]
                     struct GetTeamsSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::ServerStreamingService<()> for GetTeamsSvc<T> {
+                    impl<T: TeamService> tonic::server::ServerStreamingService<()>
+                    for GetTeamsSvc<T> {
                         type Response = super::Team;
                         type ResponseStream = T::GetTeamsStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(&mut self, request: tonic::Request<()>) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { <T as TeamService>::get_teams(&inner, request).await };
+                            let fut = async move {
+                                <T as TeamService>::get_teams(&inner, request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -2260,9 +2584,15 @@ pub mod team_service_server {
                 "/management.TeamService/UpdateTeam" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateTeamSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::UnaryService<super::UpdateTeamRequest> for UpdateTeamSvc<T> {
+                    impl<
+                        T: TeamService,
+                    > tonic::server::UnaryService<super::UpdateTeamRequest>
+                    for UpdateTeamSvc<T> {
                         type Response = super::Team;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateTeamRequest>,
@@ -2299,9 +2629,15 @@ pub mod team_service_server {
                 "/management.TeamService/RemoveTeam" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveTeamSvc<T: TeamService>(pub Arc<T>);
-                    impl<T: TeamService> tonic::server::UnaryService<super::RemoveTeamRequest> for RemoveTeamSvc<T> {
+                    impl<
+                        T: TeamService,
+                    > tonic::server::UnaryService<super::RemoveTeamRequest>
+                    for RemoveTeamSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveTeamRequest>,
@@ -2335,19 +2671,23 @@ pub mod team_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => Box::pin(async move {
-                    let mut response = http::Response::new(empty_body());
-                    let headers = response.headers_mut();
-                    headers.insert(
-                        tonic::Status::GRPC_STATUS,
-                        (tonic::Code::Unimplemented as i32).into(),
-                    );
-                    headers.insert(
-                        http::header::CONTENT_TYPE,
-                        tonic::metadata::GRPC_CONTENT_TYPE,
-                    );
-                    Ok(response)
-                }),
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
             }
         }
     }
@@ -2376,7 +2716,7 @@ pub mod task_service_server {
         dead_code,
         missing_docs,
         clippy::wildcard_imports,
-        clippy::let_unit_value
+        clippy::let_unit_value,
     )]
     use tonic::codegen::*;
     /// Generated trait containing gRPC methods that should be implemented for use with TaskServiceServer.
@@ -2394,7 +2734,8 @@ pub mod task_service_server {
         /// Server streaming response type for the GetBoards method.
         type GetBoardsStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Board, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_boards(
             &self,
@@ -2416,12 +2757,16 @@ pub mod task_service_server {
         /// Server streaming response type for the GetBoardSections method.
         type GetBoardSectionsStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::BoardSection, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_board_sections(
             &self,
             request: tonic::Request<super::GetBoardSectionRequest>,
-        ) -> std::result::Result<tonic::Response<Self::GetBoardSectionsStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::GetBoardSectionsStream>,
+            tonic::Status,
+        >;
         async fn update_board_section(
             &self,
             request: tonic::Request<super::UpdateBoardSectionRequest>,
@@ -2446,12 +2791,16 @@ pub mod task_service_server {
         /// Server streaming response type for the GetTasksFromSection method.
         type GetTasksFromSectionStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Task, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_tasks_from_section(
             &self,
             request: tonic::Request<super::GetTaskFromSectionRequest>,
-        ) -> std::result::Result<tonic::Response<Self::GetTasksFromSectionStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::GetTasksFromSectionStream>,
+            tonic::Status,
+        >;
         async fn get_task(
             &self,
             request: tonic::Request<super::GetTaskRequest>,
@@ -2459,7 +2808,8 @@ pub mod task_service_server {
         /// Server streaming response type for the GetTasks method.
         type GetTasksStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::Task, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_tasks(
             &self,
@@ -2489,12 +2839,16 @@ pub mod task_service_server {
         /// Server streaming response type for the GetTaskLabels method.
         type GetTaskLabelsStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::TaskLabel, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_task_labels(
             &self,
             request: tonic::Request<super::GetTaskLabelRequest>,
-        ) -> std::result::Result<tonic::Response<Self::GetTaskLabelsStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::GetTaskLabelsStream>,
+            tonic::Status,
+        >;
         async fn update_task_label(
             &self,
             request: tonic::Request<super::UpdateTaskLabelRequest>,
@@ -2515,12 +2869,16 @@ pub mod task_service_server {
         /// Server streaming response type for the GetTaskFields method.
         type GetTaskFieldsStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::TaskField, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_task_fields(
             &self,
             request: tonic::Request<super::GetTaskFieldRequest>,
-        ) -> std::result::Result<tonic::Response<Self::GetTaskFieldsStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::GetTaskFieldsStream>,
+            tonic::Status,
+        >;
         async fn update_task_field(
             &self,
             request: tonic::Request<super::UpdateTaskFieldRequest>,
@@ -2537,12 +2895,16 @@ pub mod task_service_server {
         /// Server streaming response type for the GetTaskComments method.
         type GetTaskCommentsStream: tonic::codegen::tokio_stream::Stream<
                 Item = std::result::Result<super::TaskComment, tonic::Status>,
-            > + std::marker::Send
+            >
+            + std::marker::Send
             + 'static;
         async fn get_task_comments(
             &self,
             request: tonic::Request<super::GetTaskCommentsRequest>,
-        ) -> std::result::Result<tonic::Response<Self::GetTaskCommentsStream>, tonic::Status>;
+        ) -> std::result::Result<
+            tonic::Response<Self::GetTaskCommentsStream>,
+            tonic::Status,
+        >;
     }
     #[derive(Debug)]
     pub struct TaskServiceServer<T> {
@@ -2565,7 +2927,10 @@ pub mod task_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(
+            inner: T,
+            interceptor: F,
+        ) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -2620,9 +2985,15 @@ pub mod task_service_server {
                 "/management.TaskService/CreateBoard" => {
                     #[allow(non_camel_case_types)]
                     struct CreateBoardSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::CreateBoardRequest> for CreateBoardSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::CreateBoardRequest>
+                    for CreateBoardSvc<T> {
                         type Response = super::Board;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateBoardRequest>,
@@ -2659,16 +3030,23 @@ pub mod task_service_server {
                 "/management.TaskService/GetBoard" => {
                     #[allow(non_camel_case_types)]
                     struct GetBoardSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::GetBoardRequest> for GetBoardSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::GetBoardRequest>
+                    for GetBoardSvc<T> {
                         type Response = super::Board;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetBoardRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { <T as TaskService>::get_board(&inner, request).await };
+                            let fut = async move {
+                                <T as TaskService>::get_board(&inner, request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -2697,14 +3075,16 @@ pub mod task_service_server {
                 "/management.TaskService/GetBoards" => {
                     #[allow(non_camel_case_types)]
                     struct GetBoardsSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetBoardRequest>
-                        for GetBoardsSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<super::GetBoardRequest>
+                    for GetBoardsSvc<T> {
                         type Response = super::Board;
                         type ResponseStream = T::GetBoardsStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetBoardRequest>,
@@ -2741,9 +3121,15 @@ pub mod task_service_server {
                 "/management.TaskService/UpdateBoard" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateBoardSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::UpdateBoardRequest> for UpdateBoardSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::UpdateBoardRequest>
+                    for UpdateBoardSvc<T> {
                         type Response = super::Board;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateBoardRequest>,
@@ -2780,9 +3166,15 @@ pub mod task_service_server {
                 "/management.TaskService/RemoveBoard" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveBoardSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::RemoveBoardRequest> for RemoveBoardSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::RemoveBoardRequest>
+                    for RemoveBoardSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveBoardRequest>,
@@ -2819,19 +3211,23 @@ pub mod task_service_server {
                 "/management.TaskService/CreateBoardSection" => {
                     #[allow(non_camel_case_types)]
                     struct CreateBoardSectionSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::UnaryService<super::CreateBoardSectionRequest>
-                        for CreateBoardSectionSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::CreateBoardSectionRequest>
+                    for CreateBoardSectionSvc<T> {
                         type Response = super::BoardSection;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateBoardSectionRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::create_board_section(&inner, request).await
+                                <T as TaskService>::create_board_section(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -2861,21 +3257,25 @@ pub mod task_service_server {
                 "/management.TaskService/GetBoardSections" => {
                     #[allow(non_camel_case_types)]
                     struct GetBoardSectionsSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetBoardSectionRequest>
-                        for GetBoardSectionsSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<
+                        super::GetBoardSectionRequest,
+                    > for GetBoardSectionsSvc<T> {
                         type Response = super::BoardSection;
                         type ResponseStream = T::GetBoardSectionsStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetBoardSectionRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::get_board_sections(&inner, request).await
+                                <T as TaskService>::get_board_sections(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -2905,19 +3305,23 @@ pub mod task_service_server {
                 "/management.TaskService/UpdateBoardSection" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateBoardSectionSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::UnaryService<super::UpdateBoardSectionRequest>
-                        for UpdateBoardSectionSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::UpdateBoardSectionRequest>
+                    for UpdateBoardSectionSvc<T> {
                         type Response = super::BoardSection;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateBoardSectionRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::update_board_section(&inner, request).await
+                                <T as TaskService>::update_board_section(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -2947,19 +3351,23 @@ pub mod task_service_server {
                 "/management.TaskService/RemoveBoardSection" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveBoardSectionSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::UnaryService<super::RemoveBoardSectionRequest>
-                        for RemoveBoardSectionSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::RemoveBoardSectionRequest>
+                    for RemoveBoardSectionSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveBoardSectionRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::remove_board_section(&inner, request).await
+                                <T as TaskService>::remove_board_section(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -2989,9 +3397,15 @@ pub mod task_service_server {
                 "/management.TaskService/CreateTask" => {
                     #[allow(non_camel_case_types)]
                     struct CreateTaskSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::CreateTaskRequest> for CreateTaskSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::CreateTaskRequest>
+                    for CreateTaskSvc<T> {
                         type Response = super::Task;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateTaskRequest>,
@@ -3028,9 +3442,15 @@ pub mod task_service_server {
                 "/management.TaskService/AssignTask" => {
                     #[allow(non_camel_case_types)]
                     struct AssignTaskSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::AssignTaskRequest> for AssignTaskSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::AssignTaskRequest>
+                    for AssignTaskSvc<T> {
                         type Response = super::Task;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::AssignTaskRequest>,
@@ -3067,18 +3487,23 @@ pub mod task_service_server {
                 "/management.TaskService/RemoveAssignTask" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveAssignTaskSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::RemoveAssignTaskRequest>
-                        for RemoveAssignTaskSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::RemoveAssignTaskRequest>
+                    for RemoveAssignTaskSvc<T> {
                         type Response = super::Task;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveAssignTaskRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::remove_assign_task(&inner, request).await
+                                <T as TaskService>::remove_assign_task(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -3108,21 +3533,25 @@ pub mod task_service_server {
                 "/management.TaskService/GetTasksFromSection" => {
                     #[allow(non_camel_case_types)]
                     struct GetTasksFromSectionSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetTaskFromSectionRequest>
-                        for GetTasksFromSectionSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<
+                        super::GetTaskFromSectionRequest,
+                    > for GetTasksFromSectionSvc<T> {
                         type Response = super::Task;
                         type ResponseStream = T::GetTasksFromSectionStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskFromSectionRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::get_tasks_from_section(&inner, request).await
+                                <T as TaskService>::get_tasks_from_section(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -3152,16 +3581,23 @@ pub mod task_service_server {
                 "/management.TaskService/GetTask" => {
                     #[allow(non_camel_case_types)]
                     struct GetTaskSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::GetTaskRequest> for GetTaskSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::GetTaskRequest>
+                    for GetTaskSvc<T> {
                         type Response = super::Task;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { <T as TaskService>::get_task(&inner, request).await };
+                            let fut = async move {
+                                <T as TaskService>::get_task(&inner, request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -3190,21 +3626,24 @@ pub mod task_service_server {
                 "/management.TaskService/GetTasks" => {
                     #[allow(non_camel_case_types)]
                     struct GetTasksSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetTaskRequest>
-                        for GetTasksSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<super::GetTaskRequest>
+                    for GetTasksSvc<T> {
                         type Response = super::Task;
                         type ResponseStream = T::GetTasksStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut =
-                                async move { <T as TaskService>::get_tasks(&inner, request).await };
+                            let fut = async move {
+                                <T as TaskService>::get_tasks(&inner, request).await
+                            };
                             Box::pin(fut)
                         }
                     }
@@ -3233,18 +3672,25 @@ pub mod task_service_server {
                 "/management.TaskService/MoveTaskToBoardSection" => {
                     #[allow(non_camel_case_types)]
                     struct MoveTaskToBoardSectionSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::MoveTaskToBoardRequest>
-                        for MoveTaskToBoardSectionSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::MoveTaskToBoardRequest>
+                    for MoveTaskToBoardSectionSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::MoveTaskToBoardRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::move_task_to_board_section(&inner, request)
+                                <T as TaskService>::move_task_to_board_section(
+                                        &inner,
+                                        request,
+                                    )
                                     .await
                             };
                             Box::pin(fut)
@@ -3275,9 +3721,15 @@ pub mod task_service_server {
                 "/management.TaskService/UpdateTask" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateTaskSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::UpdateTaskRequest> for UpdateTaskSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::UpdateTaskRequest>
+                    for UpdateTaskSvc<T> {
                         type Response = super::Task;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateTaskRequest>,
@@ -3314,9 +3766,15 @@ pub mod task_service_server {
                 "/management.TaskService/RemoveTask" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveTaskSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::RemoveTaskRequest> for RemoveTaskSvc<T> {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::RemoveTaskRequest>
+                    for RemoveTaskSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveTaskRequest>,
@@ -3353,11 +3811,15 @@ pub mod task_service_server {
                 "/management.TaskService/CreateTaskLabel" => {
                     #[allow(non_camel_case_types)]
                     struct CreateTaskLabelSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::CreateTaskLabelRequest>
-                        for CreateTaskLabelSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::CreateTaskLabelRequest>
+                    for CreateTaskLabelSvc<T> {
                         type Response = super::TaskLabel;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateTaskLabelRequest>,
@@ -3394,11 +3856,15 @@ pub mod task_service_server {
                 "/management.TaskService/GetTaskLabel" => {
                     #[allow(non_camel_case_types)]
                     struct GetTaskLabelSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::GetTaskLabelRequest>
-                        for GetTaskLabelSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::GetTaskLabelRequest>
+                    for GetTaskLabelSvc<T> {
                         type Response = super::TaskLabel;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskLabelRequest>,
@@ -3435,14 +3901,16 @@ pub mod task_service_server {
                 "/management.TaskService/GetTaskLabels" => {
                     #[allow(non_camel_case_types)]
                     struct GetTaskLabelsSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetTaskLabelRequest>
-                        for GetTaskLabelsSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<super::GetTaskLabelRequest>
+                    for GetTaskLabelsSvc<T> {
                         type Response = super::TaskLabel;
                         type ResponseStream = T::GetTaskLabelsStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskLabelRequest>,
@@ -3479,11 +3947,15 @@ pub mod task_service_server {
                 "/management.TaskService/UpdateTaskLabel" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateTaskLabelSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::UpdateTaskLabelRequest>
-                        for UpdateTaskLabelSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::UpdateTaskLabelRequest>
+                    for UpdateTaskLabelSvc<T> {
                         type Response = super::TaskLabel;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateTaskLabelRequest>,
@@ -3520,11 +3992,15 @@ pub mod task_service_server {
                 "/management.TaskService/RemoveTaskLabel" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveTaskLabelSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::RemoveTaskLabelRequest>
-                        for RemoveTaskLabelSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::RemoveTaskLabelRequest>
+                    for RemoveTaskLabelSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveTaskLabelRequest>,
@@ -3561,11 +4037,15 @@ pub mod task_service_server {
                 "/management.TaskService/CreateTaskField" => {
                     #[allow(non_camel_case_types)]
                     struct CreateTaskFieldSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::CreateTaskFieldRequest>
-                        for CreateTaskFieldSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::CreateTaskFieldRequest>
+                    for CreateTaskFieldSvc<T> {
                         type Response = super::TaskField;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateTaskFieldRequest>,
@@ -3602,11 +4082,15 @@ pub mod task_service_server {
                 "/management.TaskService/GetTaskField" => {
                     #[allow(non_camel_case_types)]
                     struct GetTaskFieldSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::GetTaskFieldRequest>
-                        for GetTaskFieldSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::GetTaskFieldRequest>
+                    for GetTaskFieldSvc<T> {
                         type Response = super::TaskField;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskFieldRequest>,
@@ -3643,14 +4127,16 @@ pub mod task_service_server {
                 "/management.TaskService/GetTaskFields" => {
                     #[allow(non_camel_case_types)]
                     struct GetTaskFieldsSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetTaskFieldRequest>
-                        for GetTaskFieldsSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<super::GetTaskFieldRequest>
+                    for GetTaskFieldsSvc<T> {
                         type Response = super::TaskField;
                         type ResponseStream = T::GetTaskFieldsStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskFieldRequest>,
@@ -3687,11 +4173,15 @@ pub mod task_service_server {
                 "/management.TaskService/UpdateTaskField" => {
                     #[allow(non_camel_case_types)]
                     struct UpdateTaskFieldSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::UpdateTaskFieldRequest>
-                        for UpdateTaskFieldSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::UpdateTaskFieldRequest>
+                    for UpdateTaskFieldSvc<T> {
                         type Response = super::TaskField;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::UpdateTaskFieldRequest>,
@@ -3728,11 +4218,15 @@ pub mod task_service_server {
                 "/management.TaskService/RemoveTaskField" => {
                     #[allow(non_camel_case_types)]
                     struct RemoveTaskFieldSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService> tonic::server::UnaryService<super::RemoveTaskFieldRequest>
-                        for RemoveTaskFieldSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::RemoveTaskFieldRequest>
+                    for RemoveTaskFieldSvc<T> {
                         type Response = ();
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::RemoveTaskFieldRequest>,
@@ -3769,19 +4263,23 @@ pub mod task_service_server {
                 "/management.TaskService/CreateTaskComment" => {
                     #[allow(non_camel_case_types)]
                     struct CreateTaskCommentSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::UnaryService<super::CreateTaskCommentRequest>
-                        for CreateTaskCommentSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::UnaryService<super::CreateTaskCommentRequest>
+                    for CreateTaskCommentSvc<T> {
                         type Response = super::TaskComment;
-                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::Response>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateTaskCommentRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
                             let fut = async move {
-                                <T as TaskService>::create_task_comment(&inner, request).await
+                                <T as TaskService>::create_task_comment(&inner, request)
+                                    .await
                             };
                             Box::pin(fut)
                         }
@@ -3811,14 +4309,17 @@ pub mod task_service_server {
                 "/management.TaskService/GetTaskComments" => {
                     #[allow(non_camel_case_types)]
                     struct GetTaskCommentsSvc<T: TaskService>(pub Arc<T>);
-                    impl<T: TaskService>
-                        tonic::server::ServerStreamingService<super::GetTaskCommentsRequest>
-                        for GetTaskCommentsSvc<T>
-                    {
+                    impl<
+                        T: TaskService,
+                    > tonic::server::ServerStreamingService<
+                        super::GetTaskCommentsRequest,
+                    > for GetTaskCommentsSvc<T> {
                         type Response = super::TaskComment;
                         type ResponseStream = T::GetTaskCommentsStream;
-                        type Future =
-                            BoxFuture<tonic::Response<Self::ResponseStream>, tonic::Status>;
+                        type Future = BoxFuture<
+                            tonic::Response<Self::ResponseStream>,
+                            tonic::Status,
+                        >;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetTaskCommentsRequest>,
@@ -3852,19 +4353,23 @@ pub mod task_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => Box::pin(async move {
-                    let mut response = http::Response::new(empty_body());
-                    let headers = response.headers_mut();
-                    headers.insert(
-                        tonic::Status::GRPC_STATUS,
-                        (tonic::Code::Unimplemented as i32).into(),
-                    );
-                    headers.insert(
-                        http::header::CONTENT_TYPE,
-                        tonic::metadata::GRPC_CONTENT_TYPE,
-                    );
-                    Ok(response)
-                }),
+                _ => {
+                    Box::pin(async move {
+                        let mut response = http::Response::new(empty_body());
+                        let headers = response.headers_mut();
+                        headers
+                            .insert(
+                                tonic::Status::GRPC_STATUS,
+                                (tonic::Code::Unimplemented as i32).into(),
+                            );
+                        headers
+                            .insert(
+                                http::header::CONTENT_TYPE,
+                                tonic::metadata::GRPC_CONTENT_TYPE,
+                            );
+                        Ok(response)
+                    })
+                }
             }
         }
     }
