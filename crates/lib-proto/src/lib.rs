@@ -1,3 +1,3 @@
-pub mod auth;
-pub mod management;
-pub mod storage;
+pub mod generated;
+
+pub use generated::*;

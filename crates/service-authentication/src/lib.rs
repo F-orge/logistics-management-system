@@ -1,4 +1,4 @@
-use sqlx::{Acquire, Pool, Postgres};
+use sqlx::{Acquire, FromRow, Pool, Postgres};
 use tonic::{Response, Status};
 
 use lib_proto::auth::{

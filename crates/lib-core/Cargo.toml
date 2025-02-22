@@ -6,3 +6,6 @@ edition = "2024"
 [dependencies]
 derive_more = { version = "2.0.1", features = ["from"] }
 tonic = { workspace = true }
+sqlx = { workspace = true }
+tracing = { workspace = true }
+sqlxinsert = "0.11.0"

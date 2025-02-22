@@ -15,6 +15,17 @@ impl GrpcHumanResourceService for HumanResourceService {
         &self,
         request: tonic::Request<lib_proto::management::CreateEmployeeRequest>,
     ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
+        let payload = request.into_inner();
+
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
+
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
+
+        let _ = trx
+            .commit()
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
         todo!()
     }
 
