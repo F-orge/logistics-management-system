@@ -21,10 +21,7 @@ impl GrpcHumanResourceService for HumanResourceService {
 
         let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        let _ = trx
-            .commit()
-            .await
-            .map_err(lib_core::error::Error::Database)?;
+        lib_core::database::commit_transaction(trx).await?;
 
         todo!()
     }
