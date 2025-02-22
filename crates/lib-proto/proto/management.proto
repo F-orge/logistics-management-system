@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package management;
 
-import "storage.proto";
 import "google/protobuf/empty.proto";
+import "storage.proto";
 
 enum EmployeeMaritalStatus {
   MARITAl_STATUS_SINGLE = 0;
@@ -46,8 +46,8 @@ enum EmployeeContractType {
 
 message Employee {
   string id = 1;
-  optional storage.file avatar_photo = 2;
-  optional storage.file cover_photo = 3;
+  optional storage.FileMetadata avatar_photo = 2;
+  optional storage.FileMetadata cover_photo = 3;
   string first_name = 4;
   string middle_name = 5;
   string last_name = 6;
@@ -101,17 +101,17 @@ message PersonnelAction {
   string id = 1;
   string employee_id = 2;
   EmployeePanActionType action_type = 3;
-  string old_value = 3;
-  string new_value = 4;
-  string effective_date = 5;
-  EmployeePanActionStatus status = 6;
-  string requested_by = 7;
-  string approved_by = 8;
+  string old_value = 4;
+  string new_value = 5;
+  string effective_date = 6;
+  EmployeePanActionStatus status = 7;
+  string requested_by = 8;
+  string approved_by = 9;
 }
 
 message CreateEmployeeRequest {
-  optional storage.file avatar_photo = 1;
-  optional storage.file cover_photo = 2;
+  optional storage.FileMetadata avatar_photo = 1;
+  optional storage.FileMetadata cover_photo = 2;
   string first_name = 3;
   string middle_name = 4;
   string last_name = 5;
@@ -134,9 +134,11 @@ message GetEmployeeRequest { string id = 1; }
 
 message GetEmployeesByDepartmentRequest { string department_id = 1; }
 
-message ChangeEmployeeAvatarRequest { storage.file avatar_photo = 1; }
+message ChangeEmployeeAvatarRequest { storage.FileMetadata avatar_photo = 1; }
 
-message ChangeEmployeeAvatarRequest { storage.file cover_photo = 1; }
+message ChangeEmployeeCoverPhotoRequest {
+  storage.FileMetadata cover_photo = 1;
+}
 
 message ChangeEmployeeFirstNameRequest { string first_name = 1; }
 
@@ -278,22 +280,22 @@ message GetPANInformationRequest { string id = 1; }
 
 message ChangePANActionTypeRequest {
   string id = 1;
-  EmployeePanActionType action_type = 1;
+  EmployeePanActionType action_type = 2;
 }
 
 message ChangePANOldValueRequest {
   string id = 1;
-  string old_value = 1;
+  string old_value = 2;
 }
 
 message ChangePANNewValueRequest {
   string id = 1;
-  string new_value = 1;
+  string new_value = 2;
 }
 
 message ChangePANEffectiveDateRequest {
   string id = 1;
-  string effective_date = 1;
+  string effective_date = 2;
 }
 
 message ApprovePANRequest { string id = 1; }
@@ -323,7 +325,7 @@ service HumanResourceService {
   // -- update
   rpc ChangeEmployeeAvatar(ChangeEmployeeAvatarRequest)
       returns (google.protobuf.Empty);
-  rpc ChangeEmployeeCoverPhoto(ChangeEmployeeAvatarRequest)
+  rpc ChangeEmployeeCoverPhoto(ChangeEmployeeCoverPhotoRequest)
       returns (google.protobuf.Empty);
   rpc ChangeEmployeeFirstName(ChangeEmployeeFirstNameRequest)
       returns (google.protobuf.Empty);
@@ -378,7 +380,7 @@ service HumanResourceService {
       returns (google.protobuf.Empty);
 
   // -- delete
-  rpc RemoveDepartment(RemoveDepartmentRequest) returns ();
+  rpc RemoveDepartment(RemoveDepartmentRequest) returns (google.protobuf.Empty);
   rpc RemoveEmployeeToDepartment(RemoveEmployeeFromDepartmentRequest)
       returns (google.protobuf.Empty);
 
@@ -448,7 +450,7 @@ service HumanResourceService {
       returns (google.protobuf.Empty);
 
   // -- read
-  rpc GetPANInformation(GetPANInformation) returns (PersonnelAction);
+  rpc GetPANInformation(GetPANInformationRequest) returns (PersonnelAction);
   // -- update
   rpc ChangePANActionType(ChangePANActionTypeRequest)
       returns (google.protobuf.Empty);
@@ -458,8 +460,8 @@ service HumanResourceService {
       returns (google.protobuf.Empty);
   rpc ChangePANEffectiveDate(ChangePANEffectiveDateRequest)
       returns (google.protobuf.Empty);
-  rpc ApprovePANRequest(ApprovePANRequest) returns (google.protobuf.Empty);
-  rpc RejectPANRequest(RejectPANRequest) returns (google.protobuf.Empty);
+  rpc ApprovePAN(ApprovePANRequest) returns (google.protobuf.Empty);
+  rpc RejectPAN(RejectPANRequest) returns (google.protobuf.Empty);
   rpc RemovePANInformation(RemovePANInformationRequest)
       returns (google.protobuf.Empty);
 }

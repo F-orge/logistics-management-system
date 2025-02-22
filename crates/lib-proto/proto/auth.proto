@@ -2,8 +2,6 @@ syntax = "proto3";
 
 package auth;
 
-import "google/protobuf/empty.proto";
-
 message AuthResponse {
   string access_token = 1;
   string token_type = 3;
@@ -16,5 +14,5 @@ message AuthBasicLoginRequest {
 }
 
 service AuthService {
-  rpc BasicLogin(AuthBasicLoginRequest) returns (AuthResponse) {}
+  rpc BasicLogin(AuthBasicLoginRequest) returns (AuthResponse);
 }

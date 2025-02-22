@@ -45,7 +45,7 @@ create table
         email varchar(255) unique check (email ~ '^.+@.+\..+$'),
         role management.employee_role not null default 'Employee',
         status management.employee_status not null default 'Active',
-        contact_type management.employee_contract_type not null,
+        contract_type management.employee_contract_type not null,
         -- note:
         -- philippine national id format is xxxx-xxxx-xxxx-xxxx
         phil_nat_id varchar(19) not null check (
@@ -190,7 +190,8 @@ execute function management.create_basic_user_employee_trigger_fn ();
 -- employee table
 alter table management.employee enable row level security;
 
-create policy "only admin can create employee" on management.employee for insert
+-- create employee, manager, and admin
+create policy "only admin can create employee, manager, and admin" on management.employee as restrictive for insert to web
 with
     check (
         exists (
@@ -203,49 +204,6 @@ with
                 and e.role = 'Admin'
         )
     );
-
-create policy "only admin or manager can view other employee information" on management.employee for
-select
-    using (
-        exists (
-            select
-                1
-            from
-                management.employee as e
-            where
-                e.auth_user_id = auth.uid ()
-                and e.role in ('Admin', 'Manager')
-        )
-    );
-
-create policy "only the current employee can view its own employee information" on management.employee for
-select
-    using (auth_user_id = auth.uid ());
-
-create policy "only admin can update employee information" on management.employee for
-update using (
-    exists (
-        select
-            1
-        from
-            management.employee as e
-        where
-            e.auth_user_id = auth.uid ()
-            and e.role = 'Admin'
-    )
-);
-
-create policy "only admin can remove employee" on management.employee for delete using (
-    exists (
-        select
-            1
-        from
-            management.employee as e
-        where
-            e.auth_user_id = auth.uid ()
-            and e.role = 'Admin'
-    )
-);
 
 -- department table
 alter table management.department enable row level security;
