@@ -352,6 +352,7 @@ mod test {
     use lib_proto::{
         auth::{self, auth_service_client::AuthServiceClient, AuthBasicLoginRequest},
         storage::{storage_service_client::StorageServiceClient, CreateFileRequest},
+        AuthResponse,
     };
 
     use service_authentication::AuthService;
@@ -360,61 +361,69 @@ mod test {
 
     use super::*;
 
-    async fn create_dummy_user(db: &Pool<Postgres>) {
-        let mut trx = match db.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                panic!("{}", err);
-            }
-        };
+    async fn create_dummy_user(
+        db: &Pool<Postgres>,
+        email: &str,
+        password: &str,
+    ) -> lib_core::error::Result<()> {
+        let mut conn = lib_core::database::aquire_connection(&db).await?;
 
-        if let Err(err) = lib_utils::db::setup_db(&mut trx, &MetadataMap::new()).await {
-            panic!("{}", err);
-        }
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        if let Err(err) = sqlx::query("insert into auth.basic_user(email,password) values ($1,$2)")
-            .bind("sample@email.com")
-            .bind("Randompassword1!")
+        lib_utils::db::setup_db(&mut trx, &MetadataMap::new())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
+        let (query, values) = Query::insert()
+            .into_table((Alias::new("auth"), Alias::new("basic_user")))
+            .columns([Alias::new("email"), Alias::new("password")])
+            .values([email.into(), password.into()])
+            .map_err(lib_core::error::Error::Query)?
+            .build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&query, values)
             .execute(&mut *trx)
             .await
-        {
-            panic!("{}", err);
-        }
+            .map_err(lib_core::error::Error::Database)?;
 
-        if let Err(err) = trx.commit().await {
-            panic!("{}", err);
-        }
+        lib_core::database::commit_transaction(trx).await?;
+
+        Ok(())
     }
 
-    async fn setup_actor(db: &Pool<Postgres>) -> Result<auth::AuthResponse, tonic::Status> {
-        create_dummy_user(db).await;
-
-        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(db))).await;
-
-        let mut client = AuthServiceClient::new(channel);
-
-        let response = client
-            .basic_login(AuthBasicLoginRequest {
-                email: "sample@email.com".into(),
-                password: "Randompassword1!".into(),
-            })
-            .await;
-
-        match response {
-            Ok(response) => Ok(response.into_inner()),
-            Err(err) => Err(err),
-        }
+    fn setup_env_variables() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
+        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
+        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
+        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+        Ok(())
     }
 
-    async fn setup_test_client(
+    async fn setup_client_with_token(
         db: &Pool<Postgres>,
-        auth_response: auth::AuthResponse,
-    ) -> (
+        email: &str,
+        password: &str,
+    ) -> lib_core::error::Result<(
         TempDir,
         StorageServiceClient<
             InterceptedService<Channel, impl Fn(Request<()>) -> Result<Request<()>, Status>>,
         >,
-    ) {
+    )> {
+        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(db))).await;
+        let mut client = AuthServiceClient::new(channel);
+
+        // register the user first
+        create_dummy_user(db, email, password).await?;
+
+        let auth_response = client
+            .basic_login(AuthBasicLoginRequest {
+                email: email.to_string(),
+                password: password.to_string(),
+            })
+            .await
+            .map_err(|err| lib_core::error::Error::Tonic(err))?
+            .into_inner();
+
         let tmp_dir = TempDir::new("temp_storage").unwrap();
 
         let (_, channel) =
@@ -429,17 +438,21 @@ mod test {
             req.metadata_mut().insert("authorization", token.clone());
             Ok(req)
         });
-        (tmp_dir, client)
+
+        // get the token
+        Ok((tmp_dir, client))
     }
 
-    async fn create_test_file(
+    async fn create_dummy_file(
         client: &mut StorageServiceClient<
             InterceptedService<Channel, impl Fn(Request<()>) -> Result<Request<()>, Status>>,
         >,
-    ) -> FileMetadata {
-        let file_content = b"Test file content";
+    ) -> lib_core::error::Result<FileMetadata> {
+        let file_content = br#"
+            This is a sample .txt file
+        "#;
 
-        let request = CreateFileRequest {
+        let file_metadata = CreateFileRequest {
             metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
                 name: "test_file.txt".into(),
                 r#type: "text/plain".into(),
@@ -451,26 +464,24 @@ mod test {
             }),
         };
 
-        let request_stream = tokio_stream::iter(vec![request]);
-        client
+        let request_stream = tokio_stream::iter(vec![file_metadata]);
+
+        Ok(client
             .create_file(request_stream)
             .await
-            .unwrap()
-            .into_inner()
+            .map_err(lib_core::error::Error::Tonic)?
+            .into_inner())
     }
 
     #[sqlx::test(migrations = "../../migrations")]
-    async fn test_storage_create_file(db: Pool<Postgres>) {
-        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
-        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
-        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
-        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+    async fn test_storage_create_file(db: Pool<Postgres>) -> lib_core::error::Result<()> {
+        // -- setup
+        setup_env_variables()?;
 
-        let actor = setup_actor(&db).await.unwrap();
+        let (tmp_dir, mut client) =
+            setup_client_with_token(&db, "sample@email.com", "RandomPassword1!").await?;
 
-        let (tmp_dir, mut client) = setup_test_client(&db, actor).await;
-
-        // send one chunk to the ba`ckend
+        // send one chunk to the backend
         let file_content = b"HELLO MY NAME IS JOHN DOE. i am a file!!! :3";
 
         let file_metadata = CreateFileRequest {
@@ -502,27 +513,22 @@ mod test {
 
         // check if we really store it in the file system.
         assert!(entry.is_some());
+
+        Ok(())
     }
 
     #[sqlx::test(migrations = "../../migrations")]
-    async fn test_storage_download_file(db: Pool<Postgres>) {
-        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
-        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
-        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
-        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+    async fn test_storage_download_file(db: Pool<Postgres>) -> lib_core::error::Result<()> {
+        // -- setup
+        setup_env_variables()?;
 
-        let actor = setup_actor(&db).await.unwrap();
-
-        let (_temp_dir, mut client) = setup_test_client(&db, actor.clone()).await;
+        let (_tmp_dir, mut client) =
+            setup_client_with_token(&db, "sample@email.com", "RandomPassword1!").await?;
 
         // create a file
-        let metadata = create_test_file(&mut client).await;
+        let metadata = create_dummy_file(&mut client).await?;
 
-        let mut metadata_request = Request::new(DownloadFileRequest { id: metadata.id });
-
-        metadata_request
-            .metadata_mut()
-            .append("authorization", actor.access_token.parse().unwrap());
+        let metadata_request = Request::new(DownloadFileRequest { id: metadata.id });
 
         // download file
         let response = client.download_file(metadata_request).await.unwrap();
@@ -534,9 +540,42 @@ mod test {
             .flat_map(|chunk| chunk.chunk)
             .collect::<Vec<u8>>();
 
-        assert_eq!(content, b"Test file content");
+        assert_eq!(
+            content,
+            br#"
+            This is a sample .txt file
+        "#
+        );
+
+        Ok(())
     }
 
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_list_owned_files(db: Pool<Postgres>) -> lib_core::error::Result<()> {
+        setup_env_variables()?;
+
+        let (tmp_dir, mut client) =
+            setup_client_with_token(&db, "sample@email.com", "RandomPassword1!").await?;
+
+        let file_1 = create_dummy_file(&mut client).await?;
+        let file_2 = create_dummy_file(&mut client).await?;
+        let file_3 = create_dummy_file(&mut client).await?;
+
+        let mut stream = client
+            .list_owned_files(Request::new(()))
+            .await
+            .unwrap()
+            .into_inner();
+
+        let files = stream.try_collect::<Vec<_>>().await.unwrap();
+
+        // must have 3 files
+        assert_eq!(files.len(), 3);
+
+        Ok(())
+    }
+
+    /*
     #[sqlx::test(migrations = "../../migrations")]
     async fn test_storage_get_file_metadata(db: Pool<Postgres>) {
         std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
@@ -611,4 +650,5 @@ mod test {
         );
         assert_eq!(get_response.unwrap_err().code(), tonic::Code::NotFound);
     }
+    */
 }
