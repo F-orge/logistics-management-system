@@ -3,16 +3,19 @@
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FileMetadata {
     #[prost(string, tag = "1")]
+    #[sqlx(try_from = "sqlx::types::Uuid")]
     pub id: ::prost::alloc::string::String,
     #[prost(string, tag = "2")]
     pub name: ::prost::alloc::string::String,
     #[prost(string, tag = "3")]
     pub r#type: ::prost::alloc::string::String,
     #[prost(uint32, tag = "4")]
+    #[sqlx(try_from = "i32")]
     pub size: u32,
     #[prost(bool, tag = "5")]
     pub is_public: bool,
     #[prost(string, tag = "6")]
+    #[sqlx(try_from = "sqlx::types::Uuid")]
     pub owner_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]

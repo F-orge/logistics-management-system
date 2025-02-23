@@ -91,22 +91,10 @@ impl GRPCStorageService for StorageService {
                     .and_where(Expr::col(Alias::new("id")).eq(file_id))
                     .build_sqlx(PostgresQueryBuilder);
 
-                let (id, name, r#type, size, is_public, owner_id) =
-                    sqlx::query_as_with::<_, (Uuid, String, String, i32, bool, Uuid), _>(
-                        &query, values,
-                    )
+                metadata = sqlx::query_as_with::<_, FileMetadata, _>(&query, values)
                     .fetch_one(&mut *trx)
                     .await
                     .map_err(lib_core::error::Error::Database)?;
-
-                metadata = FileMetadata {
-                    id: id.to_string(),
-                    name,
-                    r#type,
-                    size: size as u32,
-                    is_public,
-                    owner_id: owner_id.to_string(),
-                };
             }
             match file_request.chunk {
                 Some(bytes) => chunks.push(bytes.chunk),
@@ -151,30 +139,40 @@ impl GRPCStorageService for StorageService {
             .and_where(Expr::col(Alias::new("owner_id")).eq(Func::cust(Alias::new("auth.uid"))))
             .build_sqlx(PostgresQueryBuilder);
 
-        let rows =
-            sqlx::query_as_with::<_, (Uuid, String, String, i32, bool, Uuid), _>(&query, values)
-                .fetch_all(&mut *trx)
-                .await
-                .map_err(lib_core::error::Error::Database)?
-                .into_iter()
-                .map(|row| FileMetadata {
-                    id: row.0.to_string(),
-                    name: row.1,
-                    r#type: row.2,
-                    size: row.3 as u32,
-                    is_public: row.4,
-                    owner_id: row.5.to_string(),
-                });
-        Ok(Response::new(
-            lib_core::database::stream_response(rows).await,
-        ))
+        let rows = sqlx::query_as_with::<_, FileMetadata, _>(&query, values).fetch(&mut *trx);
+
+        Ok(Response::new(lib_core::streaming::stream_sqlx(rows).await))
     }
 
     async fn list_shared_files(
         &self,
         request: tonic::Request<()>,
     ) -> std::result::Result<tonic::Response<Self::ListSharedFilesStream>, tonic::Status> {
-        unimplemented!()
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
+
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
+
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
+        let (query, values) = Query::select()
+            .from((Alias::new("storage"), Alias::new("file")))
+            .column((Alias::new("storage"), Asterisk))
+            .join(
+                sea_query::JoinType::InnerJoin,
+                (Alias::new("storage"), Alias::new("file_access")),
+                Expr::col((
+                    Alias::new("storage"),
+                    Alias::new("file_access"),
+                    Alias::new("user_id"),
+                ))
+                .eq(Func::cust(Alias::new("auth.uid"))),
+            )
+            .build_sqlx(PostgresQueryBuilder);
+
+        let rows = sqlx::query_as_with::<_, FileMetadata, _>(&query, values).fetch(&mut *trx);
+        Ok(Response::new(lib_core::streaming::stream_sqlx(rows).await))
     }
 
     async fn share_file(
@@ -241,7 +239,7 @@ impl GRPCStorageService for StorageService {
             .collect::<Vec<_>>();
 
         Ok(Response::new(
-            lib_core::database::stream_response(file_chunks.into_iter()).await,
+            lib_core::streaming::stream_iterator(file_chunks.into_iter()).await,
         ))
     }
 
@@ -261,57 +259,37 @@ impl GRPCStorageService for StorageService {
 
         let metadata = match payload.request {
             Some(file_metadata_request::Request::Id(id)) => {
-                let file_id = match Uuid::parse_str(&id) {
-                    Ok(file_id) => file_id,
-                    Err(err) => {
-                        tracing::error!("{}", err);
-                        return Err(Status::invalid_argument("Invalid UUID format"));
-                    }
-                };
+                let file_id = id
+                    .parse::<Uuid>()
+                    .map_err(|err| lib_core::error::Error::Custom(Box::new(err)))?;
 
-                let record =
-                    match sqlx::query!(r#"select * from storage.file where id = $1"#, file_id)
-                        .fetch_one(&mut *trx)
-                        .await
-                    {
-                        Ok(record) => record,
-                        Err(err) => {
-                            tracing::error!("{}", err);
-                            return Err(Status::not_found("File not found"));
-                        }
-                    };
-                FileMetadata {
-                    id: record.id.to_string(),
-                    name: record.name,
-                    r#type: record.r#type,
-                    is_public: record.is_public,
-                    owner_id: record.owner_id.unwrap().to_string(),
-                    size: record.size as u32,
-                }
+                let (query, values) = Query::select()
+                    .from((Alias::new("storage"), Alias::new("file")))
+                    .column(Asterisk)
+                    .and_where(Expr::col(Alias::new("id")).eq(file_id))
+                    .build_sqlx(PostgresQueryBuilder);
+
+                sqlx::query_as_with::<_, FileMetadata, _>(&query, values)
+                    .fetch_one(&mut *trx)
+                    .await
+                    .map_err(lib_core::error::Error::Database)?
             }
             Some(file_metadata_request::Request::Name(name)) => {
-                let record =
-                    sqlx::query!(r#"SELECT * FROM "storage"."file" WHERE name = $1"#, name)
-                        .fetch_optional(&mut *trx)
-                        .await
-                        .map_err(|_| Status::internal("Database error"))?
-                        .ok_or_else(|| Status::not_found("File not found"))?;
-                FileMetadata {
-                    id: record.id.to_string(),
-                    name: record.name,
-                    r#type: record.r#type,
-                    is_public: record.is_public,
-                    owner_id: record.owner_id.unwrap().to_string(),
-                    size: record.size as u32,
-                }
+                let (query, values) = Query::select()
+                    .from((Alias::new("storage"), Alias::new("file")))
+                    .column(Asterisk)
+                    .and_where(Expr::col(Alias::new("name")).eq(name))
+                    .build_sqlx(PostgresQueryBuilder);
+
+                sqlx::query_as_with::<_, FileMetadata, _>(&query, values)
+                    .fetch_one(&mut *trx)
+                    .await
+                    .map_err(lib_core::error::Error::Database)?
             }
             None => return Err(Status::invalid_argument("Missing request parameters")),
         };
 
-        if let Err(err) = trx.commit().await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to commit file to database"));
-        };
+        lib_core::database::commit_transaction(trx).await?;
 
         Ok(Response::new(metadata))
     }
@@ -328,40 +306,31 @@ impl GRPCStorageService for StorageService {
             .await
             .map_err(lib_core::error::Error::Database)?;
 
-        let file_id = match request.into_inner().id.parse::<Uuid>() {
-            Ok(uuid) => uuid,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::invalid_argument("Unable to parse Uuid"));
-            }
-        };
+        let payload = request.into_inner();
 
-        if let Err(err) = sqlx::query!(r#"delete from storage.file where id = $1"#, file_id)
+        let file_id = payload
+            .id
+            .parse::<Uuid>()
+            .map_err(|err| lib_core::error::Error::Custom(Box::new(err)))?;
+
+        let (query, values) = Query::delete()
+            .from_table((Alias::new("storage"), Alias::new("file")))
+            .and_where(Expr::col(Alias::new("id")).eq(file_id))
+            .build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&query, values)
             .execute(&mut *trx)
             .await
-        {
-            tracing::error!("{}", err);
+            .map_err(lib_core::error::Error::Database)?;
 
-            if let Err(err) = trx.rollback().await {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to rollback delete operation"));
-            }
-
-            return Err(Status::not_found("Failed to delete file from database"));
-        }
-
-        if let Err(err) = trx.commit().await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to commit delete operation"));
-        }
+        lib_core::database::commit_transaction(trx).await?;
 
         let file_path = self.directory.join(format!("{}", file_id));
 
         // delete from filesystem
-        if let Err(err) = fs::remove_file(&file_path).await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Failed to delete file from disk"));
-        }
+        fs::remove_file(&file_path)
+            .await
+            .map_err(lib_core::error::Error::Io)?;
 
         Ok(Response::new(()))
     }
