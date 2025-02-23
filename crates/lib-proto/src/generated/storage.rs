@@ -298,7 +298,7 @@ pub mod storage_service_client {
         pub async fn share_file(
             &mut self,
             request: impl tonic::IntoRequest<super::ShareFileRequest>,
-        ) -> std::result::Result<tonic::Response<super::FileMetadata>, tonic::Status> {
+        ) -> std::result::Result<tonic::Response<()>, tonic::Status> {
             self.inner
                 .ready()
                 .await
@@ -402,7 +402,7 @@ pub mod storage_service_server {
         async fn share_file(
             &self,
             request: tonic::Request<super::ShareFileRequest>,
-        ) -> std::result::Result<tonic::Response<super::FileMetadata>, tonic::Status>;
+        ) -> std::result::Result<tonic::Response<()>, tonic::Status>;
         async fn delete_file(
             &self,
             request: tonic::Request<super::DeleteFileRequest>,
@@ -714,7 +714,7 @@ pub mod storage_service_server {
                         T: StorageService,
                     > tonic::server::UnaryService<super::ShareFileRequest>
                     for ShareFileSvc<T> {
-                        type Response = super::FileMetadata;
+                        type Response = ();
                         type Future = BoxFuture<
                             tonic::Response<Self::Response>,
                             tonic::Status,

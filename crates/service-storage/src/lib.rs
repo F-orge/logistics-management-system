@@ -1,7 +1,9 @@
 use std::path::{Path, PathBuf};
 
 use futures::StreamExt;
-use sea_query::{Alias, Asterisk, ConditionalStatement, Expr, Func, PostgresQueryBuilder, Query};
+use sea_query::{
+    query, Alias, Asterisk, ConditionalStatement, Expr, Func, PostgresQueryBuilder, Query,
+};
 use sea_query_binder::SqlxBinder;
 use sqlx::{types::Uuid, Acquire, PgPool, Pool, Postgres};
 use tokio::{fs, sync::mpsc};
@@ -169,6 +171,11 @@ impl GRPCStorageService for StorageService {
                 ))
                 .eq(Func::cust(Alias::new("auth.uid"))),
             )
+            .and_where(
+                Expr::col(Alias::new("owner_id"))
+                    .not()
+                    .eq(Func::cust(Alias::new("auth.uid"))),
+            )
             .build_sqlx(PostgresQueryBuilder);
 
         let rows = sqlx::query_as_with::<_, FileMetadata, _>(&query, values).fetch(&mut *trx);
@@ -178,8 +185,73 @@ impl GRPCStorageService for StorageService {
     async fn share_file(
         &self,
         request: tonic::Request<lib_proto::storage::ShareFileRequest>,
-    ) -> std::result::Result<tonic::Response<lib_proto::storage::FileMetadata>, tonic::Status> {
-        unimplemented!()
+    ) -> std::result::Result<Response<()>, tonic::Status> {
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
+
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
+
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
+        let payload = request.into_inner();
+
+        // check if we have the right properties.
+        if payload.user_ids.len() == 0 && payload.share_option.is_none() {
+            return Err(Status::invalid_argument(
+                "user_ids and share options are both empty",
+            ));
+        }
+
+        if let Some(share_option) = payload.share_option {
+            match share_option {
+                lib_proto::share_file_request::ShareOption::IsPublic(is_public) => {
+                    let (query, values) = Query::update()
+                        .table((Alias::new("storage"), Alias::new("file")))
+                        .value(Alias::new("is_public"), is_public)
+                        .build_sqlx(PostgresQueryBuilder);
+
+                    sqlx::query_with(&query, values)
+                        .execute(&mut *trx)
+                        .await
+                        .map_err(lib_core::error::Error::Database)?;
+
+                    lib_core::database::commit_transaction(trx).await?;
+
+                    return Ok(Response::new(()));
+                }
+            }
+        }
+
+        let mut insert_stmt = Query::insert()
+            .into_table((Alias::new("storage"), Alias::new("file_access")))
+            .columns([Alias::new("file_id"), Alias::new("user_id")])
+            .to_owned();
+
+        let file_id = payload
+            .file_id
+            .parse::<Uuid>()
+            .map_err(|err| lib_core::error::Error::Custom(Box::new(err)))?;
+
+        for user_id in payload.user_ids {
+            let user_id = user_id
+                .parse::<Uuid>()
+                .map_err(|err| lib_core::error::Error::Custom(Box::new(err)))?;
+            insert_stmt
+                .values([file_id.clone().into(), user_id.to_owned().into()])
+                .map_err(lib_core::error::Error::Query)?;
+        }
+
+        let (query, values) = insert_stmt.build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&query, values)
+            .execute(&mut *trx)
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
+        lib_core::database::commit_transaction(trx).await?;
+
+        Ok(Response::new(()))
     }
 
     async fn download_file(
@@ -352,7 +424,7 @@ mod test {
     use lib_proto::{
         auth::{self, auth_service_client::AuthServiceClient, AuthBasicLoginRequest},
         storage::{storage_service_client::StorageServiceClient, CreateFileRequest},
-        AuthResponse,
+        AuthResponse, ShareFileRequest,
     };
 
     use service_authentication::AuthService;
@@ -571,6 +643,44 @@ mod test {
 
         // must have 3 files
         assert_eq!(files.len(), 3);
+
+        Ok(())
+    }
+
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_share_file_to_public(db: Pool<Postgres>) -> lib_core::error::Result<()> {
+        setup_env_variables()?;
+
+        let (_temp_dir, mut john_client) =
+            setup_client_with_token(&db, "john@email.com", "RandomPassword1!").await?;
+
+        let file = create_dummy_file(&mut john_client).await?;
+
+        assert_eq!(file.is_public, false);
+
+        // convert file to public
+
+        let request = ShareFileRequest {
+            file_id: file.id.clone(),
+            user_ids: vec![],
+            share_option: Some(lib_proto::share_file_request::ShareOption::IsPublic(true)),
+        };
+
+        let response = john_client.share_file(request).await;
+
+        assert_eq!(response.is_ok(), true);
+
+        // retrieve the file to see if public
+
+        let public_file = john_client
+            .get_file_metadata(FileMetadataRequest {
+                request: Some(file_metadata_request::Request::Id(file.id)),
+            })
+            .await
+            .unwrap()
+            .into_inner();
+
+        assert_eq!(public_file.is_public, true);
 
         Ok(())
     }

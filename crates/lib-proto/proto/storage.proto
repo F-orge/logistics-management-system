@@ -50,6 +50,6 @@ service StorageService {
   rpc ListSharedFiles(google.protobuf.Empty) returns (stream FileMetadata);
   rpc DownloadFile(DownloadFileRequest) returns (stream FileChunk);
   rpc GetFileMetadata(FileMetadataRequest) returns (FileMetadata);
-  rpc ShareFile(ShareFileRequest) returns (FileMetadata);
+  rpc ShareFile(ShareFileRequest) returns (google.protobuf.Empty);
   rpc DeleteFile(DeleteFileRequest) returns (google.protobuf.Empty);
 }
