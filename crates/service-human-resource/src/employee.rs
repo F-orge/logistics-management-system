@@ -1,9 +1,11 @@
 use lib_proto::management::{
     human_resource_service_server::HumanResourceService as GrpcHumanResourceService, Employee,
 };
+use sea_query::{Alias, PostgresQueryBuilder, Query, QueryStatementWriter};
+use sea_query_binder::SqlxBinder;
 use sqlx::{Pool, Postgres};
 use tokio_stream::wrappers::ReceiverStream;
-use tonic::Status;
+use tonic::{Response, Status};
 
 pub struct HumanResourceService {
     db: Pool<Postgres>,
@@ -21,9 +23,60 @@ impl GrpcHumanResourceService for HumanResourceService {
 
         let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
+        let (query, values) = Query::insert()
+            .into_table((Alias::new("management"), Alias::new("employee")))
+            .columns([
+                Alias::new("avatar_id"),
+                Alias::new("cover_photo_id"),
+                Alias::new("first_name"),
+                Alias::new("middle_name"),
+                Alias::new("last_name"),
+                Alias::new("tel_number"),
+                Alias::new("mobile_number"),
+                Alias::new("email"),
+                Alias::new("role"),
+                Alias::new("status"),
+                Alias::new("contract_type"),
+                Alias::new("phil_nat_id"),
+                Alias::new("birth_date"),
+                Alias::new("special_interests"),
+                Alias::new("learning_institutions"),
+                Alias::new("spouse_first_name"),
+                Alias::new("spouse_middle_name"),
+                Alias::new("spouse_last_name"),
+                Alias::new("spouse_employer"),
+            ])
+            .values([
+                payload.avatar_photo.unwrap_or_default().id.into(),
+                payload.cover_photo.unwrap_or_default().id.into(),
+                payload.first_name.into(),
+                payload.middle_name.into(),
+                payload.last_name.into(),
+                payload.tel_number.unwrap_or_default().into(),
+                payload.mobile_number.unwrap_or_default().into(),
+                payload.email.into(),
+                "Employee".into(),
+                "Active".into(),
+                payload.phil_nat_id.into(),
+                payload.birth_date.into(),
+                payload.special_interests.into(),
+                payload.learning_institutions.into(),
+                payload.spouse_first_name.into(),
+                payload.spouse_middle_name.into(),
+                payload.spouse_last_name.into(),
+                payload.spouse_employer.into(),
+            ])
+            .map_err(lib_core::error::Error::Query)?
+            .build_sqlx(PostgresQueryBuilder);
+
+        sqlx::query_with(&query, values)
+            .execute(&mut *trx)
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
         lib_core::database::commit_transaction(trx).await?;
 
-        todo!()
+        return Ok(Response::new(()));
     }
 
     async fn create_manager(

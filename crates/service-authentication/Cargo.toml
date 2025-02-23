@@ -1,13 +1,18 @@
 [package]
 name = "service-authentication"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
 lib-proto = { path = "../../crates/lib-proto" }
 lib-utils = { path = "../../crates/lib-utils" }
+lib-core = { path = "../../crates/lib-core" }
+sea-query = { workspace = true }
+sea-query-binder = { workspace = true }
+
 sqlx = { workspace = true }
 serde = { workspace = true }
 tonic = { workspace = true }
 tracing = { workspace = true }
 test-log = { workspace = true }
+tracing-test = { workspace = true }

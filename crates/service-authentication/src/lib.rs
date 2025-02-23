@@ -1,3 +1,5 @@
+use sea_query::{Alias, Func, PostgresQueryBuilder, Query};
+use sea_query_binder::SqlxBinder;
 use sqlx::{Acquire, FromRow, Pool, Postgres};
 use tonic::{Response, Status};
 
@@ -22,51 +24,31 @@ impl GrpcAuthService for AuthService {
         &self,
         request: tonic::Request<AuthBasicLoginRequest>,
     ) -> std::result::Result<tonic::Response<AuthResponse>, tonic::Status> {
-        let mut conn = match self.db.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to aquire connection"));
-            }
-        };
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
 
-        let mut trx = match conn.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to start transaction"));
-            }
-        };
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to setup database"));
-        }
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
 
         let payload = request.into_inner();
 
-        let token = match sqlx::query!(
-            r#"select auth.basic_user_login($1,$2) as token"#,
-            payload.email,
-            payload.password
-        )
-        .fetch_one(&mut *trx)
-        .await
-        {
-            Ok(row) => match row.token {
-                Some(token) => token,
-                None => {
-                    return Err(Status::invalid_argument("No token available"));
-                }
-            },
-            Err(err) => {
-                println!("{}", err);
-                return Err(Status::invalid_argument("Invalid email or password"));
-            }
-        };
+        let (query, values) = Query::select()
+            .expr(
+                Func::cust(Alias::new("auth.basic_user_login"))
+                    .arg(payload.email)
+                    .arg(payload.password),
+            )
+            .build_sqlx(PostgresQueryBuilder);
+
+        let token = sqlx::query_as_with::<_, (String,), _>(&query, values)
+            .fetch_one(&mut *trx)
+            .await
+            .map_err(lib_core::error::Error::Database)?;
 
         Ok(Response::new(AuthResponse {
-            access_token: token.clone(),
+            access_token: token.0,
             token_type: "bearer".into(),
             expires_in: 3600,
         }))
@@ -86,6 +68,7 @@ mod test {
     use lib_utils::test::start_server;
 
     #[sqlx::test(migrations = "../../migrations")]
+    #[tracing_test::traced_test]
     async fn test_auth_basic_login(db: Pool<Postgres>) {
         let mut trx = match db.begin().await {
             Ok(trx) => trx,

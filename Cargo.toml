@@ -66,6 +66,16 @@ clap = { version = "4.5.26", features = ["derive", "string"] }
 askama = "0.12.1"
 askama_axum = "0.4.0"
 axum-extra = { version = "0.9.0", features = ["cookie"] }
+sea-query = { version = "0.32.2", features = [
+  "thread-safe",
+  "backend-postgres",
+  "postgres-array",
+] }
+sea-query-binder = { version = "0.7.0", features = [
+  "sqlx-postgres",
+  "postgres-array",
+] }
+tracing-test = "0.2.5"
 
 [dependencies]
 service-storage = { path = "./crates/service-storage" }
@@ -83,3 +93,4 @@ clap = { workspace = true }
 axum = { workspace = true }
 lib-proto = { path = "./crates/lib-proto" }
 axum-extra = { workspace = true }
+sea-query = { workspace = true }

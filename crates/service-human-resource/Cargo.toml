@@ -15,3 +15,5 @@ futures = { workspace = true }
 tempdir = "0.3.7"
 uuid = { workspace = true }
 tracing = { workspace = true }
+sea-query = { workspace = true }
+sea-query-binder = { workspace = true }
