@@ -1,6 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use futures::StreamExt;
+use sea_query::{Alias, Asterisk, ConditionalStatement, Expr, Func, PostgresQueryBuilder, Query};
+use sea_query_binder::SqlxBinder;
 use sqlx::{types::Uuid, Acquire, PgPool, Pool, Postgres};
 use tokio::{fs, sync::mpsc};
 use tokio_stream::wrappers::ReceiverStream;
@@ -37,26 +39,13 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<tonic::Streaming<CreateFileRequest>>,
     ) -> std::result::Result<tonic::Response<FileMetadata>, tonic::Status> {
-        let mut conn = match self.db.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to aquire connection"));
-            }
-        };
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
 
-        let mut trx = match conn.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to start transaction"));
-            }
-        };
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to setup database"));
-        }
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
 
         // refer to this documentation. https://github.com/hyperium/tonic/blob/master/examples/routeguide-tutorial.md
         // under client side streaming section.
@@ -69,10 +58,7 @@ impl GRPCStorageService for StorageService {
         let mut has_inserted_to_db = false;
 
         while let Some(chunk) = stream.next().await {
-            let file_request = match chunk {
-                Ok(file_request) => file_request,
-                Err(err) => return Err(err),
-            };
+            let file_request = chunk?;
 
             let create_metadata = match file_request.metadata {
                 Some(metadata) => metadata,
@@ -80,33 +66,46 @@ impl GRPCStorageService for StorageService {
             };
 
             if !has_inserted_to_db {
-                let record = match sqlx::query!(
-                        r#"insert into "storage"."file" (name, type, size) values ($1, $2, $3) returning id"#,
-                        create_metadata.name,
-                        create_metadata.r#type,
-                        create_metadata.size as i32
-                    )
-                    .fetch_one(&mut *trx)
-                    .await {
-                        Ok(record) => record,
-                        Err(err) => {
-                            println!("{}",err);
-                            return Err(Status::internal("Unable to insert file"))
-                        }
-                    };
-                has_inserted_to_db = true;
-                let record = sqlx::query!("select * from storage.file where id = $1", record.id)
+                let (query, values) = Query::insert()
+                    .into_table((Alias::new("storage"), Alias::new("file")))
+                    .columns([Alias::new("name"), Alias::new("type"), Alias::new("size")])
+                    .returning(Query::returning().column(Alias::new("id")))
+                    .values([
+                        create_metadata.name.into(),
+                        create_metadata.r#type.into(),
+                        (create_metadata.size as i32).into(),
+                    ])
+                    .map_err(lib_core::error::Error::Query)?
+                    .build_sqlx(PostgresQueryBuilder);
+
+                let (file_id,) = sqlx::query_as_with::<_, (Uuid,), _>(&query, values)
                     .fetch_one(&mut *trx)
                     .await
-                    .unwrap();
+                    .map_err(lib_core::error::Error::Database)?;
+
+                has_inserted_to_db = true;
+
+                let (query, values) = Query::select()
+                    .from((Alias::new("storage"), Alias::new("file")))
+                    .column(Asterisk)
+                    .and_where(Expr::col(Alias::new("id")).eq(file_id))
+                    .build_sqlx(PostgresQueryBuilder);
+
+                let (id, name, r#type, size, is_public, owner_id) =
+                    sqlx::query_as_with::<_, (Uuid, String, String, i32, bool, Uuid), _>(
+                        &query, values,
+                    )
+                    .fetch_one(&mut *trx)
+                    .await
+                    .map_err(lib_core::error::Error::Database)?;
 
                 metadata = FileMetadata {
-                    id: record.id.to_string(),
-                    name: record.name,
-                    r#type: record.r#type,
-                    size: record.size as u32,
-                    is_public: record.is_public,
-                    owner_id: record.owner_id.unwrap().to_string(),
+                    id: id.to_string(),
+                    name,
+                    r#type,
+                    size: size as u32,
+                    is_public,
+                    owner_id: owner_id.to_string(),
                 };
             }
             match file_request.chunk {
@@ -125,18 +124,11 @@ impl GRPCStorageService for StorageService {
             return Err(Status::data_loss("Invalid file size"));
         }
 
-        match fs::write(file_path, file_contents).await {
-            Ok(_) => {}
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Cannot write file to the server"));
-            }
-        };
+        fs::write(file_path, file_contents)
+            .await
+            .map_err(lib_core::error::Error::Io)?;
 
-        if let Err(err) = trx.commit().await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to commit transaction"));
-        };
+        lib_core::database::commit_transaction(trx).await?;
 
         Ok(Response::new(metadata))
     }
@@ -145,7 +137,37 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<()>,
     ) -> std::result::Result<tonic::Response<Self::ListOwnedFilesStream>, tonic::Status> {
-        unimplemented!()
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
+
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
+
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
+
+        let (query, values) = Query::select()
+            .from((Alias::new("storage"), Alias::new("file")))
+            .column(Asterisk)
+            .and_where(Expr::col(Alias::new("owner_id")).eq(Func::cust(Alias::new("auth.uid"))))
+            .build_sqlx(PostgresQueryBuilder);
+
+        let rows =
+            sqlx::query_as_with::<_, (Uuid, String, String, i32, bool, Uuid), _>(&query, values)
+                .fetch_all(&mut *trx)
+                .await
+                .map_err(lib_core::error::Error::Database)?
+                .into_iter()
+                .map(|row| FileMetadata {
+                    id: row.0.to_string(),
+                    name: row.1,
+                    r#type: row.2,
+                    size: row.3 as u32,
+                    is_public: row.4,
+                    owner_id: row.5.to_string(),
+                });
+        Ok(Response::new(
+            lib_core::database::stream_response(rows).await,
+        ))
     }
 
     async fn list_shared_files(
@@ -166,26 +188,13 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<DownloadFileRequest>,
     ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status> {
-        let mut conn = match self.db.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to aquire connection"));
-            }
-        };
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
 
-        let mut trx = match conn.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to start transaction"));
-            }
-        };
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to setup database"));
-        }
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
 
         let file_id = match request.into_inner().id.parse::<Uuid>() {
             Ok(file_id) => file_id,
@@ -220,60 +229,33 @@ impl GRPCStorageService for StorageService {
             };
         }
 
-        let (tx, rx) = mpsc::channel(32);
-
         let chunk_size = 1024 * 64; // 64KB chunks
 
-        tokio::spawn(async move {
-            let file_contents = match fs::read(file_path).await {
-                Ok(contents) => contents,
-                Err(err) => {
-                    tracing::error!("{}", err);
-                    let _ = tx.send(Err(Status::internal("Failed to read file"))).await;
-                    return;
-                }
-            };
+        let contents = fs::read(file_path)
+            .await
+            .map_err(lib_core::error::Error::Io)?;
 
-            for chunk in file_contents.chunks(chunk_size) {
-                if let Err(err) = tx
-                    .send(Ok(FileChunk {
-                        chunk: chunk.to_vec(),
-                    }))
-                    .await
-                {
-                    tracing::error!("{}", err);
-                    break;
-                }
-            }
-        });
+        let file_chunks = contents
+            .chunks(chunk_size)
+            .map(|v| FileChunk { chunk: v.to_vec() })
+            .collect::<Vec<_>>();
 
-        Ok(Response::new(ReceiverStream::new(rx)))
+        Ok(Response::new(
+            lib_core::database::stream_response(file_chunks.into_iter()).await,
+        ))
     }
 
     async fn get_file_metadata(
         &self,
         request: tonic::Request<FileMetadataRequest>,
     ) -> std::result::Result<tonic::Response<FileMetadata>, tonic::Status> {
-        let mut conn = match self.db.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to aquire connection"));
-            }
-        };
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
 
-        let mut trx = match conn.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to start transaction"));
-            }
-        };
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to setup database"));
-        }
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
 
         let payload = request.into_inner();
 
@@ -338,26 +320,13 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<DeleteFileRequest>,
     ) -> Result<Response<()>, Status> {
-        let mut conn = match self.db.acquire().await {
-            Ok(conn) => conn,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to aquire connection"));
-            }
-        };
+        let mut conn = lib_core::database::aquire_connection(&self.db).await?;
 
-        let mut trx = match conn.begin().await {
-            Ok(trx) => trx,
-            Err(err) => {
-                tracing::error!("{}", err);
-                return Err(Status::internal("Unable to start transaction"));
-            }
-        };
+        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
 
-        if let Err(err) = lib_utils::db::setup_db(&mut trx, request.metadata()).await {
-            tracing::error!("{}", err);
-            return Err(Status::internal("Unable to setup database"));
-        }
+        lib_utils::db::setup_db(&mut trx, request.metadata())
+            .await
+            .map_err(lib_core::error::Error::Database)?;
 
         let file_id = match request.into_inner().id.parse::<Uuid>() {
             Ok(uuid) => uuid,

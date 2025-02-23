@@ -3,10 +3,11 @@ use tonic::Status;
 
 #[derive(From, Debug)]
 pub enum Error {
-    Custom(Box<dyn std::error::Error>),
+    Custom(Box<dyn std::error::Error + Send + Sync>),
     Database(sqlx::Error),
     Query(sea_query::error::Error),
     Io(std::io::Error),
+    Tonic(tonic::Status),
 }
 
 pub type Result<T> = core::result::Result<T, Error>;
@@ -15,7 +16,7 @@ impl From<Error> for Status {
     fn from(err: Error) -> Self {
         match err {
             Error::Database(err) => {
-                tracing::error!("{}", err);
+                println!("{}", err);
                 match err {
                     sqlx::Error::RowNotFound => Status::not_found("Row not found"),
                     sqlx::Error::ColumnNotFound(col) => {
@@ -38,6 +39,10 @@ impl From<Error> for Status {
             Error::Io(err) => {
                 tracing::error!("{}", err);
                 return Status::internal("Internal IO Error");
+            }
+            Error::Tonic(err) => {
+                tracing::error!("{}", err);
+                return err;
             }
             Error::Custom(err) => {
                 tracing::error!("{}", err);

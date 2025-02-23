@@ -10,6 +10,9 @@ tonic = { workspace = true }
 tokio-stream = { workspace = true }
 lib-proto = { path = "../../crates/lib-proto" }
 lib-utils = { path = "../../crates/lib-utils" }
+lib-core = { path = "../../crates/lib-core" }
+sea-query = { workspace = true }
+sea-query-binder = { workspace = true }
 service-authentication = { path = "../service-authentication" }
 futures = { workspace = true }
 tempdir = "0.3.7"

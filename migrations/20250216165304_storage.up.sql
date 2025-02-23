@@ -10,7 +10,7 @@ create table
         type varchar not null,
         size int not null,
         is_public bool not null default false,
-        owner_id uuid null references auth.users (id) on delete cascade,
+        owner_id uuid not null references auth.users (id) on delete cascade,
         created_at timestamp not null default current_timestamp,
         updated_at timestamp not null default current_timestamp
     );

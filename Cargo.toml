@@ -70,10 +70,12 @@ sea-query = { version = "0.32.2", features = [
   "thread-safe",
   "backend-postgres",
   "postgres-array",
+  "with-uuid",
 ] }
 sea-query-binder = { version = "0.7.0", features = [
   "sqlx-postgres",
   "postgres-array",
+  "with-uuid",
 ] }
 tracing-test = "0.2.5"
 
