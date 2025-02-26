@@ -79,7 +79,6 @@ mod test {
         conn_options: PgConnectOptions,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let db = Database::connect(conn_options.to_url_lossy()).await?;
-
         let mut user = users::ActiveModel::new();
 
         user.email = Set("sample@email.com".into());
