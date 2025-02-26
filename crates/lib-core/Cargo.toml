@@ -11,3 +11,4 @@ tracing = { workspace = true }
 sea-query = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
+sea-orm = { workspace = true }

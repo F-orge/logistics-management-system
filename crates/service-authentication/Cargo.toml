@@ -7,9 +7,8 @@ edition = "2021"
 lib-proto = { path = "../../crates/lib-proto" }
 lib-utils = { path = "../../crates/lib-utils" }
 lib-core = { path = "../../crates/lib-core" }
-sea-query = { workspace = true }
-sea-query-binder = { workspace = true }
-
+lib-entity = { path = "../../crates/lib-entity" }
+sea-orm = { workspace = true }
 sqlx = { workspace = true }
 serde = { workspace = true }
 tonic = { workspace = true }

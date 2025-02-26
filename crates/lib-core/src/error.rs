@@ -8,6 +8,8 @@ pub enum Error {
     Query(sea_query::error::Error),
     Io(std::io::Error),
     Tonic(tonic::Status),
+    SeaOrm(sea_orm::DbErr),
+    RowNotFound,
 }
 
 pub type Result<T> = core::result::Result<T, Error>;
@@ -16,7 +18,7 @@ impl From<Error> for Status {
     fn from(err: Error) -> Self {
         match err {
             Error::Database(err) => {
-                println!("{}", err);
+                tracing::info!("{}", err);
                 match err {
                     sqlx::Error::RowNotFound => Status::not_found("Row not found"),
                     sqlx::Error::ColumnNotFound(col) => {
@@ -25,6 +27,16 @@ impl From<Error> for Status {
                     _ => Status::internal("Database related error"),
                 }
             }
+            Error::SeaOrm(err) => {
+                tracing::info!("{}", err);
+                match err {
+                    sea_orm::DbErr::RecordNotFound(id) => {
+                        Status::not_found(format!("Row not found {}", id))
+                    }
+                    _ => Status::internal("Internal Database Error"),
+                }
+            }
+            Error::RowNotFound => Status::not_found("Row not found"),
             Error::Query(err) => {
                 tracing::warn!("{}", err);
                 match err {
