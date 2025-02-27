@@ -9,7 +9,6 @@ tokio = { workspace = true }
 tonic = { workspace = true }
 tokio-stream = { workspace = true }
 lib-proto = { path = "../../crates/lib-proto" }
-lib-utils = { path = "../../crates/lib-utils" }
 lib-core = { path = "../../crates/lib-core" }
 lib-entity = { path = "../../crates/lib-entity" }
 sea-orm = { workspace = true }

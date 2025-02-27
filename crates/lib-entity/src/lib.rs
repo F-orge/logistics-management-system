@@ -6,6 +6,7 @@ pub mod department;
 pub mod department_employees;
 pub mod emergency_information;
 pub mod employee;
+pub mod extensions;
 pub mod file;
 pub mod file_access;
 pub mod job_information;

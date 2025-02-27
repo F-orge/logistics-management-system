@@ -14,12 +14,12 @@ path = "cmd/backend.rs"
 [workspace]
 members = [
   "crates/lib-proto",
-  "crates/lib-utils",
   "crates/service-human-resource",
   "crates/service-authentication",
   "crates/service-storage",
   "crates/lib-core",
   "crates/lib-entity",
+  "crates/lib-security",
 ]
 
 
@@ -80,6 +80,9 @@ sea-query-binder = { version = "0.7.0", features = [
 ] }
 tracing-test = "0.2.5"
 sea-orm = { version = "1.1.6", features = ["sqlx-postgres", "runtime-tokio"] }
+hmac = "0.12.1"
+sha2 = "0.10.8"
+hyper-util = "0.1.10"
 
 [dependencies]
 service-storage = { path = "./crates/service-storage" }
@@ -98,3 +101,6 @@ axum = { workspace = true }
 lib-proto = { path = "./crates/lib-proto" }
 axum-extra = { workspace = true }
 sea-query = { workspace = true }
+sea-orm = { workspace = true }
+hmac = { workspace = true }
+sha2 = { workspace = true }

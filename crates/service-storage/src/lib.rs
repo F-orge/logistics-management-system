@@ -13,7 +13,6 @@ use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
 use lib_proto::storage::{
-    file_metadata_request,
     storage_service_server::{StorageService as GRPCStorageService, StorageServiceServer},
     CreateFileRequest, DeleteFileRequest, DownloadFileRequest, FileChunk, FileMetadata,
     FileMetadataRequest,
@@ -83,14 +82,7 @@ impl GRPCStorageService for StorageService {
 
                 has_inserted_to_db = true;
 
-                metadata = FileMetadata {
-                    id: file.id.to_string(),
-                    name: file.name,
-                    r#type: file.r#type,
-                    size: file.size as u32,
-                    is_public: file.is_public,
-                    owner_id: file.owner_id.to_string(),
-                };
+                metadata = file.into();
             }
             match file_request.chunk {
                 Some(bytes) => chunks.push(bytes.chunk),
@@ -131,16 +123,9 @@ impl GRPCStorageService for StorageService {
 
         while let Some(row) = user_files.try_next().await.map_err(Error::SeaOrm)? {
             let item: file::Model = row.into();
-            tx.send(Ok(FileMetadata {
-                id: item.id.to_string(),
-                name: item.name,
-                r#type: item.r#type,
-                size: item.size as u32,
-                is_public: item.is_public,
-                owner_id: item.owner_id.to_string(),
-            }))
-            .await
-            .map_err(|err| Error::Custom(Box::new(err)))?;
+            tx.send(Ok(item.into()))
+                .await
+                .map_err(|err| Error::Custom(Box::new(err)))?;
         }
         Ok(Response::new(ReceiverStream::new(rx)))
     }
@@ -161,16 +146,9 @@ impl GRPCStorageService for StorageService {
 
         while let Some(row) = shared_files.try_next().await.map_err(Error::SeaOrm)? {
             let item: file::Model = row.into();
-            tx.send(Ok(FileMetadata {
-                id: item.id.to_string(),
-                name: item.name,
-                r#type: item.r#type,
-                size: item.size as u32,
-                is_public: item.is_public,
-                owner_id: item.owner_id.to_string(),
-            }))
-            .await
-            .map_err(|err| Error::Custom(Box::new(err)))?;
+            tx.send(Ok(item.into()))
+                .await
+                .map_err(|err| Error::Custom(Box::new(err)))?;
         }
         Ok(Response::new(ReceiverStream::new(rx)))
     }
@@ -190,11 +168,20 @@ impl GRPCStorageService for StorageService {
             ));
         }
 
+        let user_ids = payload
+            .user_ids
+            .into_iter()
+            .map(|v| v.parse::<Uuid>())
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(Error::Uuid)?;
+
+        let file_id = payload.file_id.parse::<Uuid>().map_err(Error::Uuid)?;
+
         if let Some(share_option) = payload.share_option {
             match share_option {
                 lib_proto::share_file_request::ShareOption::IsPublic(is_public) => {
                     let mut file = File::find()
-                        .filter(file::Column::Id.eq(payload.file_id))
+                        .filter(file::Column::Id.eq(file_id))
                         .one(&trx)
                         .await
                         .map_err(Error::SeaOrm)?
@@ -212,11 +199,11 @@ impl GRPCStorageService for StorageService {
             }
         }
 
-        for user_id in payload.user_ids {
+        for user_id in user_ids {
             let mut insert_stmt = file_access::ActiveModel::new();
 
-            insert_stmt.file_id = Set(payload.file_id.parse().unwrap());
-            insert_stmt.user_id = Set(user_id.parse().unwrap());
+            insert_stmt.file_id = Set(file_id);
+            insert_stmt.user_id = Set(user_id);
 
             let _ = insert_stmt.insert(&trx).await.map_err(Error::SeaOrm)?;
         }
@@ -230,7 +217,11 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<DownloadFileRequest>,
     ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status> {
-        let file_id = request.into_inner().id.parse::<Uuid>().unwrap();
+        let file_id = request
+            .into_inner()
+            .id
+            .parse::<Uuid>()
+            .map_err(Error::Uuid)?;
 
         let file = File::find()
             .filter(file::Column::Id.eq(file_id))
@@ -278,47 +269,15 @@ impl GRPCStorageService for StorageService {
     ) -> std::result::Result<tonic::Response<FileMetadata>, tonic::Status> {
         let payload = request.into_inner();
 
-        let metadata = match payload.request {
-            Some(file_metadata_request::Request::Id(id)) => {
-                let file_id = id
-                    .parse::<Uuid>()
-                    .map_err(|err| lib_core::error::Error::Custom(Box::new(err)))?;
+        let file_id = payload.id.parse::<Uuid>().map_err(Error::Uuid)?;
 
-                let file = File::find()
-                    .filter(file::Column::Id.eq(id))
-                    .one(&self.db)
-                    .await
-                    .map_err(Error::SeaOrm)?
-                    .ok_or(Error::RowNotFound)?;
-
-                FileMetadata {
-                    id: file.id.to_string(),
-                    name: file.name,
-                    r#type: file.r#type,
-                    size: file.size as u32,
-                    is_public: file.is_public,
-                    owner_id: file.owner_id.to_string(),
-                }
-            }
-            Some(file_metadata_request::Request::Name(name)) => {
-                let file = File::find()
-                    .filter(file::Column::Name.eq(name))
-                    .one(&self.db)
-                    .await
-                    .map_err(Error::SeaOrm)?
-                    .ok_or(Error::RowNotFound)?;
-
-                FileMetadata {
-                    id: file.id.to_string(),
-                    name: file.name,
-                    r#type: file.r#type,
-                    size: file.size as u32,
-                    is_public: file.is_public,
-                    owner_id: file.owner_id.to_string(),
-                }
-            }
-            None => return Err(Status::invalid_argument("Missing request parameters")),
-        };
+        let metadata: FileMetadata = File::find()
+            .filter(file::Column::Id.eq(file_id))
+            .one(&self.db)
+            .await
+            .map_err(Error::SeaOrm)?
+            .ok_or(Error::RowNotFound)?
+            .into();
 
         Ok(Response::new(metadata))
     }
@@ -331,10 +290,7 @@ impl GRPCStorageService for StorageService {
 
         let payload = request.into_inner();
 
-        let file_id = payload
-            .id
-            .parse::<Uuid>()
-            .map_err(|err| lib_core::error::Error::Custom(Box::new(err)))?;
+        let file_id = payload.id.parse::<Uuid>().map_err(Error::Uuid)?;
 
         let file = File::find()
             .filter(file::Column::Id.eq(file_id))

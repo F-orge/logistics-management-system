@@ -289,6 +289,12 @@ dependencies = [
 
 [[package]]
 name = "base64"
+version = "0.13.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9e1b586273c5702936fe7b7d6896644d8be71e6314cfe09d3167c95f712589e8"
+
+[[package]]
+name = "base64"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
@@ -1422,6 +1428,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "jwt"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6204285f77fe7d9784db3fdc449ecce1a0114927a51d5a41c4c7a292011c015f"
+dependencies = [
+ "base64 0.13.1",
+ "crypto-common",
+ "digest",
+ "hmac",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
 name = "lazy_static"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1434,13 +1455,16 @@ dependencies = [
 name = "lib-core"
 version = "0.2.0"
 dependencies = [
+ "axum",
  "derive_more",
+ "hyper-util",
  "sea-orm",
  "sea-query",
  "sqlx",
  "tokio",
  "tokio-stream",
  "tonic",
+ "tower 0.5.2",
  "tracing",
 ]
 
@@ -1448,6 +1472,7 @@ dependencies = [
 name = "lib-entity"
 version = "0.1.0"
 dependencies = [
+ "lib-proto",
  "sea-orm",
 ]
 
@@ -1462,16 +1487,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "lib-utils"
+name = "lib-security"
 version = "0.1.0"
 dependencies = [
- "hyper-util",
+ "axum",
+ "hmac",
+ "jwt",
+ "serde",
+ "sha2",
  "sqlx",
- "tokio",
- "tokio-stream",
- "tonic",
- "tower 0.5.2",
- "tracing",
 ]
 
 [[package]]
@@ -1532,10 +1556,13 @@ dependencies = [
  "axum-extra",
  "clap",
  "dotenv",
+ "hmac",
  "lib-proto",
+ "sea-orm",
  "sea-query",
  "service-authentication",
  "service-storage",
+ "sha2",
  "sqlx",
  "test-log",
  "tokio",
@@ -2550,12 +2577,15 @@ dependencies = [
 name = "service-authentication"
 version = "0.1.1"
 dependencies = [
+ "hmac",
+ "jwt",
  "lib-core",
  "lib-entity",
  "lib-proto",
- "lib-utils",
+ "lib-security",
  "sea-orm",
  "serde",
+ "sha2",
  "sqlx",
  "test-log",
  "tonic",
@@ -2570,7 +2600,6 @@ dependencies = [
  "futures",
  "lib-core",
  "lib-proto",
- "lib-utils",
  "sea-query",
  "sea-query-binder",
  "sqlx",
@@ -2590,7 +2619,6 @@ dependencies = [
  "lib-core",
  "lib-entity",
  "lib-proto",
- "lib-utils",
  "sea-orm",
  "service-authentication",
  "sqlx",
@@ -2809,7 +2837,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4560278f0e00ce64938540546f59f590d60beee33fffbd3b9cd47851e5fff233"
 dependencies = [
  "atoi",
- "base64",
+ "base64 0.22.1",
  "bigdecimal",
  "bitflags",
  "byteorder",
@@ -2856,7 +2884,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c5b98a57f363ed6764d5b3a12bfedf62f07aa16e1856a7ddc2a0bb190a959613"
 dependencies = [
  "atoi",
- "base64",
+ "base64 0.22.1",
  "bigdecimal",
  "bitflags",
  "byteorder",
@@ -3235,7 +3263,7 @@ dependencies = [
  "async-stream",
  "async-trait",
  "axum",
- "base64",
+ "base64 0.22.1",
  "bytes",
  "h2",
  "http",

@@ -29,12 +29,7 @@ message CreateFileRequest {
 
 message DownloadFileRequest { string id = 1; }
 
-message FileMetadataRequest {
-  oneof request {
-    string id = 1;
-    string name = 2;
-  }
-}
+message FileMetadataRequest { string id = 1; }
 
 message ShareFileRequest {
   string file_id = 1;

@@ -53,18 +53,8 @@ pub struct DownloadFileRequest {
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct FileMetadataRequest {
-    #[prost(oneof = "file_metadata_request::Request", tags = "1, 2")]
-    pub request: ::core::option::Option<file_metadata_request::Request>,
-}
-/// Nested message and enum types in `FileMetadataRequest`.
-pub mod file_metadata_request {
-    #[derive(Clone, PartialEq, ::prost::Oneof)]
-    pub enum Request {
-        #[prost(string, tag = "1")]
-        Id(::prost::alloc::string::String),
-        #[prost(string, tag = "2")]
-        Name(::prost::alloc::string::String),
-    }
+    #[prost(string, tag = "1")]
+    pub id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]

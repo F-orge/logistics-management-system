@@ -5,9 +5,9 @@ edition = "2021"
 
 [dependencies]
 lib-proto = { path = "../../crates/lib-proto" }
-lib-utils = { path = "../../crates/lib-utils" }
 lib-core = { path = "../../crates/lib-core" }
 lib-entity = { path = "../../crates/lib-entity" }
+lib-security = { path = "../../crates/lib-security" }
 sea-orm = { workspace = true }
 sqlx = { workspace = true }
 serde = { workspace = true }
@@ -15,3 +15,6 @@ tonic = { workspace = true }
 tracing = { workspace = true }
 test-log = { workspace = true }
 tracing-test = { workspace = true }
+hmac = { workspace = true }
+sha2 = { workspace = true }
+jwt = { workspace = true }
