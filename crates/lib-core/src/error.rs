@@ -23,7 +23,7 @@ impl From<Error> for Status {
     fn from(err: Error) -> Self {
         match err {
             Error::SeaOrm(err) => {
-                tracing::info!("{}", err);
+                println!("{}", err);
                 match err {
                     sea_orm::DbErr::RecordNotFound(id) => {
                         Status::not_found(format!("Row not found {}", id))

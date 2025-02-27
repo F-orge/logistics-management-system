@@ -14,6 +14,5 @@ create table
 create table
     logistics.file_access (
         user_id uuid references logistics.users (id) on delete cascade,
-        file_id uuid references logistics.file (id) on delete cascade,
-        primary key (user_id, file_id)
+        file_id uuid references logistics.file (id) on delete cascade
     );

@@ -1453,7 +1453,7 @@ dependencies = [
 
 [[package]]
 name = "lib-core"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "axum",
  "derive_more",
@@ -1490,12 +1490,12 @@ dependencies = [
 name = "lib-security"
 version = "0.1.0"
 dependencies = [
- "axum",
  "hmac",
  "jwt",
  "serde",
  "sha2",
  "sqlx",
+ "tonic",
 ]
 
 [[package]]
@@ -2616,11 +2616,14 @@ name = "service-storage"
 version = "0.2.0"
 dependencies = [
  "futures",
+ "hmac",
  "lib-core",
  "lib-entity",
  "lib-proto",
+ "lib-security",
  "sea-orm",
  "service-authentication",
+ "sha2",
  "sqlx",
  "tempdir",
  "tokio",

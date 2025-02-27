@@ -1,12 +1,12 @@
-// reference: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims
-use hmac::{Hmac, Mac};
+use hmac::Hmac;
 use jwt::VerifyWithKey;
 use sha2::Sha256;
 use std::collections::BTreeMap;
+use tonic::{Status, metadata::MetadataMap};
 
-use axum::{async_trait, extract::FromRequestParts, http::StatusCode};
 use serde::{Deserialize, Serialize};
 
+// reference: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims
 #[derive(Deserialize, Serialize, Debug)]
 pub struct JWTClaim {
     #[serde(rename = "iss")]
@@ -27,33 +27,40 @@ pub struct JWTClaim {
     pub claims: BTreeMap<String, String>,
 }
 
-#[async_trait]
-impl<S> FromRequestParts<S> for JWTClaim {
-    type Rejection = StatusCode;
-    async fn from_request_parts(
-        parts: &mut axum::http::request::Parts,
-        state: &S,
-    ) -> Result<Self, Self::Rejection> {
-        let key = parts
-            .extensions
-            .get::<Hmac<Sha256>>()
-            .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+pub fn get_jwt_claim(
+    metadata: &MetadataMap,
+    encryption_key: &Hmac<Sha256>,
+) -> Result<JWTClaim, Status> {
+    let authorization = metadata
+        .get("authorization")
+        .ok_or(Status::unauthenticated(
+            "Cannot get `authorization` header metadata",
+        ))?
+        .clone();
 
-        // get the authorization header
-        let auth_header = parts
-            .headers
-            .get("Authorization")
-            .ok_or(StatusCode::FORBIDDEN)?;
-
-        let token = auth_header
+    let (auth_type, token) = {
+        let auth_str = authorization
             .to_str()
-            .map_err(|_| StatusCode::FORBIDDEN)?
-            .to_string();
+            .map_err(|_| Status::unauthenticated("Cannot get `authorization` header metadata"))?;
+        let mut parts = auth_str.splitn(2, ' ');
+        let auth_type = parts.next().ok_or(Status::unauthenticated(
+            "Cannot get `authorization` header metadata",
+        ))?;
+        let token = parts.next().ok_or(Status::unauthenticated(
+            "Cannot get `authorization` header metadata",
+        ))?;
+        (auth_type, token)
+    };
 
-        let claims: Self = token
-            .verify_with_key(key)
-            .map_err(|_| StatusCode::FORBIDDEN)?;
-
-        Ok(claims)
+    if auth_type.to_lowercase() != "bearer" {
+        return Err(Status::unauthenticated(
+            "Cannot get `authorization` header metadata",
+        ));
     }
+
+    let claims: JWTClaim = token
+        .verify_with_key(encryption_key)
+        .map_err(|_| Status::unauthenticated("Cannot get `authorization` header metadata"))?;
+
+    Ok(claims)
 }

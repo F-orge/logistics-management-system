@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 sqlx = { workspace = true }
 serde = { workspace = true }
-axum = { workspace = true }
 jwt = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }
+tonic = { workspace = true }

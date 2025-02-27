@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let db_url = std::env::var("RUST_DATABASE_URL")?;
 
-    let jwt_key = std::env::var("RUST_JWT_SECRET")?;
+    let jwt_key = Hmac::new_from_slice(std::env::var("RUST_JWT_SECRET")?.as_bytes())?;
 
     let directory = std::env::var("RUST_STORAGE_DIRECTORY_URL")?;
 
@@ -48,11 +48,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let grpc_server = Server::builder()
         .add_service(service_authentication::AuthService::new(
             &db,
-            Hmac::new_from_slice(jwt_key.as_bytes())?,
+            jwt_key.clone(),
         ))
         .add_service(service_storage::StorageService::new(
             &db,
             Path::new(&directory),
+            jwt_key,
         ))
         .into_service()
         .into_axum_router();

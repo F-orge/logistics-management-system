@@ -1,14 +1,17 @@
 use std::path::{Path, PathBuf};
 
 use futures::{StreamExt, TryStreamExt};
+use hmac::Hmac;
 use lib_core::error::Error;
 use lib_entity::{file, file_access, prelude::*};
+use lib_security::get_jwt_claim;
 use sea_orm::{
-    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait,
-    IntoActiveModel, QueryFilter, Set, TransactionTrait,
+    prelude::Expr, ActiveModelBehavior, ActiveModelTrait, ColumnTrait, Condition,
+    DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter, Set, TransactionTrait,
 };
-use sqlx::{types::Uuid, PgPool, Pool, Postgres};
-use tokio::{fs, sync::mpsc};
+use sha2::Sha256;
+use sqlx::types::Uuid;
+use tokio::fs;
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Request, Response, Status};
 
@@ -21,13 +24,19 @@ use lib_proto::storage::{
 pub struct StorageService {
     db: DatabaseConnection,
     directory: PathBuf,
+    encryption_key: Hmac<Sha256>,
 }
 
 impl StorageService {
-    pub fn new(db: &DatabaseConnection, directory: &Path) -> StorageServiceServer<Self> {
+    pub fn new(
+        db: &DatabaseConnection,
+        directory: &Path,
+        encryption_key: Hmac<Sha256>,
+    ) -> StorageServiceServer<Self> {
         StorageServiceServer::new(Self {
             db: db.clone(),
             directory: directory.to_path_buf(),
+            encryption_key,
         })
     }
 }
@@ -43,6 +52,8 @@ impl GRPCStorageService for StorageService {
         request: tonic::Request<tonic::Streaming<CreateFileRequest>>,
     ) -> std::result::Result<tonic::Response<FileMetadata>, tonic::Status> {
         let trx = self.db.begin().await.map_err(Error::SeaOrm)?;
+
+        let claims = lib_security::get_jwt_claim(&request.metadata(), &self.encryption_key)?;
 
         // refer to this documentation. https://github.com/hyperium/tonic/blob/master/examples/routeguide-tutorial.md
         // under client side streaming section.
@@ -67,7 +78,7 @@ impl GRPCStorageService for StorageService {
 
                 file.name = Set(create_metadata.name);
                 file.is_public = Set(create_metadata.is_public);
-                file.owner_id = todo!("implement on how to get the user_id by token");
+                file.owner_id = Set(claims.subject);
                 file.r#type = Set(create_metadata.r#type);
                 file.size = Set(create_metadata.size as i32);
 
@@ -76,7 +87,7 @@ impl GRPCStorageService for StorageService {
                 let mut file_access = file_access::ActiveModel::new();
 
                 file_access.file_id = Set(file.id);
-                file_access.user_id = Set(todo!("implement on how to get the user_id by token"));
+                file_access.user_id = Set(claims.subject);
 
                 let _ = file_access.insert(&trx).await.map_err(Error::SeaOrm)?;
 
@@ -111,10 +122,12 @@ impl GRPCStorageService for StorageService {
 
     async fn list_owned_files(
         &self,
-        _request: tonic::Request<()>,
+        request: tonic::Request<()>,
     ) -> std::result::Result<tonic::Response<Self::ListOwnedFilesStream>, tonic::Status> {
+        let claims = get_jwt_claim(&request.metadata(), &self.encryption_key)?;
+
         let mut user_files = File::find()
-            .filter(file::Column::OwnerId.eq("Todo: owner_id"))
+            .filter(file::Column::OwnerId.eq(claims.subject))
             .stream(&self.db)
             .await
             .map_err(Error::SeaOrm)?;
@@ -134,13 +147,20 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<()>,
     ) -> std::result::Result<tonic::Response<Self::ListSharedFilesStream>, tonic::Status> {
-        let mut shared_files = File::find()
-            .inner_join(FileAccess)
-            .filter(file::Column::OwnerId.ne("TODO: owner_id"))
-            .filter(file_access::Column::UserId.eq("TODO: owner_id"))
-            .stream(&self.db)
-            .await
-            .map_err(Error::SeaOrm)?;
+        let claims = get_jwt_claim(&request.metadata(), &self.encryption_key)?;
+
+        let mut shared_files =
+            File::find()
+                .inner_join(FileAccess)
+                .filter(file::Column::OwnerId.ne(claims.subject))
+                .filter(Condition::any().add(file::Column::IsPublic.eq(true)).add(
+                    file_access::Column::UserId.eq(claims.subject).and(
+                        Expr::col(file_access::Column::FileId).eq(Expr::col(file::Column::Id)),
+                    ),
+                ))
+                .stream(&self.db)
+                .await
+                .map_err(Error::SeaOrm)?;
 
         let (tx, rx) = tokio::sync::mpsc::channel::<Result<FileMetadata, Status>>(1024 * 64);
 
@@ -157,14 +177,30 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<lib_proto::storage::ShareFileRequest>,
     ) -> std::result::Result<Response<()>, tonic::Status> {
+        let claims = get_jwt_claim(&request.metadata(), &self.encryption_key)?;
+
         let trx = self.db.begin().await.map_err(Error::SeaOrm)?;
 
         let payload = request.into_inner();
+
+        // TODO make sure that the user owned the file
+        let file = File::find()
+            .filter(file::Column::OwnerId.eq(claims.subject))
+            .one(&self.db)
+            .await
+            .map_err(Error::SeaOrm)?
+            .ok_or(Error::RowNotFound)?;
 
         // check if we have the right properties.
         if payload.user_ids.len() == 0 && payload.share_option.is_none() {
             return Err(Status::invalid_argument(
                 "user_ids and share options are both empty",
+            ));
+        }
+
+        if payload.user_ids.len() > 0 && payload.share_option.is_some() {
+            return Err(Status::invalid_argument(
+                "user_ids and share options are both present",
             ));
         }
 
@@ -175,18 +211,10 @@ impl GRPCStorageService for StorageService {
             .collect::<Result<Vec<_>, _>>()
             .map_err(Error::Uuid)?;
 
-        let file_id = payload.file_id.parse::<Uuid>().map_err(Error::Uuid)?;
-
         if let Some(share_option) = payload.share_option {
             match share_option {
                 lib_proto::share_file_request::ShareOption::IsPublic(is_public) => {
-                    let mut file = File::find()
-                        .filter(file::Column::Id.eq(file_id))
-                        .one(&trx)
-                        .await
-                        .map_err(Error::SeaOrm)?
-                        .ok_or(Error::RowNotFound)?
-                        .into_active_model();
+                    let mut file = file.clone().into_active_model();
 
                     file.is_public = Set(is_public);
 
@@ -202,10 +230,10 @@ impl GRPCStorageService for StorageService {
         for user_id in user_ids {
             let mut insert_stmt = file_access::ActiveModel::new();
 
-            insert_stmt.file_id = Set(file_id);
+            insert_stmt.file_id = Set(file.id);
             insert_stmt.user_id = Set(user_id);
 
-            let _ = insert_stmt.insert(&trx).await.map_err(Error::SeaOrm)?;
+            let f = insert_stmt.insert(&trx).await.map_err(Error::SeaOrm)?;
         }
 
         trx.commit().await.map_err(Error::SeaOrm)?;
@@ -217,14 +245,28 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<DownloadFileRequest>,
     ) -> std::result::Result<tonic::Response<Self::DownloadFileStream>, tonic::Status> {
+        let claims = get_jwt_claim(&request.metadata(), &self.encryption_key)?;
+
         let file_id = request
             .into_inner()
             .id
             .parse::<Uuid>()
             .map_err(Error::Uuid)?;
 
+        // TODO: make sure that the file is either owned by the user, is_public = true, or shared by other users
         let file = File::find()
+            .inner_join(FileAccess)
             .filter(file::Column::Id.eq(file_id))
+            .filter(
+                Condition::any()
+                    .add(file::Column::OwnerId.eq(claims.subject))
+                    .add(file::Column::IsPublic.eq(true))
+                    .add(
+                        file_access::Column::UserId
+                            .eq(claims.subject)
+                            .and(file_access::Column::FileId.eq(file_id)),
+                    ),
+            )
             .one(&self.db)
             .await
             .map_err(Error::SeaOrm)?
@@ -267,25 +309,40 @@ impl GRPCStorageService for StorageService {
         &self,
         request: tonic::Request<FileMetadataRequest>,
     ) -> std::result::Result<tonic::Response<FileMetadata>, tonic::Status> {
+        let claims = get_jwt_claim(&request.metadata(), &self.encryption_key)?;
+
         let payload = request.into_inner();
 
         let file_id = payload.id.parse::<Uuid>().map_err(Error::Uuid)?;
 
-        let metadata: FileMetadata = File::find()
+        let file = File::find()
+            .inner_join(FileAccess)
             .filter(file::Column::Id.eq(file_id))
+            .filter(
+                Condition::any()
+                    .add(file::Column::OwnerId.eq(claims.subject))
+                    .add(file::Column::IsPublic.eq(true))
+                    .add(
+                        file_access::Column::UserId
+                            .eq(claims.subject)
+                            .and(file_access::Column::FileId.eq(file_id)),
+                    ),
+            )
             .one(&self.db)
             .await
             .map_err(Error::SeaOrm)?
             .ok_or(Error::RowNotFound)?
             .into();
 
-        Ok(Response::new(metadata))
+        Ok(Response::new(file))
     }
 
     async fn delete_file(
         &self,
         request: tonic::Request<DeleteFileRequest>,
     ) -> Result<Response<()>, Status> {
+        let claims = get_jwt_claim(&request.metadata(), &self.encryption_key)?;
+
         let trx = self.db.begin().await.map_err(Error::SeaOrm)?;
 
         let payload = request.into_inner();
@@ -294,6 +351,7 @@ impl GRPCStorageService for StorageService {
 
         let file = File::find()
             .filter(file::Column::Id.eq(file_id))
+            .filter(file::Column::OwnerId.eq(claims.subject))
             .one(&trx)
             .await
             .map_err(Error::SeaOrm)?
@@ -318,119 +376,83 @@ impl GRPCStorageService for StorageService {
         Ok(Response::new(()))
     }
 }
-/*
+
 #[cfg(test)]
 mod test {
-    #![allow(clippy::unwrap_used)]
+    use sea_orm::{EntityOrSelect, EntityTrait};
+    use std::str::FromStr;
 
     use futures::TryStreamExt;
-    use tempdir::TempDir;
-    use tonic::{
-        metadata::{MetadataMap, MetadataValue},
-        service::interceptor::InterceptedService,
-        transport::{Channel, Server},
-        Request,
-    };
-
-    use lib_proto::{
-        auth::{self, auth_service_client::AuthServiceClient, AuthBasicLoginRequest},
-        storage::{storage_service_client::StorageServiceClient, CreateFileRequest},
-        AuthResponse, ShareFileRequest,
-    };
-
+    use hmac::{Hmac, Mac};
+    use lib_core::test::start_server;
+    use lib_entity::sea_orm_active_enums::AuthType;
+    use lib_entity::{file, users};
+    use lib_proto::auth_service_client::AuthServiceClient;
+    use lib_proto::storage_service_client::StorageServiceClient;
+    use lib_proto::{AuthBasicLoginRequest, CreateFileRequest, FileChunk, ShareFileRequest};
+    use sea_orm::{ActiveModelBehavior, ActiveModelTrait, Database, Set};
     use service_authentication::AuthService;
+    use sqlx::ConnectOptions;
+    use sqlx::{pool::PoolOptions, postgres::PgConnectOptions, Postgres};
+    use tonic::metadata::MetadataValue;
+    use tonic::transport::Server;
+    use tonic::{Request, Status};
 
-    use lib_utils::test::start_server;
+    use crate::StorageService;
 
-    use super::*;
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_create_file(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // -- setup
 
-    async fn create_dummy_user(
-        db: &Pool<Postgres>,
-        email: &str,
-        password: &str,
-    ) -> lib_core::error::Result<()> {
-        let mut conn = lib_core::database::aquire_connection(&db).await?;
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
 
-        let mut trx = lib_core::database::start_transaction(&mut conn).await?;
+        let mut user = users::ActiveModel::new();
 
-        lib_utils::db::setup_db(&mut trx, &MetadataMap::new())
-            .await
-            .map_err(lib_core::error::Error::Database)?;
+        user.email = Set("sample@email.com".into());
+        user.password = Set("Randompassword1!".into());
+        user.auth_type = Set(AuthType::BasicAuth);
 
-        let (query, values) = Query::insert()
-            .into_table((Alias::new("auth"), Alias::new("basic_user")))
-            .columns([Alias::new("email"), Alias::new("password")])
-            .values([email.into(), password.into()])
-            .map_err(lib_core::error::Error::Query)?
-            .build_sqlx(PostgresQueryBuilder);
+        let _ = user.insert(&db).await?;
 
-        sqlx::query_with(&query, values)
-            .execute(&mut *trx)
-            .await
-            .map_err(lib_core::error::Error::Database)?;
+        let temp_dir = tempdir::TempDir::new("sample")?;
 
-        lib_core::database::commit_transaction(trx).await?;
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
 
-        Ok(())
-    }
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
 
-    fn setup_env_variables() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
-        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
-        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
-        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
-        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
-        Ok(())
-    }
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
 
-    async fn setup_client_with_token(
-        db: &Pool<Postgres>,
-        email: &str,
-        password: &str,
-    ) -> lib_core::error::Result<(
-        TempDir,
-        StorageServiceClient<
-            InterceptedService<Channel, impl Fn(Request<()>) -> Result<Request<()>, Status>>,
-        >,
-    )> {
-        let (_, channel) = start_server(Server::builder().add_service(AuthService::new(db))).await;
-        let mut client = AuthServiceClient::new(channel);
+        let mut auth_client = AuthServiceClient::new(auth_channel);
 
-        // register the user first
-        create_dummy_user(db, email, password).await?;
-
-        let auth_response = client
+        let user_auth = auth_client
             .basic_login(AuthBasicLoginRequest {
-                email: email.to_string(),
-                password: password.to_string(),
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
             })
-            .await
-            .map_err(|err| lib_core::error::Error::Tonic(err))?
+            .await?
             .into_inner();
 
-        let tmp_dir = TempDir::new("temp_storage").unwrap();
+        let mut storage_client =
+            StorageServiceClient::with_interceptor(storage_channel, |mut request: Request<()>| {
+                let token = format!("Bearer {}", user_auth.access_token);
+                request.metadata_mut().append(
+                    "authorization",
+                    MetadataValue::from_str(&token).map_err(|_| Status::internal("error"))?,
+                );
+                Ok(request)
+            });
 
-        let (_, channel) =
-            start_server(Server::builder().add_service(StorageService::new(db, tmp_dir.path())))
-                .await;
+        // -- end setup
 
-        let token: MetadataValue<_> = auth_response.access_token.parse().unwrap();
+        // -- start execution
 
-        let client = StorageServiceClient::with_interceptor(channel, move |mut req: Request<()>| {
-            // NOTE: for metadata insertion and retrieval only use lowercase keys because inserting it will cause a panic.
-            // see this bug post: https://github.com/hyperium/tonic/issues/1782
-            req.metadata_mut().insert("authorization", token.clone());
-            Ok(req)
-        });
-
-        // get the token
-        Ok((tmp_dir, client))
-    }
-
-    async fn create_dummy_file(
-        client: &mut StorageServiceClient<
-            InterceptedService<Channel, impl Fn(Request<()>) -> Result<Request<()>, Status>>,
-        >,
-    ) -> lib_core::error::Result<FileMetadata> {
         let file_content = br#"
             This is a sample .txt file
         "#;
@@ -449,23 +471,76 @@ mod test {
 
         let request_stream = tokio_stream::iter(vec![file_metadata]);
 
-        Ok(client
-            .create_file(request_stream)
-            .await
-            .map_err(lib_core::error::Error::Tonic)?
-            .into_inner())
+        let response = storage_client.create_file(request_stream).await;
+
+        // -- end execution
+
+        // -- validation
+
+        assert!(response.is_ok(), "{:?}", response.err());
+
+        let directory = std::fs::read_dir(temp_dir.path())?.collect::<Vec<_>>();
+
+        assert_eq!(directory.len(), 1);
+
+        // -- end validation
+
+        Ok(())
     }
 
     #[sqlx::test(migrations = "../../migrations")]
-    async fn test_storage_create_file(db: Pool<Postgres>) -> lib_core::error::Result<()> {
+    async fn test_list_owned_files(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         // -- setup
-        setup_env_variables()?;
 
-        let (tmp_dir, mut client) =
-            setup_client_with_token(&db, "sample@email.com", "RandomPassword1!").await?;
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
 
-        // send one chunk to the backend
-        let file_content = b"HELLO MY NAME IS JOHN DOE. i am a file!!! :3";
+        let mut user = users::ActiveModel::new();
+
+        user.email = Set("sample@email.com".into());
+        user.password = Set("Randompassword1!".into());
+        user.auth_type = Set(AuthType::BasicAuth);
+
+        let _ = user.insert(&db).await?;
+
+        let temp_dir = tempdir::TempDir::new("sample")?;
+
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
+
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
+
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
+
+        let mut auth_client = AuthServiceClient::new(auth_channel);
+
+        let user_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let mut storage_client =
+            StorageServiceClient::with_interceptor(storage_channel, |mut request: Request<()>| {
+                let token = format!("Bearer {}", user_auth.access_token);
+                request.metadata_mut().append(
+                    "authorization",
+                    MetadataValue::from_str(&token).map_err(|_| Status::internal("error"))?,
+                );
+
+                Ok(request)
+            });
+
+        let file_content = br#"
+            This is a sample .txt file
+        "#;
 
         let file_metadata = CreateFileRequest {
             metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
@@ -480,197 +555,389 @@ mod test {
         };
 
         let request_stream = tokio_stream::iter(vec![file_metadata]);
-        let response = client.create_file(request_stream).await;
 
-        assert!(response.is_ok(), "{:#?}", response.err());
+        let _ = storage_client.create_file(request_stream).await;
 
-        let response = response.unwrap().into_inner();
+        // -- end setup
 
-        assert_eq!(response.name, "test_file.txt");
-        assert_eq!(response.r#type, "text/plain");
-        assert_eq!(response.size, file_content.len() as u32);
+        // -- start execution
 
-        let mut read_dir = fs::read_dir(tmp_dir.path()).await.unwrap();
+        let response = storage_client
+            .list_owned_files(())
+            .await?
+            .into_inner()
+            .try_collect::<Vec<_>>()
+            .await?;
 
-        let entry = read_dir.next_entry().await.unwrap();
+        // -- end execution
 
-        // check if we really store it in the file system.
-        assert!(entry.is_some());
+        // -- validation
+
+        assert_eq!(response.len(), 1);
+
+        // -- end validation
 
         Ok(())
     }
 
     #[sqlx::test(migrations = "../../migrations")]
-    async fn test_storage_download_file(db: Pool<Postgres>) -> lib_core::error::Result<()> {
+    async fn test_share_file(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         // -- setup
-        setup_env_variables()?;
 
-        let (_tmp_dir, mut client) =
-            setup_client_with_token(&db, "sample@email.com", "RandomPassword1!").await?;
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
 
-        // create a file
-        let metadata = create_dummy_file(&mut client).await?;
+        let temp_dir = tempdir::TempDir::new("sample")?;
 
-        let metadata_request = Request::new(DownloadFileRequest { id: metadata.id });
+        let mut user_1 = users::ActiveModel::new();
 
-        // download file
-        let response = client.download_file(metadata_request).await.unwrap();
+        user_1.email = Set("sample@email.com".into());
+        user_1.password = Set("Randompassword1!".into());
+        user_1.auth_type = Set(AuthType::BasicAuth);
 
-        let chunks: Vec<FileChunk> = response.into_inner().try_collect().await.unwrap();
+        let user_1 = user_1.insert(&db).await?;
 
-        let content = chunks
-            .into_iter()
-            .flat_map(|chunk| chunk.chunk)
-            .collect::<Vec<u8>>();
+        let mut user_2 = users::ActiveModel::new();
 
-        assert_eq!(
-            content,
-            br#"
-            This is a sample .txt file
-        "#
-        );
+        user_2.email = Set("sample2@email.com".into());
+        user_2.password = Set("Randompassword1!".into());
+        user_2.auth_type = Set(AuthType::BasicAuth);
 
-        Ok(())
-    }
+        let user_2 = user_2.insert(&db).await?;
 
-    #[sqlx::test(migrations = "../../migrations")]
-    async fn test_list_owned_files(db: Pool<Postgres>) -> lib_core::error::Result<()> {
-        setup_env_variables()?;
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
 
-        let (tmp_dir, mut client) =
-            setup_client_with_token(&db, "sample@email.com", "RandomPassword1!").await?;
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
 
-        let file_1 = create_dummy_file(&mut client).await?;
-        let file_2 = create_dummy_file(&mut client).await?;
-        let file_3 = create_dummy_file(&mut client).await?;
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
 
-        let mut stream = client
-            .list_owned_files(Request::new(()))
-            .await
-            .unwrap()
+        let mut auth_client = AuthServiceClient::new(auth_channel);
+
+        let user_1_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
             .into_inner();
 
-        let files = stream.try_collect::<Vec<_>>().await.unwrap();
+        let _ = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample2@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
 
-        // must have 3 files
-        assert_eq!(files.len(), 3);
+        let mut storage_client = StorageServiceClient::new(storage_channel);
 
-        Ok(())
-    }
+        let file_content = br#"
+            This is a sample .txt file
+        "#;
 
-    #[sqlx::test(migrations = "../../migrations")]
-    async fn test_share_file_to_public(db: Pool<Postgres>) -> lib_core::error::Result<()> {
-        setup_env_variables()?;
-
-        let (_temp_dir, mut john_client) =
-            setup_client_with_token(&db, "john@email.com", "RandomPassword1!").await?;
-
-        let file = create_dummy_file(&mut john_client).await?;
-
-        assert_eq!(file.is_public, false);
-
-        // convert file to public
-
-        let request = ShareFileRequest {
-            file_id: file.id.clone(),
-            user_ids: vec![],
-            share_option: Some(lib_proto::share_file_request::ShareOption::IsPublic(true)),
+        let file_metadata = CreateFileRequest {
+            metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
+                name: "test_file.txt".into(),
+                r#type: "text/plain".into(),
+                is_public: false,
+                size: file_content.len() as u32,
+            }),
+            chunk: Some(FileChunk {
+                chunk: file_content.to_vec(),
+            }),
         };
 
-        let response = john_client.share_file(request).await;
+        let mut request_stream = Request::new(tokio_stream::iter(vec![file_metadata]));
 
-        assert_eq!(response.is_ok(), true);
+        request_stream.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_1_auth.access_token).parse()?,
+        );
 
-        // retrieve the file to see if public
-
-        let public_file = john_client
-            .get_file_metadata(FileMetadataRequest {
-                request: Some(file_metadata_request::Request::Id(file.id)),
-            })
-            .await
-            .unwrap()
+        let file = storage_client
+            .create_file(request_stream)
+            .await?
             .into_inner();
 
-        assert_eq!(public_file.is_public, true);
+        // -- end setup
 
-        Ok(())
-    }
+        // -- start execution
 
-    /*
-    #[sqlx::test(migrations = "../../migrations")]
-    async fn test_storage_get_file_metadata(db: Pool<Postgres>) {
-        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
-        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
-        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
-        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+        let share_request = ShareFileRequest {
+            user_ids: vec![user_2.id.to_string()],
+            share_option: None,
+            file_id: file.id,
+        };
 
-        let actor = setup_actor(&db).await.unwrap();
+        let mut request = Request::new(share_request);
 
-        let (_temp_dir, mut client) = setup_test_client(&db, actor.clone()).await;
+        request.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_1_auth.access_token).parse()?,
+        );
 
-        // create a file
-        let metadata = create_test_file(&mut client).await;
+        let response = storage_client.share_file(request).await;
 
-        let mut metadata_request = Request::new(FileMetadataRequest {
-            request: Some(file_metadata_request::Request::Id(metadata.clone().id)),
-        });
+        // -- end execution
 
-        metadata_request
-            .metadata_mut()
-            .append("authorization", actor.access_token.parse().unwrap());
-
-        // download file
-        let response = client.get_file_metadata(metadata_request).await;
+        // -- validation
 
         assert!(response.is_ok());
 
-        let response = response.unwrap().into_inner();
+        // -- end validation
 
-        assert_eq!(metadata.id, response.id);
-        assert_eq!(metadata.name, response.name);
-        assert_eq!(metadata.r#type, response.r#type);
-        assert_eq!(metadata.size, response.size);
+        Ok(())
     }
 
     #[sqlx::test(migrations = "../../migrations")]
-    async fn test_delete_file(db: Pool<Postgres>) {
-        std::env::set_var("RUST_POSTGRES_JWT_SECRET", "randomsecret");
-        std::env::set_var("RUST_POSTGRES_JWT_AUDIENCE", "management.com");
-        std::env::set_var("RUST_POSTGRES_JWT_ISSUER", "web");
-        std::env::set_var("RUST_POSTGRES_JWT_EXPIRY", "3600");
+    async fn test_list_shared_files(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // -- setup
 
-        let actor = setup_actor(&db).await.unwrap();
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
 
-        let (_temp_dir, mut client) = setup_test_client(&db, actor.clone()).await;
+        let temp_dir = tempdir::TempDir::new("sample")?;
 
-        // create a file
-        let metadata = create_test_file(&mut client).await;
+        let mut user_1 = users::ActiveModel::new();
 
-        // Delete the file
-        let file_id = metadata.id.clone();
+        user_1.email = Set("sample@email.com".into());
+        user_1.password = Set("Randompassword1!".into());
+        user_1.auth_type = Set(AuthType::BasicAuth);
 
-        let response = client
-            .delete_file(Request::new(DeleteFileRequest {
-                id: file_id.clone(),
-            }))
-            .await;
+        let _ = user_1.insert(&db).await?;
 
-        assert!(response.is_ok(), "{:#?}", response.err());
+        let mut user_2 = users::ActiveModel::new();
 
-        // try to get the deleted file - should return not found
-        let get_response = client
-            .get_file_metadata(Request::new(FileMetadataRequest {
-                request: Some(file_metadata_request::Request::Id(file_id)),
-            }))
-            .await;
+        user_2.email = Set("sample2@email.com".into());
+        user_2.password = Set("Randompassword1!".into());
+        user_2.auth_type = Set(AuthType::BasicAuth);
 
-        assert!(
-            get_response.is_err(),
-            "File should not exist after deletion {:#?}",
-            get_response.ok()
+        let user_2 = user_2.insert(&db).await?;
+
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
+
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
+
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
+
+        let mut auth_client = AuthServiceClient::new(auth_channel);
+
+        let user_1_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let user_2_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample2@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let mut storage_client = StorageServiceClient::new(storage_channel);
+
+        for i in 0..3 {
+            let file_content = br#"
+            This is a sample .txt file
+        "#;
+
+            let file_metadata = CreateFileRequest {
+                metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
+                    name: format!("test_file_{}.txt", i),
+                    r#type: "text/plain".into(),
+                    is_public: false,
+                    size: file_content.len() as u32,
+                }),
+                chunk: Some(FileChunk {
+                    chunk: file_content.to_vec(),
+                }),
+            };
+
+            let mut request_stream = Request::new(tokio_stream::iter(vec![file_metadata]));
+
+            request_stream.metadata_mut().append(
+                "authorization",
+                format!("Bearer {}", user_1_auth.access_token).parse()?,
+            );
+
+            let file = storage_client
+                .create_file(request_stream)
+                .await?
+                .into_inner();
+
+            let share_request = ShareFileRequest {
+                user_ids: vec![user_2.id.to_string()],
+                share_option: None,
+                file_id: file.id,
+            };
+
+            let mut request = Request::new(share_request);
+
+            request.metadata_mut().append(
+                "authorization",
+                format!("Bearer {}", user_1_auth.access_token).parse()?,
+            );
+
+            let _ = storage_client.share_file(request).await?;
+        }
+
+        // -- end setup
+
+        // -- start execution
+
+        let mut list_shared_files_request = Request::new(());
+
+        list_shared_files_request.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_2_auth.access_token).parse()?,
         );
-        assert_eq!(get_response.unwrap_err().code(), tonic::Code::NotFound);
+
+        let response = storage_client
+            .list_shared_files(list_shared_files_request)
+            .await?
+            .into_inner()
+            .try_collect::<Vec<_>>()
+            .await?;
+
+        // -- end execution
+
+        // -- validation
+
+        assert_eq!(response.len(), 3);
+
+        // -- end validation
+
+        Ok(())
     }
-    */
+
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_list_shared_public_files(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // -- setup
+
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
+
+        let temp_dir = tempdir::TempDir::new("sample")?;
+
+        let mut user_1 = users::ActiveModel::new();
+
+        user_1.email = Set("sample@email.com".into());
+        user_1.password = Set("Randompassword1!".into());
+        user_1.auth_type = Set(AuthType::BasicAuth);
+
+        let _ = user_1.insert(&db).await?;
+
+        let mut user_2 = users::ActiveModel::new();
+
+        user_2.email = Set("sample2@email.com".into());
+        user_2.password = Set("Randompassword1!".into());
+        user_2.auth_type = Set(AuthType::BasicAuth);
+
+        let _ = user_2.insert(&db).await?;
+
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
+
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
+
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
+
+        let mut auth_client = AuthServiceClient::new(auth_channel);
+
+        let user_1_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let user_2_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample2@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let mut storage_client = StorageServiceClient::new(storage_channel);
+
+        for i in 0..3 {
+            let file_content = br#"
+            This is a sample .txt file
+        "#;
+
+            let file_metadata = CreateFileRequest {
+                metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
+                    name: format!("test_file_{}", i),
+                    r#type: "text/plain".into(),
+                    is_public: true,
+                    size: file_content.len() as u32,
+                }),
+                chunk: Some(FileChunk {
+                    chunk: file_content.to_vec(),
+                }),
+            };
+
+            let mut request_stream = Request::new(tokio_stream::iter(vec![file_metadata]));
+
+            request_stream.metadata_mut().append(
+                "authorization",
+                format!("Bearer {}", user_1_auth.access_token).parse()?,
+            );
+
+            let file = storage_client
+                .create_file(request_stream)
+                .await?
+                .into_inner();
+        }
+        // -- end setup
+
+        // -- start execution
+
+        let mut list_shared_files_request = Request::new(());
+
+        list_shared_files_request.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_2_auth.access_token).parse()?,
+        );
+
+        let response = storage_client
+            .list_shared_files(list_shared_files_request)
+            .await?
+            .into_inner()
+            .try_collect::<Vec<_>>()
+            .await?;
+
+        // -- end execution
+
+        // -- validation
+
+        assert_eq!(response.len(), 3);
+
+        // -- end validation
+
+        Ok(())
+    }
 }
-*/
