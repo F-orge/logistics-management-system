@@ -2,20 +2,18 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import DashboardHeader from "./_header/component";
 import SidebarComponent from "./_sidebar/component";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export default async function Layout(
   { children }: {
     children: React.ReactNode;
   },
 ) {
-  let auth_token = (await cookies()).get("authorization");
+  const auth_token = (await cookies()).get("authorization");
 
-  if (auth_token === undefined) {
-    redirect("/management/login");
+  if (!auth_token) {
+    redirect("/login", RedirectType.push);
   }
-
-  // check if auth_token is still valid
 
   return (
     <SidebarProvider>

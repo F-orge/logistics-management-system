@@ -11,8 +11,23 @@ const db = new Kysely<DB>({
 });
 
 // admin user
-await db.insertInto("logistics.users").values({
-  email: "admin@email.com",
-  password: "RandomPassword1!",
-  auth_type: "basic_auth",
-}).execute();
+try {
+  await db.insertInto("logistics.users").values({
+    email: "admin@email.com",
+    password: "RandomPassword1!",
+    auth_type: "basic_auth",
+  }).execute();
+} catch (e) {
+  console.error(e);
+}
+
+// another admin user
+try {
+  await db.insertInto("logistics.users").values({
+    email: "admin2@email.com",
+    password: "RandomPassword1!",
+    auth_type: "basic_auth",
+  }).execute();
+} catch (e) {
+  console.error(e);
+}

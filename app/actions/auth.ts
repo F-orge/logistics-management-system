@@ -25,13 +25,15 @@ export async function loginAction(
       path: "/",
     });
 
-    redirect("/management/dashboard");
+    redirect("/management/human-resource");
   } catch (e) {
     console.error(e);
     if (e instanceof RpcError) {
       switch (e.code) {
         case "NOT_FOUND":
           return { message: "Invalid email or password" };
+        case "UNAUTHENTICATED":
+          return { message: e.message };
       }
     } else {
       throw e;

@@ -1,14 +1,15 @@
 import { GalleryVertical } from "lucide-react";
 import { LoginForm } from "./form";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect, RedirectType } from "next/navigation";
 
 export default async function Page() {
   // check if user is already logged in
-  let auth_token = (await cookies()).get("authorization");
 
-  if (auth_token !== undefined) {
-    redirect("/management/dashboard");
+  const auth_token = (await cookies()).get("authorization");
+
+  if (auth_token) {
+    redirect("/management/", RedirectType.push);
   }
 
   return (
