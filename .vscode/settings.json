@@ -7,10 +7,4 @@
       "--proto_path=${workspaceRoot}/crates/crate-proto/proto",
     ]
   },
-  "plpgsqlLanguageServer.database": "postgres",
-  "plpgsqlLanguageServer.user": "postgres",
-  "plpgsqlLanguageServer.password": "randompassword",
-  "files.associations": {
-    "*.sql": "postgres"
-  }
 }

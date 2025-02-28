@@ -1,12 +1,10 @@
-#![deny(clippy::unwrap_used)]
-
 use hmac::Hmac;
-use sea_orm::{Database, DatabaseConnection};
+use sea_orm::Database;
 use sha2::digest::KeyInit;
-use tokio::{fs, net::TcpListener};
+use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use std::{path::Path, process::exit};
+use std::path::Path;
 
 use tonic::transport::Server;
 
