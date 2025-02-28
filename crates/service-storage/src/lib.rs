@@ -389,7 +389,10 @@ mod test {
     use lib_entity::{file, users};
     use lib_proto::auth_service_client::AuthServiceClient;
     use lib_proto::storage_service_client::StorageServiceClient;
-    use lib_proto::{AuthBasicLoginRequest, CreateFileRequest, FileChunk, ShareFileRequest};
+    use lib_proto::{
+        AuthBasicLoginRequest, CreateFileRequest, DeleteFileRequest, DownloadFileRequest,
+        FileChunk, ShareFileRequest,
+    };
     use sea_orm::{ActiveModelBehavior, ActiveModelTrait, Database, Set};
     use service_authentication::AuthService;
     use sqlx::ConnectOptions;
@@ -935,6 +938,207 @@ mod test {
         // -- validation
 
         assert_eq!(response.len(), 3);
+
+        // -- end validation
+
+        Ok(())
+    }
+
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_download_file(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // -- setup
+
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
+
+        let temp_dir = tempdir::TempDir::new("sample")?;
+
+        let mut user = users::ActiveModel::new();
+
+        user.email = Set("sample@email.com".into());
+        user.password = Set("Randompassword1!".into());
+        user.auth_type = Set(AuthType::BasicAuth);
+
+        let _ = user.insert(&db).await?;
+
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
+
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
+
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
+
+        let mut auth_client = AuthServiceClient::new(auth_channel);
+
+        let user_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let mut storage_client = StorageServiceClient::new(storage_channel);
+
+        let file_content = br#"
+            This is a sample .txt file
+        "#;
+
+        let file_metadata = CreateFileRequest {
+            metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
+                name: "test_file.txt".into(),
+                r#type: "text/plain".into(),
+                is_public: true,
+                size: file_content.len() as u32,
+            }),
+            chunk: Some(FileChunk {
+                chunk: file_content.to_vec(),
+            }),
+        };
+
+        let mut request_stream = Request::new(tokio_stream::iter(vec![file_metadata]));
+
+        request_stream.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_auth.access_token).parse()?,
+        );
+
+        let file = storage_client
+            .create_file(request_stream)
+            .await?
+            .into_inner();
+
+        // -- end setup
+
+        // -- start execution
+
+        let mut download_file_request = Request::new(DownloadFileRequest { id: file.id });
+
+        download_file_request.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_auth.access_token).parse()?,
+        );
+
+        let response = storage_client
+            .download_file(download_file_request)
+            .await?
+            .into_inner()
+            .try_collect::<Vec<_>>()
+            .await?;
+
+        let file_chunk = response.get(0).unwrap();
+
+        // -- end execution
+
+        // -- validation
+
+        assert_eq!(file_chunk.chunk.len(), file_content.len());
+
+        // -- end validation
+
+        Ok(())
+    }
+
+    #[sqlx::test(migrations = "../../migrations")]
+    async fn test_delete_file(
+        _: PoolOptions<Postgres>,
+        conn_options: PgConnectOptions,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        // -- setup
+
+        let db = Database::connect(conn_options.to_url_lossy()).await?;
+
+        let temp_dir = tempdir::TempDir::new("sample")?;
+
+        let mut user = users::ActiveModel::new();
+
+        user.email = Set("sample@email.com".into());
+        user.password = Set("Randompassword1!".into());
+        user.auth_type = Set(AuthType::BasicAuth);
+
+        let _ = user.insert(&db).await?;
+
+        let key = Hmac::new_from_slice(b"random-encryptio-key")?;
+
+        let (_, storage_channel) = start_server(
+            Server::builder().add_service(StorageService::new(&db, temp_dir.path(), key.clone())),
+        )
+        .await;
+
+        let (_, auth_channel) =
+            start_server(Server::builder().add_service(AuthService::new(&db, key.clone()))).await;
+
+        let mut auth_client = AuthServiceClient::new(auth_channel);
+
+        let user_auth = auth_client
+            .basic_login(AuthBasicLoginRequest {
+                email: "sample@email.com".into(),
+                password: "Randompassword1!".into(),
+            })
+            .await?
+            .into_inner();
+
+        let mut storage_client = StorageServiceClient::new(storage_channel);
+
+        let file_content = br#"
+            This is a sample .txt file
+        "#;
+
+        let file_metadata = CreateFileRequest {
+            metadata: Some(lib_proto::storage::CreateFileMetadataRequest {
+                name: "test_file.txt".into(),
+                r#type: "text/plain".into(),
+                is_public: true,
+                size: file_content.len() as u32,
+            }),
+            chunk: Some(FileChunk {
+                chunk: file_content.to_vec(),
+            }),
+        };
+
+        let mut request_stream = Request::new(tokio_stream::iter(vec![file_metadata]));
+
+        request_stream.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_auth.access_token).parse()?,
+        );
+
+        let file = storage_client
+            .create_file(request_stream)
+            .await?
+            .into_inner();
+
+        // -- end setup
+
+        // -- start execution
+
+        let mut delete_file_request = Request::new(DeleteFileRequest { id: file.id });
+
+        delete_file_request.metadata_mut().append(
+            "authorization",
+            format!("Bearer {}", user_auth.access_token).parse()?,
+        );
+
+        let response = storage_client.delete_file(delete_file_request).await;
+
+        // -- end execution
+
+        // -- validation
+
+        assert!(response.is_ok());
+
+        let db_files = file::Entity::find().all(&db).await?;
+
+        assert_eq!(db_files.len(), 0);
+
+        let directory = std::fs::read_dir(temp_dir.path())?.collect::<Vec<_>>();
+
+        assert_eq!(directory.len(), 0);
 
         // -- end validation
 
