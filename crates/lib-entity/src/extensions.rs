@@ -1,6 +1,6 @@
 use lib_proto::FileMetadata;
 
-use crate::{file, prelude::*};
+use crate::file;
 
 // storage file
 impl Into<lib_proto::FileMetadata> for file::Model {

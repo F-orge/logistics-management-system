@@ -14,6 +14,7 @@ use lib_proto::auth::{
     auth_service_server::{AuthService as GrpcAuthService, AuthServiceServer},
     AuthBasicLoginRequest, AuthResponse,
 };
+use uuid::Uuid;
 
 pub struct AuthService {
     db: DatabaseConnection,
@@ -61,7 +62,7 @@ impl GrpcAuthService for AuthService {
             expiration: (sqlx::types::chrono::Utc::now() + Duration::from_secs(3600)).to_string(),
             not_before: (sqlx::types::chrono::Utc::now() - Duration::from_secs(1)).to_string(),
             issued_at: sqlx::types::chrono::Utc::now().to_string(),
-            jwt_id: sqlx::types::Uuid::new_v4(),
+            jwt_id: Uuid::new_v4(),
             claims: BTreeMap::new(),
         };
 

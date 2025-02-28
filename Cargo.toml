@@ -111,22 +111,18 @@ garde = { version = "0.20.0", features = ["derive", "serde", "email"] }
 # Environment variables
 dotenv = "0.15.0"
 
+# Utilities
+uuid = { version = "1.15.1", features = ["v4"] }
+
 [dependencies]
 service-storage = { path = "./crates/service-storage" }
 service-authentication = { path = "./crates/service-authentication" }
 tracing-subscriber = { workspace = true }
 tracing = { workspace = true }
 tokio = { workspace = true }
-sqlx = { workspace = true }
 tonic = { workspace = true }
 dotenv = { workspace = true }
-tower-http = { workspace = true }
-test-log = { workspace = true }
-tokio-util = { workspace = true }
 axum = { workspace = true }
-lib-proto = { path = "./crates/lib-proto" }
-axum-extra = { workspace = true }
-sea-query = { workspace = true }
 sea-orm = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }

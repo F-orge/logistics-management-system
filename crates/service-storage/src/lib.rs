@@ -233,7 +233,7 @@ impl GRPCStorageService for StorageService {
             insert_stmt.file_id = Set(file.id);
             insert_stmt.user_id = Set(user_id);
 
-            let f = insert_stmt.insert(&trx).await.map_err(Error::SeaOrm)?;
+            insert_stmt.insert(&trx).await.map_err(Error::SeaOrm)?;
         }
 
         trx.commit().await.map_err(Error::SeaOrm)?;
@@ -379,7 +379,7 @@ impl GRPCStorageService for StorageService {
 
 #[cfg(test)]
 mod test {
-    use sea_orm::{EntityOrSelect, EntityTrait};
+    use sea_orm::EntityTrait;
     use std::str::FromStr;
 
     use futures::TryStreamExt;
@@ -600,7 +600,7 @@ mod test {
         user_1.password = Set("Randompassword1!".into());
         user_1.auth_type = Set(AuthType::BasicAuth);
 
-        let user_1 = user_1.insert(&db).await?;
+        let _ = user_1.insert(&db).await?;
 
         let mut user_2 = users::ActiveModel::new();
 
@@ -910,7 +910,7 @@ mod test {
                 format!("Bearer {}", user_1_auth.access_token).parse()?,
             );
 
-            let file = storage_client
+            let _ = storage_client
                 .create_file(request_stream)
                 .await?
                 .into_inner();
