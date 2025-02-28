@@ -7,13 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate": "protoc --ts_out app/lib/proto --proto_path crates/crate-proto/proto crates/crate-proto/proto/*.proto"
+    "generate": "protoc --ts_out app/lib/proto --proto_path crates/lib-proto/proto crates/lib-proto/proto/*.proto"
   },
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/nextjs-registry": "^1.0.2",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
-    "@faker-js/faker": "^9.5.0",
+    "@faker-js/faker": "^9.5.1",
     "@hookform/resolvers": "^4.0.0",
     "@protobuf-ts/grpc-transport": "^2.9.4",
     "@radix-ui/react-accordion": "^1.2.3",
@@ -70,10 +70,14 @@
     "@protobuf-ts/plugin": "^2.9.4",
     "@types/bun": "^1.2.2",
     "@types/node": "^20",
+    "@types/pg": "^8.11.11",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.1.6",
+    "kysely": "^0.27.5",
+    "kysely-codegen": "^0.17.0",
+    "pg": "^8.13.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

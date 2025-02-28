@@ -1,7 +1,16 @@
 import { GalleryVertical } from "lucide-react";
 import { LoginForm } from "./form";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function Page() {
+export default async function Page() {
+  // check if user is already logged in
+  let auth_token = (await cookies()).get("authorization");
+
+  if (auth_token !== undefined) {
+    redirect("/management/dashboard");
+  }
+
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">

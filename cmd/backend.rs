@@ -1,12 +1,12 @@
 #![deny(clippy::unwrap_used)]
 
 use hmac::Hmac;
-use sea_orm::{Database, DatabaseConnection};
+use sea_orm::Database;
 use sha2::digest::KeyInit;
-use tokio::{fs, net::TcpListener};
+use tokio::net::TcpListener;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use std::{path::Path, process::exit};
+use std::path::Path;
 
 use tonic::transport::Server;
 
@@ -43,6 +43,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let directory = std::env::var("RUST_STORAGE_DIRECTORY_URL")?;
 
+    tracing::debug!("Connecting to database: {}", db_url);
+
     let db = Database::connect(&db_url).await?;
 
     let grpc_server = Server::builder()
@@ -64,6 +66,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let port = std::env::var("RUST_PORT")?;
 
     let listener = TcpListener::bind(format!("{}:{}", host, port)).await?;
+
+    tracing::info!("Listening on: {}:{}", host, port);
 
     axum::serve(listener, app.into_make_service()).await?;
 

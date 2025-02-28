@@ -4,9 +4,6 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { AuthService } from "./auth";
-import type { Empty } from "./google/protobuf/empty";
-import type { AuthBasicUpdatePassword } from "./auth";
-import type { AuthBasicRegisterRequest } from "./auth";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { AuthResponse } from "./auth";
 import type { AuthBasicLoginRequest } from "./auth";
@@ -20,14 +17,6 @@ export interface IAuthServiceClient {
      * @generated from protobuf rpc: BasicLogin(auth.AuthBasicLoginRequest) returns (auth.AuthResponse);
      */
     basicLogin(input: AuthBasicLoginRequest, options?: RpcOptions): UnaryCall<AuthBasicLoginRequest, AuthResponse>;
-    /**
-     * @generated from protobuf rpc: BasicRegister(auth.AuthBasicRegisterRequest) returns (auth.AuthResponse);
-     */
-    basicRegister(input: AuthBasicRegisterRequest, options?: RpcOptions): UnaryCall<AuthBasicRegisterRequest, AuthResponse>;
-    /**
-     * @generated from protobuf rpc: BasicUpdatePassword(auth.AuthBasicUpdatePassword) returns (google.protobuf.Empty);
-     */
-    basicUpdatePassword(input: AuthBasicUpdatePassword, options?: RpcOptions): UnaryCall<AuthBasicUpdatePassword, Empty>;
 }
 /**
  * @generated from protobuf service auth.AuthService
@@ -44,19 +33,5 @@ export class AuthServiceClient implements IAuthServiceClient, ServiceInfo {
     basicLogin(input: AuthBasicLoginRequest, options?: RpcOptions): UnaryCall<AuthBasicLoginRequest, AuthResponse> {
         const method = this.methods[0], opt = this._transport.mergeOptions(options);
         return stackIntercept<AuthBasicLoginRequest, AuthResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: BasicRegister(auth.AuthBasicRegisterRequest) returns (auth.AuthResponse);
-     */
-    basicRegister(input: AuthBasicRegisterRequest, options?: RpcOptions): UnaryCall<AuthBasicRegisterRequest, AuthResponse> {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
-        return stackIntercept<AuthBasicRegisterRequest, AuthResponse>("unary", this._transport, method, opt, input);
-    }
-    /**
-     * @generated from protobuf rpc: BasicUpdatePassword(auth.AuthBasicUpdatePassword) returns (google.protobuf.Empty);
-     */
-    basicUpdatePassword(input: AuthBasicUpdatePassword, options?: RpcOptions): UnaryCall<AuthBasicUpdatePassword, Empty> {
-        const method = this.methods[2], opt = this._transport.mergeOptions(options);
-        return stackIntercept<AuthBasicUpdatePassword, Empty>("unary", this._transport, method, opt, input);
     }
 }

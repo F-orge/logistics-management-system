@@ -4,12 +4,13 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { StorageService } from "./storage";
-import type { Empty } from "./google/protobuf/empty";
 import type { DeleteFileRequest } from "./storage";
+import type { ShareFileRequest } from "./storage";
 import type { FileMetadataRequest } from "./storage";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { FileChunk } from "./storage";
 import type { DownloadFileRequest } from "./storage";
+import type { Empty } from "./google/protobuf/empty";
 import type { ServerStreamingCall } from "@protobuf-ts/runtime-rpc";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { FileMetadata } from "./storage";
@@ -25,6 +26,14 @@ export interface IStorageServiceClient {
      */
     createFile(options?: RpcOptions): ClientStreamingCall<CreateFileRequest, FileMetadata>;
     /**
+     * @generated from protobuf rpc: ListOwnedFiles(google.protobuf.Empty) returns (stream storage.FileMetadata);
+     */
+    listOwnedFiles(input: Empty, options?: RpcOptions): ServerStreamingCall<Empty, FileMetadata>;
+    /**
+     * @generated from protobuf rpc: ListSharedFiles(google.protobuf.Empty) returns (stream storage.FileMetadata);
+     */
+    listSharedFiles(input: Empty, options?: RpcOptions): ServerStreamingCall<Empty, FileMetadata>;
+    /**
      * @generated from protobuf rpc: DownloadFile(storage.DownloadFileRequest) returns (stream storage.FileChunk);
      */
     downloadFile(input: DownloadFileRequest, options?: RpcOptions): ServerStreamingCall<DownloadFileRequest, FileChunk>;
@@ -32,6 +41,10 @@ export interface IStorageServiceClient {
      * @generated from protobuf rpc: GetFileMetadata(storage.FileMetadataRequest) returns (storage.FileMetadata);
      */
     getFileMetadata(input: FileMetadataRequest, options?: RpcOptions): UnaryCall<FileMetadataRequest, FileMetadata>;
+    /**
+     * @generated from protobuf rpc: ShareFile(storage.ShareFileRequest) returns (google.protobuf.Empty);
+     */
+    shareFile(input: ShareFileRequest, options?: RpcOptions): UnaryCall<ShareFileRequest, Empty>;
     /**
      * @generated from protobuf rpc: DeleteFile(storage.DeleteFileRequest) returns (google.protobuf.Empty);
      */
@@ -54,24 +67,45 @@ export class StorageServiceClient implements IStorageServiceClient, ServiceInfo 
         return stackIntercept<CreateFileRequest, FileMetadata>("clientStreaming", this._transport, method, opt);
     }
     /**
+     * @generated from protobuf rpc: ListOwnedFiles(google.protobuf.Empty) returns (stream storage.FileMetadata);
+     */
+    listOwnedFiles(input: Empty, options?: RpcOptions): ServerStreamingCall<Empty, FileMetadata> {
+        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, FileMetadata>("serverStreaming", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ListSharedFiles(google.protobuf.Empty) returns (stream storage.FileMetadata);
+     */
+    listSharedFiles(input: Empty, options?: RpcOptions): ServerStreamingCall<Empty, FileMetadata> {
+        const method = this.methods[2], opt = this._transport.mergeOptions(options);
+        return stackIntercept<Empty, FileMetadata>("serverStreaming", this._transport, method, opt, input);
+    }
+    /**
      * @generated from protobuf rpc: DownloadFile(storage.DownloadFileRequest) returns (stream storage.FileChunk);
      */
     downloadFile(input: DownloadFileRequest, options?: RpcOptions): ServerStreamingCall<DownloadFileRequest, FileChunk> {
-        const method = this.methods[1], opt = this._transport.mergeOptions(options);
+        const method = this.methods[3], opt = this._transport.mergeOptions(options);
         return stackIntercept<DownloadFileRequest, FileChunk>("serverStreaming", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: GetFileMetadata(storage.FileMetadataRequest) returns (storage.FileMetadata);
      */
     getFileMetadata(input: FileMetadataRequest, options?: RpcOptions): UnaryCall<FileMetadataRequest, FileMetadata> {
-        const method = this.methods[2], opt = this._transport.mergeOptions(options);
+        const method = this.methods[4], opt = this._transport.mergeOptions(options);
         return stackIntercept<FileMetadataRequest, FileMetadata>("unary", this._transport, method, opt, input);
+    }
+    /**
+     * @generated from protobuf rpc: ShareFile(storage.ShareFileRequest) returns (google.protobuf.Empty);
+     */
+    shareFile(input: ShareFileRequest, options?: RpcOptions): UnaryCall<ShareFileRequest, Empty> {
+        const method = this.methods[5], opt = this._transport.mergeOptions(options);
+        return stackIntercept<ShareFileRequest, Empty>("unary", this._transport, method, opt, input);
     }
     /**
      * @generated from protobuf rpc: DeleteFile(storage.DeleteFileRequest) returns (google.protobuf.Empty);
      */
     deleteFile(input: DeleteFileRequest, options?: RpcOptions): UnaryCall<DeleteFileRequest, Empty> {
-        const method = this.methods[3], opt = this._transport.mergeOptions(options);
+        const method = this.methods[6], opt = this._transport.mergeOptions(options);
         return stackIntercept<DeleteFileRequest, Empty>("unary", this._transport, method, opt, input);
     }
 }

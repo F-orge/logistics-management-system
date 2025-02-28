@@ -22,38 +22,90 @@ export interface Employee {
      */
     id: string;
     /**
-     * @generated from protobuf field: string user_id = 2;
+     * @generated from protobuf field: optional storage.FileMetadata avatar_photo = 2;
      */
-    userId: string;
+    avatarPhoto?: FileMetadata;
     /**
-     * @generated from protobuf field: management.Role role = 3;
+     * @generated from protobuf field: optional storage.FileMetadata cover_photo = 3;
      */
-    role: Role;
+    coverPhoto?: FileMetadata;
     /**
-     * @generated from protobuf field: string full_name = 4;
+     * @generated from protobuf field: string first_name = 4;
      */
-    fullName: string;
+    firstName: string;
     /**
-     * @generated from protobuf field: string address = 5;
+     * @generated from protobuf field: string middle_name = 5;
      */
-    address: string;
+    middleName: string;
     /**
-     * @generated from protobuf field: string position = 6;
+     * @generated from protobuf field: string last_name = 6;
      */
-    position: string;
+    lastName: string;
     /**
-     * @generated from protobuf field: storage.FileMetadata avatar_file_id = 7;
+     * @generated from protobuf field: optional string tel_number = 7;
      */
-    avatarFileId?: FileMetadata;
+    telNumber?: string;
     /**
-     * @generated from protobuf field: storage.FileMetadata cover_photo_file_id = 8;
+     * @generated from protobuf field: optional string mobile_Number = 8;
      */
-    coverPhotoFileId?: FileMetadata;
+    mobileNumber?: string;
+    /**
+     * @generated from protobuf field: string email = 9;
+     */
+    email: string;
+    /**
+     * @generated from protobuf field: management.EmployeeRole role = 10;
+     */
+    role: EmployeeRole;
+    /**
+     * @generated from protobuf field: management.EmployeeStatus status = 11;
+     */
+    status: EmployeeStatus;
+    /**
+     * @generated from protobuf field: management.EmployeeContractType contract_type = 12;
+     */
+    contractType: EmployeeContractType;
+    /**
+     * @generated from protobuf field: string phil_nat_id = 13;
+     */
+    philNatId: string;
+    /**
+     * @generated from protobuf field: string birth_date = 14;
+     */
+    birthDate: string;
+    /**
+     * @generated from protobuf field: repeated string special_interests = 15;
+     */
+    specialInterests: string[];
+    /**
+     * @generated from protobuf field: repeated string learning_institutions = 16;
+     */
+    learningInstitutions: string[];
+    /**
+     * @generated from protobuf field: string auth_user_id = 17;
+     */
+    authUserId: string;
+    /**
+     * @generated from protobuf field: optional string spouse_first_name = 18;
+     */
+    spouseFirstName?: string;
+    /**
+     * @generated from protobuf field: optional string spouse_middle_name = 19;
+     */
+    spouseMiddleName?: string;
+    /**
+     * @generated from protobuf field: optional string spouse_last_name = 20;
+     */
+    spouseLastName?: string;
+    /**
+     * @generated from protobuf field: optional string spouse_employer = 21;
+     */
+    spouseEmployer?: string;
 }
 /**
- * @generated from protobuf message management.Team
+ * @generated from protobuf message management.Department
  */
-export interface Team {
+export interface Department {
     /**
      * @generated from protobuf field: string id = 1;
      */
@@ -63,80 +115,18 @@ export interface Team {
      */
     name: string;
     /**
-     * @generated from protobuf field: string description = 3;
+     * @generated from protobuf field: optional string description = 3;
      */
-    description: string;
+    description?: string;
     /**
-     * @generated from protobuf field: string leader_id = 4;
+     * @generated from protobuf field: repeated string employee_ids = 4;
      */
-    leaderId: string;
-    /**
-     * @generated from protobuf field: repeated string member_ids = 5;
-     */
-    memberIds: string[];
+    employeeIds: string[];
 }
 /**
- * @generated from protobuf message management.Board
+ * @generated from protobuf message management.JobInformation
  */
-export interface Board {
-    /**
-     * @generated from protobuf field: int32 id = 1;
-     */
-    id: number;
-    /**
-     * @generated from protobuf field: string name = 2;
-     */
-    name: string;
-    /**
-     * @generated from protobuf field: string team_id = 3;
-     */
-    teamId: string;
-}
-/**
- * @generated from protobuf message management.BoardSection
- */
-export interface BoardSection {
-    /**
-     * @generated from protobuf field: string id = 1;
-     */
-    id: string;
-    /**
-     * @generated from protobuf field: string name = 2;
-     */
-    name: string;
-    /**
-     * @generated from protobuf field: string color = 3;
-     */
-    color: string;
-    /**
-     * @generated from protobuf field: string description = 4;
-     */
-    description: string;
-    /**
-     * @generated from protobuf field: bool hidden = 5;
-     */
-    hidden: boolean;
-    /**
-     * @generated from protobuf field: int32 task_limit = 6;
-     */
-    taskLimit: number;
-    /**
-     * @generated from protobuf field: string task_board_id = 7;
-     */
-    taskBoardId: string;
-    /**
-     * @generated from protobuf field: int32 order = 8;
-     */
-    order: number;
-    /**
-     * @generated from protobuf field: repeated string task_ids = 9;
-     */
-    taskIds: string[];
-}
-/**
- * @generated from protobuf message management.Task
- */
-export interface Task {
+export interface JobInformation {
     /**
      * @generated from protobuf field: string id = 1;
      */
@@ -146,935 +136,968 @@ export interface Task {
      */
     title: string;
     /**
-     * @generated from protobuf field: string description = 3;
+     * @generated from protobuf field: string employee_id = 3;
      */
-    description: string;
+    employeeId: string;
     /**
-     * @generated from protobuf field: string board_section_id = 4;
+     * @generated from protobuf field: string department_id = 4;
      */
-    boardSectionId: string;
+    departmentId: string;
     /**
-     * @generated from protobuf field: int32 order = 5;
+     * @generated from protobuf field: string supervisor_id = 5;
      */
-    order: number;
+    supervisorId: string;
     /**
-     * @generated from protobuf field: repeated management.TaskField fields = 6;
+     * @generated from protobuf field: string work_location = 6;
      */
-    fields: TaskField[];
+    workLocation: string;
     /**
-     * @generated from protobuf field: repeated string label_ids = 7;
+     * @generated from protobuf field: string start_date = 7;
      */
-    labelIds: string[];
+    startDate: string;
     /**
-     * @generated from protobuf field: repeated management.TaskComment comments = 8;
+     * @generated from protobuf field: string salary = 8;
      */
-    comments: TaskComment[];
+    salary: string;
     /**
-     * @generated from protobuf field: string issuer_id = 9;
+     * @generated from protobuf field: string currency = 9;
      */
-    issuerId: string;
-    /**
-     * @generated from protobuf field: repeated string assignee_ids = 10;
-     */
-    assigneeIds: string[];
+    currency: string;
 }
 /**
- * @generated from protobuf message management.TaskField
+ * @generated from protobuf message management.EmployeeEmergencyInformation
  */
-export interface TaskField {
+export interface EmployeeEmergencyInformation {
     /**
      * @generated from protobuf field: string id = 1;
      */
     id: string;
     /**
-     * @generated from protobuf field: string name = 2;
+     * @generated from protobuf field: string employee_id = 2;
      */
-    name: string;
+    employeeId: string;
     /**
-     * @generated from protobuf field: management.TaskFieldType type = 3;
+     * @generated from protobuf field: string address = 3;
      */
-    type: TaskFieldType;
+    address: string;
     /**
-     * NOTE TO CLIENTS: please convert this into proper data type before using it.
-     * you can check the type first before doing the conversion
-     *
-     * @generated from protobuf field: string value = 4;
+     * @generated from protobuf field: optional string tel_number = 4;
      */
-    value: string;
+    telNumber?: string;
     /**
-     * @generated from protobuf field: string team_id = 5;
+     * @generated from protobuf field: optional string mobile_number = 5;
      */
-    teamId: string;
+    mobileNumber?: string;
+    /**
+     * @generated from protobuf field: repeated string health_conditions = 6;
+     */
+    healthConditions: string[];
+    /**
+     * @generated from protobuf field: string contact_name = 7;
+     */
+    contactName: string;
 }
 /**
- * @generated from protobuf message management.TaskLabel
+ * @generated from protobuf message management.PersonnelAction
  */
-export interface TaskLabel {
+export interface PersonnelAction {
     /**
      * @generated from protobuf field: string id = 1;
      */
     id: string;
     /**
-     * @generated from protobuf field: string name = 2;
+     * @generated from protobuf field: string employee_id = 2;
      */
-    name: string;
+    employeeId: string;
     /**
-     * @generated from protobuf field: string description = 3;
+     * @generated from protobuf field: management.EmployeePanActionType action_type = 3;
      */
-    description: string;
+    actionType: EmployeePanActionType;
     /**
-     * @generated from protobuf field: string color = 4;
+     * @generated from protobuf field: string old_value = 4;
      */
-    color: string;
+    oldValue: string;
     /**
-     * @generated from protobuf field: string team_id = 5;
+     * @generated from protobuf field: string new_value = 5;
      */
-    teamId: string;
-}
-/**
- * @generated from protobuf message management.TaskComment
- */
-export interface TaskComment {
+    newValue: string;
     /**
-     * @generated from protobuf field: string id = 1;
+     * @generated from protobuf field: string effective_date = 6;
      */
-    id: string;
+    effectiveDate: string;
     /**
-     * NOTE: this is a markdown compatible comment
-     *
-     * @generated from protobuf field: string message = 2;
+     * @generated from protobuf field: management.EmployeePanActionStatus status = 7;
      */
-    message: string;
+    status: EmployeePanActionStatus;
     /**
-     * @generated from protobuf field: string sender_id = 3;
+     * @generated from protobuf field: string requested_by = 8;
      */
-    senderId: string;
+    requestedBy: string;
     /**
-     * @generated from protobuf field: string task_id = 4;
+     * @generated from protobuf field: string approved_by = 9;
      */
-    taskId: string;
-    /**
-     * @generated from protobuf field: repeated storage.FileMetadata attachments = 5;
-     */
-    attachments: FileMetadata[];
-    /**
-     * NOTE: this can be used to identify the order of the comments
-     *
-     * @generated from protobuf field: string timestamp = 6;
-     */
-    timestamp: string;
+    approvedBy: string;
 }
 /**
  * @generated from protobuf message management.CreateEmployeeRequest
  */
 export interface CreateEmployeeRequest {
     /**
-     * @generated from protobuf field: string full_name = 1;
+     * @generated from protobuf field: optional storage.FileMetadata avatar_photo = 1;
      */
-    fullName: string;
+    avatarPhoto?: FileMetadata;
     /**
-     * @generated from protobuf field: string address = 2;
+     * @generated from protobuf field: optional storage.FileMetadata cover_photo = 2;
      */
-    address: string;
+    coverPhoto?: FileMetadata;
     /**
-     * @generated from protobuf field: management.Role role = 3;
+     * @generated from protobuf field: string first_name = 3;
      */
-    role: Role;
+    firstName: string;
     /**
-     * @generated from protobuf field: string position = 4;
+     * @generated from protobuf field: string middle_name = 4;
      */
-    position: string;
+    middleName: string;
     /**
-     * @generated from protobuf field: string email = 5;
+     * @generated from protobuf field: string last_name = 5;
+     */
+    lastName: string;
+    /**
+     * @generated from protobuf field: optional string tel_number = 6;
+     */
+    telNumber?: string;
+    /**
+     * @generated from protobuf field: optional string mobile_Number = 7;
+     */
+    mobileNumber?: string;
+    /**
+     * @generated from protobuf field: string email = 8;
      */
     email: string;
     /**
-     * @generated from protobuf field: optional string avatar_file_id = 6;
+     * @generated from protobuf field: management.EmployeeStatus status = 9;
      */
-    avatarFileId?: string;
+    status: EmployeeStatus;
     /**
-     * @generated from protobuf field: optional string avatar_cover_photo_file_id = 7;
+     * @generated from protobuf field: management.EmployeeContractType contract_type = 10;
      */
-    avatarCoverPhotoFileId?: string;
-}
-/**
- * @generated from protobuf message management.CreateEmployeeResponse
- */
-export interface CreateEmployeeResponse {
+    contractType: EmployeeContractType;
     /**
-     * @generated from protobuf field: string email = 1;
+     * @generated from protobuf field: string phil_nat_id = 11;
      */
-    email: string;
+    philNatId: string;
     /**
-     * NOTE: this is a auto-generate password for new employees
-     *
-     * @generated from protobuf field: string password = 2;
+     * @generated from protobuf field: string birth_date = 12;
      */
-    password: string;
+    birthDate: string;
+    /**
+     * @generated from protobuf field: repeated string special_interests = 13;
+     */
+    specialInterests: string[];
+    /**
+     * @generated from protobuf field: repeated string learning_institutions = 14;
+     */
+    learningInstitutions: string[];
+    /**
+     * @generated from protobuf field: optional string spouse_first_name = 15;
+     */
+    spouseFirstName?: string;
+    /**
+     * @generated from protobuf field: optional string spouse_middle_name = 16;
+     */
+    spouseMiddleName?: string;
+    /**
+     * @generated from protobuf field: optional string spouse_last_name = 17;
+     */
+    spouseLastName?: string;
+    /**
+     * @generated from protobuf field: optional string spouse_employer = 18;
+     */
+    spouseEmployer?: string;
 }
 /**
  * @generated from protobuf message management.GetEmployeeRequest
  */
 export interface GetEmployeeRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: string id = 1;
      */
-    request: {
-        oneofKind: "employeeId";
-        /**
-         * @generated from protobuf field: string employee_id = 1;
-         */
-        employeeId: string;
-    } | {
-        oneofKind: "userId";
-        /**
-         * @generated from protobuf field: string user_id = 2;
-         */
-        userId: string;
-    } | {
-        oneofKind: "role";
-        /**
-         * @generated from protobuf field: management.Role role = 3;
-         */
-        role: Role;
-    } | {
-        oneofKind: undefined;
-    };
+    id: string;
 }
 /**
- * @generated from protobuf message management.BatchGetEmployeesRequest
+ * @generated from protobuf message management.GetEmployeesByDepartmentRequest
  */
-export interface BatchGetEmployeesRequest {
+export interface GetEmployeesByDepartmentRequest {
     /**
-     * @generated from protobuf field: repeated string employee_ids = 1;
+     * @generated from protobuf field: string department_id = 1;
      */
-    employeeIds: string[];
+    departmentId: string;
 }
 /**
- * @generated from protobuf message management.UpdateEmployeeRequest
+ * @generated from protobuf message management.ChangeEmployeeAvatarRequest
  */
-export interface UpdateEmployeeRequest {
+export interface ChangeEmployeeAvatarRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: storage.FileMetadata avatar_photo = 1;
      */
-    request: {
-        oneofKind: "role";
-        /**
-         * @generated from protobuf field: management.Role role = 1;
-         */
-        role: Role;
-    } | {
-        oneofKind: "fullName";
-        /**
-         * @generated from protobuf field: string full_name = 2;
-         */
-        fullName: string;
-    } | {
-        oneofKind: "address";
-        /**
-         * @generated from protobuf field: string address = 3;
-         */
-        address: string;
-    } | {
-        oneofKind: "position";
-        /**
-         * @generated from protobuf field: string position = 4;
-         */
-        position: string;
-    } | {
-        oneofKind: "avatarFile";
-        /**
-         * @generated from protobuf field: storage.FileMetadata avatar_file = 5;
-         */
-        avatarFile: FileMetadata;
-    } | {
-        oneofKind: "converPhotoFile";
-        /**
-         * @generated from protobuf field: storage.FileMetadata conver_photo_file = 6;
-         */
-        converPhotoFile: FileMetadata;
-    } | {
-        oneofKind: undefined;
-    };
+    avatarPhoto?: FileMetadata;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeCoverPhotoRequest
+ */
+export interface ChangeEmployeeCoverPhotoRequest {
+    /**
+     * @generated from protobuf field: storage.FileMetadata cover_photo = 1;
+     */
+    coverPhoto?: FileMetadata;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeFirstNameRequest
+ */
+export interface ChangeEmployeeFirstNameRequest {
+    /**
+     * @generated from protobuf field: string first_name = 1;
+     */
+    firstName: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeMiddleNameRequest
+ */
+export interface ChangeEmployeeMiddleNameRequest {
+    /**
+     * @generated from protobuf field: string middle_name = 1;
+     */
+    middleName: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeLastNameRequest
+ */
+export interface ChangeEmployeeLastNameRequest {
+    /**
+     * @generated from protobuf field: string last_name = 1;
+     */
+    lastName: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeTelNumberRequest
+ */
+export interface ChangeEmployeeTelNumberRequest {
+    /**
+     * @generated from protobuf field: string tel_number = 1;
+     */
+    telNumber: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeMobileNumberRequest
+ */
+export interface ChangeEmployeeMobileNumberRequest {
+    /**
+     * @generated from protobuf field: string mobile_number = 1;
+     */
+    mobileNumber: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeEmailRequest
+ */
+export interface ChangeEmployeeEmailRequest {
+    /**
+     * @generated from protobuf field: string email = 1;
+     */
+    email: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeRoleRequest
+ */
+export interface ChangeEmployeeRoleRequest {
+    /**
+     * @generated from protobuf field: management.EmployeeRole role = 1;
+     */
+    role: EmployeeRole;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeStatusRequest
+ */
+export interface ChangeEmployeeStatusRequest {
+    /**
+     * @generated from protobuf field: management.EmployeeStatus status = 1;
+     */
+    status: EmployeeStatus;
+}
+/**
+ * @generated from protobuf message management.ChangeEmployeeContractTypeRequest
+ */
+export interface ChangeEmployeeContractTypeRequest {
+    /**
+     * @generated from protobuf field: management.EmployeeContractType contract_type = 1;
+     */
+    contractType: EmployeeContractType;
+}
+/**
+ * @generated from protobuf message management.ChangePhilNatIDRequest
+ */
+export interface ChangePhilNatIDRequest {
+    /**
+     * @generated from protobuf field: string phil_nat_id = 1;
+     */
+    philNatId: string;
+}
+/**
+ * @generated from protobuf message management.ChangeBirthDateRequest
+ */
+export interface ChangeBirthDateRequest {
+    /**
+     * @generated from protobuf field: string birth_date = 1;
+     */
+    birthDate: string;
+}
+/**
+ * @generated from protobuf message management.AddSpecialInterestRequest
+ */
+export interface AddSpecialInterestRequest {
+    /**
+     * @generated from protobuf field: string special_interest = 1;
+     */
+    specialInterest: string;
+}
+/**
+ * @generated from protobuf message management.RemoveSpecialInterestRequest
+ */
+export interface RemoveSpecialInterestRequest {
+    /**
+     * @generated from protobuf field: string special_interest = 1;
+     */
+    specialInterest: string;
+}
+/**
+ * @generated from protobuf message management.AddLearningInstitutionRequest
+ */
+export interface AddLearningInstitutionRequest {
+    /**
+     * @generated from protobuf field: string learning_institution = 1;
+     */
+    learningInstitution: string;
+}
+/**
+ * @generated from protobuf message management.RemoveLearningInstitutionRequest
+ */
+export interface RemoveLearningInstitutionRequest {
+    /**
+     * @generated from protobuf field: string learning_institution = 1;
+     */
+    learningInstitution: string;
+}
+/**
+ * @generated from protobuf message management.ChangeSpouseFirstNameRequest
+ */
+export interface ChangeSpouseFirstNameRequest {
+    /**
+     * @generated from protobuf field: string spouse_first_name = 1;
+     */
+    spouseFirstName: string;
+}
+/**
+ * @generated from protobuf message management.ChangeSpouseMiddleNameRequest
+ */
+export interface ChangeSpouseMiddleNameRequest {
+    /**
+     * @generated from protobuf field: string spouse_middle_name = 1;
+     */
+    spouseMiddleName: string;
+}
+/**
+ * @generated from protobuf message management.ChangeSpouseLastNameRequest
+ */
+export interface ChangeSpouseLastNameRequest {
+    /**
+     * @generated from protobuf field: string spouse_last_name = 1;
+     */
+    spouseLastName: string;
+}
+/**
+ * @generated from protobuf message management.ChangeSpouseEmployerRequest
+ */
+export interface ChangeSpouseEmployerRequest {
+    /**
+     * @generated from protobuf field: string spouse_employer = 1;
+     */
+    spouseEmployer: string;
 }
 /**
  * @generated from protobuf message management.RemoveEmployeeRequest
  */
 export interface RemoveEmployeeRequest {
     /**
-     * @generated from protobuf field: string employee_id = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    employeeId: string;
+    id: string;
 }
 /**
- * @generated from protobuf message management.CreateTeamRequest
+ * @generated from protobuf message management.CreateDepartmentRequest
  */
-export interface CreateTeamRequest {
+export interface CreateDepartmentRequest {
     /**
      * @generated from protobuf field: string name = 1;
      */
     name: string;
     /**
-     * @generated from protobuf field: string description = 2;
+     * @generated from protobuf field: optional string description = 2;
+     */
+    description?: string;
+}
+/**
+ * @generated from protobuf message management.AddEmployeeToDepartmentRequest
+ */
+export interface AddEmployeeToDepartmentRequest {
+    /**
+     * @generated from protobuf field: string employee_id = 1;
+     */
+    employeeId: string;
+    /**
+     * @generated from protobuf field: string department_id = 2;
+     */
+    departmentId: string;
+}
+/**
+ * @generated from protobuf message management.RemoveEmployeeFromDepartmentRequest
+ */
+export interface RemoveEmployeeFromDepartmentRequest {
+    /**
+     * @generated from protobuf field: string employee_id = 1;
+     */
+    employeeId: string;
+    /**
+     * @generated from protobuf field: string department_id = 2;
+     */
+    departmentId: string;
+}
+/**
+ * @generated from protobuf message management.GetDepartmentRequest
+ */
+export interface GetDepartmentRequest {
+    /**
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string;
+}
+/**
+ * @generated from protobuf message management.UpdateDepartmentNameRequest
+ */
+export interface UpdateDepartmentNameRequest {
+    /**
+     * @generated from protobuf field: string name = 1;
+     */
+    name: string;
+}
+/**
+ * @generated from protobuf message management.UpdateDepartmentDescriptionRequest
+ */
+export interface UpdateDepartmentDescriptionRequest {
+    /**
+     * @generated from protobuf field: string description = 1;
      */
     description: string;
-    /**
-     * @generated from protobuf field: string leader_id = 3;
-     */
-    leaderId: string;
 }
 /**
- * @generated from protobuf message management.AddTeamMemberRequest
+ * @generated from protobuf message management.RemoveDepartmentRequest
  */
-export interface AddTeamMemberRequest {
+export interface RemoveDepartmentRequest {
     /**
-     * @generated from protobuf field: string employee_id = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    employeeId: string;
+    id: string;
 }
 /**
- * @generated from protobuf message management.RemoveTeamMemberRequest
+ * @generated from protobuf message management.CreateJobInformationRequest
  */
-export interface RemoveTeamMemberRequest {
-    /**
-     * @generated from protobuf field: string employee_id = 1;
-     */
-    employeeId: string;
-}
-/**
- * @generated from protobuf message management.GetTeamRequest
- */
-export interface GetTeamRequest {
-    /**
-     * @generated from protobuf oneof: request
-     */
-    request: {
-        oneofKind: "id";
-        /**
-         * @generated from protobuf field: string id = 1;
-         */
-        id: string;
-    } | {
-        oneofKind: "name";
-        /**
-         * @generated from protobuf field: string name = 2;
-         */
-        name: string;
-    } | {
-        oneofKind: "leaderId";
-        /**
-         * @generated from protobuf field: string leader_id = 3;
-         */
-        leaderId: string;
-    } | {
-        oneofKind: undefined;
-    };
-}
-/**
- * @generated from protobuf message management.UpdateTeamRequest
- */
-export interface UpdateTeamRequest {
-    /**
-     * @generated from protobuf oneof: request
-     */
-    request: {
-        oneofKind: "name";
-        /**
-         * @generated from protobuf field: string name = 1;
-         */
-        name: string;
-    } | {
-        oneofKind: "description";
-        /**
-         * @generated from protobuf field: string description = 2;
-         */
-        description: string;
-    } | {
-        oneofKind: "leaderId";
-        /**
-         * @generated from protobuf field: string leader_id = 3;
-         */
-        leaderId: string;
-    } | {
-        oneofKind: undefined;
-    };
-}
-/**
- * @generated from protobuf message management.RemoveTeamRequest
- */
-export interface RemoveTeamRequest {
-    /**
-     * @generated from protobuf field: string team_id = 1;
-     */
-    teamId: string;
-}
-/**
- * @generated from protobuf message management.CreateBoardRequest
- */
-export interface CreateBoardRequest {
-    /**
-     * @generated from protobuf field: string name = 1;
-     */
-    name: string;
-    /**
-     * @generated from protobuf field: string team_id = 2;
-     */
-    teamId: string;
-}
-/**
- * @generated from protobuf message management.GetBoardRequest
- */
-export interface GetBoardRequest {
-    /**
-     * @generated from protobuf oneof: request
-     */
-    request: {
-        oneofKind: "name";
-        /**
-         * @generated from protobuf field: string name = 1;
-         */
-        name: string;
-    } | {
-        oneofKind: "teamId";
-        /**
-         * @generated from protobuf field: string team_id = 2;
-         */
-        teamId: string;
-    } | {
-        oneofKind: undefined;
-    };
-}
-/**
- * @generated from protobuf message management.UpdateBoardRequest
- */
-export interface UpdateBoardRequest {
-    /**
-     * @generated from protobuf field: string name = 1;
-     */
-    name: string;
-}
-/**
- * @generated from protobuf message management.RemoveBoardRequest
- */
-export interface RemoveBoardRequest {
-    /**
-     * @generated from protobuf field: string board_id = 1;
-     */
-    boardId: string;
-}
-/**
- * @generated from protobuf message management.CreateBoardSectionRequest
- */
-export interface CreateBoardSectionRequest {
-    /**
-     * @generated from protobuf field: string name = 1;
-     */
-    name: string;
-    /**
-     * @generated from protobuf field: string color = 2;
-     */
-    color: string;
-    /**
-     * @generated from protobuf field: string description = 3;
-     */
-    description: string;
-    /**
-     * @generated from protobuf field: int32 task_limit = 4;
-     */
-    taskLimit: number;
-    /**
-     * @generated from protobuf field: string task_board_id = 5;
-     */
-    taskBoardId: string;
-}
-/**
- * @generated from protobuf message management.GetBoardSectionRequest
- */
-export interface GetBoardSectionRequest {
-    /**
-     * @generated from protobuf field: string board_id = 1;
-     */
-    boardId: string;
-}
-/**
- * @generated from protobuf message management.UpdateBoardSectionRequest
- */
-export interface UpdateBoardSectionRequest {
-    /**
-     * @generated from protobuf oneof: request
-     */
-    request: {
-        oneofKind: "name";
-        /**
-         * @generated from protobuf field: string name = 1;
-         */
-        name: string;
-    } | {
-        oneofKind: "color";
-        /**
-         * @generated from protobuf field: string color = 2;
-         */
-        color: string;
-    } | {
-        oneofKind: "description";
-        /**
-         * @generated from protobuf field: string description = 3;
-         */
-        description: string;
-    } | {
-        oneofKind: "hidden";
-        /**
-         * @generated from protobuf field: bool hidden = 4;
-         */
-        hidden: boolean;
-    } | {
-        oneofKind: "taskLimit";
-        /**
-         * @generated from protobuf field: int32 task_limit = 5;
-         */
-        taskLimit: number;
-    } | {
-        oneofKind: "order";
-        /**
-         * @generated from protobuf field: int32 order = 6;
-         */
-        order: number;
-    } | {
-        oneofKind: undefined;
-    };
-}
-/**
- * @generated from protobuf message management.RemoveBoardSectionRequest
- */
-export interface RemoveBoardSectionRequest {
-    /**
-     * @generated from protobuf field: string board_section_id = 1;
-     */
-    boardSectionId: string;
-}
-/**
- * @generated from protobuf message management.CreateTaskRequest
- */
-export interface CreateTaskRequest {
+export interface CreateJobInformationRequest {
     /**
      * @generated from protobuf field: string title = 1;
      */
     title: string;
     /**
-     * @generated from protobuf field: string description = 2;
+     * @generated from protobuf field: string employee_id = 2;
      */
-    description: string;
+    employeeId: string;
     /**
-     * @generated from protobuf field: string board_section_id = 3;
+     * @generated from protobuf field: string department_id = 3;
      */
-    boardSectionId: string;
+    departmentId: string;
     /**
-     * @generated from protobuf field: string issuer_id = 4;
+     * @generated from protobuf field: string supervisor_id = 4;
      */
-    issuerId: string;
+    supervisorId: string;
+    /**
+     * @generated from protobuf field: string work_location = 5;
+     */
+    workLocation: string;
+    /**
+     * @generated from protobuf field: string start_date = 6;
+     */
+    startDate: string;
+    /**
+     * @generated from protobuf field: string salary = 7;
+     */
+    salary: string;
+    /**
+     * @generated from protobuf field: string currency = 8;
+     */
+    currency: string;
 }
 /**
- * @generated from protobuf message management.AssignTaskRequest
+ * @generated from protobuf message management.GetJobInformationRequest
  */
-export interface AssignTaskRequest {
+export interface GetJobInformationRequest {
     /**
-     * @generated from protobuf field: string task_id = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    taskId: string;
+    id: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobTitleRequest
+ */
+export interface ChangeJobTitleRequest {
     /**
-     * @generated from protobuf field: string employee_id = 2;
+     * @generated from protobuf field: string title = 1;
+     */
+    title: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobDepartmentRequest
+ */
+export interface ChangeJobDepartmentRequest {
+    /**
+     * @generated from protobuf field: string department_id = 1;
+     */
+    departmentId: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobSupervisorRequest
+ */
+export interface ChangeJobSupervisorRequest {
+    /**
+     * @generated from protobuf field: string supervisor_id = 1;
+     */
+    supervisorId: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobWorkLocationRequest
+ */
+export interface ChangeJobWorkLocationRequest {
+    /**
+     * @generated from protobuf field: string work_location = 1;
+     */
+    workLocation: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobStartDateRequest
+ */
+export interface ChangeJobStartDateRequest {
+    /**
+     * @generated from protobuf field: string start_date = 1;
+     */
+    startDate: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobSalaryRequest
+ */
+export interface ChangeJobSalaryRequest {
+    /**
+     * @generated from protobuf field: string salary = 1;
+     */
+    salary: string;
+}
+/**
+ * @generated from protobuf message management.ChangeJobCurrencyRequest
+ */
+export interface ChangeJobCurrencyRequest {
+    /**
+     * @generated from protobuf field: string currency = 1;
+     */
+    currency: string;
+}
+/**
+ * @generated from protobuf message management.RemoveJobInformationRequest
+ */
+export interface RemoveJobInformationRequest {
+    /**
+     * @generated from protobuf field: string id = 1;
+     */
+    id: string;
+}
+/**
+ * @generated from protobuf message management.CreateEmergencyInformationRequest
+ */
+export interface CreateEmergencyInformationRequest {
+    /**
+     * @generated from protobuf field: string employee_id = 1;
+     */
+    employeeId: string;
+    /**
+     * @generated from protobuf field: string address = 2;
+     */
+    address: string;
+    /**
+     * @generated from protobuf field: optional string tel_number = 3;
+     */
+    telNumber?: string;
+    /**
+     * @generated from protobuf field: optional string mobile_number = 4;
+     */
+    mobileNumber?: string;
+    /**
+     * @generated from protobuf field: repeated string health_conditions = 5;
+     */
+    healthConditions: string[];
+    /**
+     * @generated from protobuf field: string contact_name = 6;
+     */
+    contactName: string;
+}
+/**
+ * @generated from protobuf message management.GetEmergencyInformationRequest
+ */
+export interface GetEmergencyInformationRequest {
+    /**
+     * @generated from protobuf field: string employee_id = 1;
      */
     employeeId: string;
 }
 /**
- * @generated from protobuf message management.RemoveAssignTaskRequest
+ * @generated from protobuf message management.ChangeEmergencyInformationAddressRequest
  */
-export interface RemoveAssignTaskRequest {
+export interface ChangeEmergencyInformationAddressRequest {
     /**
-     * @generated from protobuf field: string task_id = 1;
+     * @generated from protobuf field: string address = 1;
      */
-    taskId: string;
+    address: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmergencyInformationTelNumberRequest
+ */
+export interface ChangeEmergencyInformationTelNumberRequest {
     /**
-     * @generated from protobuf field: string employee_id = 2;
+     * @generated from protobuf field: string tel_number = 1;
+     */
+    telNumber: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmergencyInformationMobileNumberRequest
+ */
+export interface ChangeEmergencyInformationMobileNumberRequest {
+    /**
+     * @generated from protobuf field: string mobile_number = 1;
+     */
+    mobileNumber: string;
+}
+/**
+ * @generated from protobuf message management.ChangeEmergencyInformationContactNameRequest
+ */
+export interface ChangeEmergencyInformationContactNameRequest {
+    /**
+     * @generated from protobuf field: string contact_name = 1;
+     */
+    contactName: string;
+}
+/**
+ * @generated from protobuf message management.RemoveEmergencyInformationRequest
+ */
+export interface RemoveEmergencyInformationRequest {
+    /**
+     * @generated from protobuf field: string employee_id = 1;
      */
     employeeId: string;
 }
 /**
- * @generated from protobuf message management.GetTaskFromSectionRequest
+ * @generated from protobuf message management.AddEmergencyInformationHealthConditionRequest
  */
-export interface GetTaskFromSectionRequest {
+export interface AddEmergencyInformationHealthConditionRequest {
     /**
-     * @generated from protobuf field: string board_section_id = 1;
+     * @generated from protobuf field: string health_condition = 1;
      */
-    boardSectionId: string;
+    healthCondition: string;
 }
 /**
- * @generated from protobuf message management.GetTaskRequest
+ * @generated from protobuf message management.RemoveEmergencyInformationHealthConditionRequest
  */
-export interface GetTaskRequest {
+export interface RemoveEmergencyInformationHealthConditionRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: string health_condition = 1;
      */
-    request: {
-        oneofKind: "id";
-        /**
-         * @generated from protobuf field: string id = 1;
-         */
-        id: string;
-    } | {
-        oneofKind: "issuerId";
-        /**
-         * @generated from protobuf field: string issuer_id = 2;
-         */
-        issuerId: string;
-    } | {
-        oneofKind: "assigneeId";
-        /**
-         * @generated from protobuf field: string assignee_id = 3;
-         */
-        assigneeId: string;
-    } | {
-        oneofKind: undefined;
-    };
+    healthCondition: string;
 }
 /**
- * @generated from protobuf message management.MoveTaskToBoardRequest
+ * @generated from protobuf message management.CreatePANRequest
  */
-export interface MoveTaskToBoardRequest {
+export interface CreatePANRequest {
     /**
-     * @generated from protobuf field: string task_id = 1;
+     * @generated from protobuf field: string employee_id = 1;
      */
-    taskId: string;
+    employeeId: string;
     /**
-     * @generated from protobuf field: string board_section_id = 2;
+     * @generated from protobuf field: management.EmployeePanActionType action_type = 2;
      */
-    boardSectionId: string;
+    actionType: EmployeePanActionType;
+    /**
+     * @generated from protobuf field: string old_value = 3;
+     */
+    oldValue: string;
+    /**
+     * @generated from protobuf field: string new_value = 4;
+     */
+    newValue: string;
+    /**
+     * @generated from protobuf field: string effective_date = 5;
+     */
+    effectiveDate: string;
+    /**
+     * @generated from protobuf field: management.EmployeePanActionStatus status = 6;
+     */
+    status: EmployeePanActionStatus;
 }
 /**
- * @generated from protobuf message management.UpdateTaskRequest
+ * @generated from protobuf message management.GetPANInformationRequest
  */
-export interface UpdateTaskRequest {
+export interface GetPANInformationRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: string id = 1;
      */
-    request: {
-        oneofKind: "title";
-        /**
-         * @generated from protobuf field: string title = 1;
-         */
-        title: string;
-    } | {
-        oneofKind: "description";
-        /**
-         * @generated from protobuf field: string description = 2;
-         */
-        description: string;
-    } | {
-        oneofKind: "boardSectionId";
-        /**
-         * @generated from protobuf field: string board_section_id = 3;
-         */
-        boardSectionId: string;
-    } | {
-        oneofKind: "issuerId";
-        /**
-         * @generated from protobuf field: string issuer_id = 4;
-         */
-        issuerId: string;
-    } | {
-        oneofKind: undefined;
-    };
+    id: string;
 }
 /**
- * @generated from protobuf message management.RemoveTaskRequest
+ * @generated from protobuf message management.ChangePANActionTypeRequest
  */
-export interface RemoveTaskRequest {
+export interface ChangePANActionTypeRequest {
     /**
-     * @generated from protobuf field: string task_id = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    taskId: string;
+    id: string;
+    /**
+     * @generated from protobuf field: management.EmployeePanActionType action_type = 2;
+     */
+    actionType: EmployeePanActionType;
 }
 /**
- * @generated from protobuf message management.CreateTaskLabelRequest
+ * @generated from protobuf message management.ChangePANOldValueRequest
  */
-export interface CreateTaskLabelRequest {
+export interface ChangePANOldValueRequest {
     /**
-     * @generated from protobuf field: string name = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    name: string;
+    id: string;
     /**
-     * @generated from protobuf field: string description = 2;
+     * @generated from protobuf field: string old_value = 2;
      */
-    description: string;
-    /**
-     * @generated from protobuf field: string color = 3;
-     */
-    color: string;
-    /**
-     * @generated from protobuf field: string team_id = 4;
-     */
-    teamId: string;
+    oldValue: string;
 }
 /**
- * @generated from protobuf message management.GetTaskLabelRequest
+ * @generated from protobuf message management.ChangePANNewValueRequest
  */
-export interface GetTaskLabelRequest {
+export interface ChangePANNewValueRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: string id = 1;
      */
-    request: {
-        oneofKind: "id";
-        /**
-         * @generated from protobuf field: string id = 1;
-         */
-        id: string;
-    } | {
-        oneofKind: "taskId";
-        /**
-         * @generated from protobuf field: string task_id = 2;
-         */
-        taskId: string;
-    } | {
-        oneofKind: "teamId";
-        /**
-         * @generated from protobuf field: string team_id = 3;
-         */
-        teamId: string;
-    } | {
-        oneofKind: undefined;
-    };
+    id: string;
+    /**
+     * @generated from protobuf field: string new_value = 2;
+     */
+    newValue: string;
 }
 /**
- * @generated from protobuf message management.UpdateTaskLabelRequest
+ * @generated from protobuf message management.ChangePANEffectiveDateRequest
  */
-export interface UpdateTaskLabelRequest {
+export interface ChangePANEffectiveDateRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: string id = 1;
      */
-    request: {
-        oneofKind: "name";
-        /**
-         * @generated from protobuf field: string name = 1;
-         */
-        name: string;
-    } | {
-        oneofKind: "description";
-        /**
-         * @generated from protobuf field: string description = 2;
-         */
-        description: string;
-    } | {
-        oneofKind: "color";
-        /**
-         * @generated from protobuf field: string color = 3;
-         */
-        color: string;
-    } | {
-        oneofKind: undefined;
-    };
+    id: string;
+    /**
+     * @generated from protobuf field: string effective_date = 2;
+     */
+    effectiveDate: string;
 }
 /**
- * @generated from protobuf message management.RemoveTaskLabelRequest
+ * @generated from protobuf message management.ApprovePANRequest
  */
-export interface RemoveTaskLabelRequest {
+export interface ApprovePANRequest {
     /**
-     * @generated from protobuf field: string task_label_id = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    taskLabelId: string;
+    id: string;
 }
 /**
- * @generated from protobuf message management.CreateTaskFieldRequest
+ * @generated from protobuf message management.RejectPANRequest
  */
-export interface CreateTaskFieldRequest {
+export interface RejectPANRequest {
     /**
-     * @generated from protobuf field: string name = 1;
+     * @generated from protobuf field: string id = 1;
      */
-    name: string;
-    /**
-     * @generated from protobuf field: management.TaskFieldType type = 2;
-     */
-    type: TaskFieldType;
-    /**
-     * @generated from protobuf field: string value = 3;
-     */
-    value: string;
-    /**
-     * @generated from protobuf field: string team_id = 4;
-     */
-    teamId: string;
+    id: string;
 }
 /**
- * @generated from protobuf message management.GetTaskFieldRequest
+ * @generated from protobuf message management.RemovePANInformationRequest
  */
-export interface GetTaskFieldRequest {
+export interface RemovePANInformationRequest {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf field: string id = 1;
      */
-    request: {
-        oneofKind: "id";
-        /**
-         * @generated from protobuf field: string id = 1;
-         */
-        id: string;
-    } | {
-        oneofKind: "teamId";
-        /**
-         * @generated from protobuf field: string team_id = 2;
-         */
-        teamId: string;
-    } | {
-        oneofKind: "taskId";
-        /**
-         * @generated from protobuf field: string task_id = 3;
-         */
-        taskId: string;
-    } | {
-        oneofKind: undefined;
-    };
+    id: string;
 }
 /**
- * @generated from protobuf message management.UpdateTaskFieldRequest
+ * @generated from protobuf enum management.EmployeeMaritalStatus
  */
-export interface UpdateTaskFieldRequest {
+export enum EmployeeMaritalStatus {
     /**
-     * @generated from protobuf oneof: request
+     * @generated from protobuf enum value: MARITAl_STATUS_SINGLE = 0;
      */
-    request: {
-        oneofKind: "name";
-        /**
-         * @generated from protobuf field: string name = 1;
-         */
-        name: string;
-    } | {
-        oneofKind: "type";
-        /**
-         * @generated from protobuf field: management.TaskFieldType type = 2;
-         */
-        type: TaskFieldType;
-    } | {
-        oneofKind: "value";
-        /**
-         * @generated from protobuf field: string value = 3;
-         */
-        value: string;
-    } | {
-        oneofKind: "teamId";
-        /**
-         * @generated from protobuf field: string team_id = 4;
-         */
-        teamId: string;
-    } | {
-        oneofKind: undefined;
-    };
+    MARITAl_STATUS_SINGLE = 0,
+    /**
+     * @generated from protobuf enum value: MARITAl_STATUS_MARRIED = 1;
+     */
+    MARITAl_STATUS_MARRIED = 1,
+    /**
+     * @generated from protobuf enum value: MARITAl_STATUS_DIVORCED = 2;
+     */
+    MARITAl_STATUS_DIVORCED = 2,
+    /**
+     * @generated from protobuf enum value: MARITAl_STATUS_WIDOWED = 3;
+     */
+    MARITAl_STATUS_WIDOWED = 3,
+    /**
+     * @generated from protobuf enum value: MARITAl_STATUS_SEPERATED = 4;
+     */
+    MARITAl_STATUS_SEPERATED = 4
 }
 /**
- * @generated from protobuf message management.RemoveTaskFieldRequest
+ * @generated from protobuf enum management.EmployeeRole
  */
-export interface RemoveTaskFieldRequest {
-    /**
-     * @generated from protobuf field: string task_field_id = 1;
-     */
-    taskFieldId: string;
-}
-/**
- * @generated from protobuf message management.CreateTaskCommentRequest
- */
-export interface CreateTaskCommentRequest {
-    /**
-     * @generated from protobuf field: string message = 1;
-     */
-    message: string;
-    /**
-     * @generated from protobuf field: string sender_id = 2;
-     */
-    senderId: string;
-    /**
-     * @generated from protobuf field: string task_id = 3;
-     */
-    taskId: string;
-    /**
-     * @generated from protobuf field: repeated storage.FileMetadata attachments = 4;
-     */
-    attachments: FileMetadata[];
-}
-/**
- * @generated from protobuf message management.GetTaskCommentsRequest
- */
-export interface GetTaskCommentsRequest {
-    /**
-     * @generated from protobuf field: string task_id = 1;
-     */
-    taskId: string;
-}
-/**
- * @generated from protobuf enum management.Role
- */
-export enum Role {
+export enum EmployeeRole {
     /**
      * @generated from protobuf enum value: ROLE_SUPER_ADMIN = 0;
      */
-    SUPER_ADMIN = 0,
+    ROLE_SUPER_ADMIN = 0,
     /**
      * @generated from protobuf enum value: ROLE_MANAGER = 1;
      */
-    MANAGER = 1,
+    ROLE_MANAGER = 1,
     /**
      * @generated from protobuf enum value: ROLE_EMPLOYEE = 2;
      */
-    EMPLOYEE = 2
+    ROLE_EMPLOYEE = 2
 }
 /**
- * @generated from protobuf enum management.ContractType
+ * @generated from protobuf enum management.EmployeePanActionType
  */
-export enum ContractType {
+export enum EmployeePanActionType {
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_TYPE_HIRE = 0;
+     */
+    HIRE = 0,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_TYPE_PROMOTION = 1;
+     */
+    PROMOTION = 1,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_TYPE_SALARY_ADJUSTMENT = 2;
+     */
+    SALARY_ADJUSTMENT = 2,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_TYPE_TERMINATION = 3;
+     */
+    TERMINATION = 3,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_TYPE_LEAVE = 4;
+     */
+    LEAVE = 4,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_TYPE_TRANSFER = 5;
+     */
+    TRANSFER = 5
+}
+/**
+ * @generated from protobuf enum management.EmployeePanActionStatus
+ */
+export enum EmployeePanActionStatus {
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_STATUS_PENDING = 0;
+     */
+    PENDING = 0,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_STATUS_APPROVED = 1;
+     */
+    APPROVED = 1,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_PAN_ACTION_STATUS_REJECTED = 2;
+     */
+    REJECTED = 2
+}
+/**
+ * @generated from protobuf enum management.EmployeeStatus
+ */
+export enum EmployeeStatus {
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_STATUS_ACTIVE = 0;
+     */
+    ACTIVE = 0,
+    /**
+     * @generated from protobuf enum value: EMPLOYEE_STATUS_INACTIVE = 1;
+     */
+    INACTIVE = 1
+}
+/**
+ * @generated from protobuf enum management.EmployeeContractType
+ */
+export enum EmployeeContractType {
     /**
      * @generated from protobuf enum value: CONTRACT_TYPE_FULL_TIME = 0;
      */
-    FULL_TIME = 0,
+    CONTRACT_TYPE_FULL_TIME = 0,
     /**
      * @generated from protobuf enum value: CONTRACT_TYPE_PART_TIME = 1;
      */
-    PART_TIME = 1
-}
-/**
- * @generated from protobuf enum management.TaskFieldType
- */
-export enum TaskFieldType {
-    /**
-     * @generated from protobuf enum value: TASK_FIELD_TYPE_TEXT = 0;
-     */
-    TEXT = 0,
-    /**
-     * @generated from protobuf enum value: TASK_FIELD_TYPE_NUMBER = 1;
-     */
-    NUMBER = 1,
-    /**
-     * @generated from protobuf enum value: TASK_FIELD_TYPE_DATE = 2;
-     */
-    DATE = 2
+    CONTRACT_TYPE_PART_TIME = 1
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class Employee$Type extends MessageType<Employee> {
     constructor() {
         super("management.Employee", [
             { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "role", kind: "enum", T: () => ["management.Role", Role, "ROLE_"] },
-            { no: 4, name: "full_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "position", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 7, name: "avatar_file_id", kind: "message", T: () => FileMetadata },
-            { no: 8, name: "cover_photo_file_id", kind: "message", T: () => FileMetadata }
+            { no: 2, name: "avatar_photo", kind: "message", T: () => FileMetadata },
+            { no: 3, name: "cover_photo", kind: "message", T: () => FileMetadata },
+            { no: 4, name: "first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "middle_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "tel_number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "mobile_Number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 9, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 10, name: "role", kind: "enum", T: () => ["management.EmployeeRole", EmployeeRole] },
+            { no: 11, name: "status", kind: "enum", T: () => ["management.EmployeeStatus", EmployeeStatus, "EMPLOYEE_STATUS_"] },
+            { no: 12, name: "contract_type", kind: "enum", T: () => ["management.EmployeeContractType", EmployeeContractType] },
+            { no: 13, name: "phil_nat_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "birth_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 15, name: "special_interests", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 16, name: "learning_institutions", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "auth_user_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 18, name: "spouse_first_name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 19, name: "spouse_middle_name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 20, name: "spouse_last_name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 21, name: "spouse_employer", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<Employee>): Employee {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.id = "";
-        message.userId = "";
+        message.firstName = "";
+        message.middleName = "";
+        message.lastName = "";
+        message.email = "";
         message.role = 0;
-        message.fullName = "";
-        message.address = "";
-        message.position = "";
+        message.status = 0;
+        message.contractType = 0;
+        message.philNatId = "";
+        message.birthDate = "";
+        message.specialInterests = [];
+        message.learningInstitutions = [];
+        message.authUserId = "";
         if (value !== undefined)
             reflectionMergePartial<Employee>(this, message, value);
         return message;
@@ -1087,26 +1110,65 @@ class Employee$Type extends MessageType<Employee> {
                 case /* string id */ 1:
                     message.id = reader.string();
                     break;
-                case /* string user_id */ 2:
-                    message.userId = reader.string();
+                case /* optional storage.FileMetadata avatar_photo */ 2:
+                    message.avatarPhoto = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.avatarPhoto);
                     break;
-                case /* management.Role role */ 3:
+                case /* optional storage.FileMetadata cover_photo */ 3:
+                    message.coverPhoto = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.coverPhoto);
+                    break;
+                case /* string first_name */ 4:
+                    message.firstName = reader.string();
+                    break;
+                case /* string middle_name */ 5:
+                    message.middleName = reader.string();
+                    break;
+                case /* string last_name */ 6:
+                    message.lastName = reader.string();
+                    break;
+                case /* optional string tel_number */ 7:
+                    message.telNumber = reader.string();
+                    break;
+                case /* optional string mobile_Number */ 8:
+                    message.mobileNumber = reader.string();
+                    break;
+                case /* string email */ 9:
+                    message.email = reader.string();
+                    break;
+                case /* management.EmployeeRole role */ 10:
                     message.role = reader.int32();
                     break;
-                case /* string full_name */ 4:
-                    message.fullName = reader.string();
+                case /* management.EmployeeStatus status */ 11:
+                    message.status = reader.int32();
                     break;
-                case /* string address */ 5:
-                    message.address = reader.string();
+                case /* management.EmployeeContractType contract_type */ 12:
+                    message.contractType = reader.int32();
                     break;
-                case /* string position */ 6:
-                    message.position = reader.string();
+                case /* string phil_nat_id */ 13:
+                    message.philNatId = reader.string();
                     break;
-                case /* storage.FileMetadata avatar_file_id */ 7:
-                    message.avatarFileId = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.avatarFileId);
+                case /* string birth_date */ 14:
+                    message.birthDate = reader.string();
                     break;
-                case /* storage.FileMetadata cover_photo_file_id */ 8:
-                    message.coverPhotoFileId = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.coverPhotoFileId);
+                case /* repeated string special_interests */ 15:
+                    message.specialInterests.push(reader.string());
+                    break;
+                case /* repeated string learning_institutions */ 16:
+                    message.learningInstitutions.push(reader.string());
+                    break;
+                case /* string auth_user_id */ 17:
+                    message.authUserId = reader.string();
+                    break;
+                case /* optional string spouse_first_name */ 18:
+                    message.spouseFirstName = reader.string();
+                    break;
+                case /* optional string spouse_middle_name */ 19:
+                    message.spouseMiddleName = reader.string();
+                    break;
+                case /* optional string spouse_last_name */ 20:
+                    message.spouseLastName = reader.string();
+                    break;
+                case /* optional string spouse_employer */ 21:
+                    message.spouseEmployer = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -1123,27 +1185,66 @@ class Employee$Type extends MessageType<Employee> {
         /* string id = 1; */
         if (message.id !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string user_id = 2; */
-        if (message.userId !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.userId);
-        /* management.Role role = 3; */
+        /* optional storage.FileMetadata avatar_photo = 2; */
+        if (message.avatarPhoto)
+            FileMetadata.internalBinaryWrite(message.avatarPhoto, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* optional storage.FileMetadata cover_photo = 3; */
+        if (message.coverPhoto)
+            FileMetadata.internalBinaryWrite(message.coverPhoto, writer.tag(3, WireType.LengthDelimited).fork(), options).join();
+        /* string first_name = 4; */
+        if (message.firstName !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.firstName);
+        /* string middle_name = 5; */
+        if (message.middleName !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.middleName);
+        /* string last_name = 6; */
+        if (message.lastName !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.lastName);
+        /* optional string tel_number = 7; */
+        if (message.telNumber !== undefined)
+            writer.tag(7, WireType.LengthDelimited).string(message.telNumber);
+        /* optional string mobile_Number = 8; */
+        if (message.mobileNumber !== undefined)
+            writer.tag(8, WireType.LengthDelimited).string(message.mobileNumber);
+        /* string email = 9; */
+        if (message.email !== "")
+            writer.tag(9, WireType.LengthDelimited).string(message.email);
+        /* management.EmployeeRole role = 10; */
         if (message.role !== 0)
-            writer.tag(3, WireType.Varint).int32(message.role);
-        /* string full_name = 4; */
-        if (message.fullName !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.fullName);
-        /* string address = 5; */
-        if (message.address !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.address);
-        /* string position = 6; */
-        if (message.position !== "")
-            writer.tag(6, WireType.LengthDelimited).string(message.position);
-        /* storage.FileMetadata avatar_file_id = 7; */
-        if (message.avatarFileId)
-            FileMetadata.internalBinaryWrite(message.avatarFileId, writer.tag(7, WireType.LengthDelimited).fork(), options).join();
-        /* storage.FileMetadata cover_photo_file_id = 8; */
-        if (message.coverPhotoFileId)
-            FileMetadata.internalBinaryWrite(message.coverPhotoFileId, writer.tag(8, WireType.LengthDelimited).fork(), options).join();
+            writer.tag(10, WireType.Varint).int32(message.role);
+        /* management.EmployeeStatus status = 11; */
+        if (message.status !== 0)
+            writer.tag(11, WireType.Varint).int32(message.status);
+        /* management.EmployeeContractType contract_type = 12; */
+        if (message.contractType !== 0)
+            writer.tag(12, WireType.Varint).int32(message.contractType);
+        /* string phil_nat_id = 13; */
+        if (message.philNatId !== "")
+            writer.tag(13, WireType.LengthDelimited).string(message.philNatId);
+        /* string birth_date = 14; */
+        if (message.birthDate !== "")
+            writer.tag(14, WireType.LengthDelimited).string(message.birthDate);
+        /* repeated string special_interests = 15; */
+        for (let i = 0; i < message.specialInterests.length; i++)
+            writer.tag(15, WireType.LengthDelimited).string(message.specialInterests[i]);
+        /* repeated string learning_institutions = 16; */
+        for (let i = 0; i < message.learningInstitutions.length; i++)
+            writer.tag(16, WireType.LengthDelimited).string(message.learningInstitutions[i]);
+        /* string auth_user_id = 17; */
+        if (message.authUserId !== "")
+            writer.tag(17, WireType.LengthDelimited).string(message.authUserId);
+        /* optional string spouse_first_name = 18; */
+        if (message.spouseFirstName !== undefined)
+            writer.tag(18, WireType.LengthDelimited).string(message.spouseFirstName);
+        /* optional string spouse_middle_name = 19; */
+        if (message.spouseMiddleName !== undefined)
+            writer.tag(19, WireType.LengthDelimited).string(message.spouseMiddleName);
+        /* optional string spouse_last_name = 20; */
+        if (message.spouseLastName !== undefined)
+            writer.tag(20, WireType.LengthDelimited).string(message.spouseLastName);
+        /* optional string spouse_employer = 21; */
+        if (message.spouseEmployer !== undefined)
+            writer.tag(21, WireType.LengthDelimited).string(message.spouseEmployer);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -1155,860 +1256,39 @@ class Employee$Type extends MessageType<Employee> {
  */
 export const Employee = new Employee$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class Team$Type extends MessageType<Team> {
+class Department$Type extends MessageType<Department> {
     constructor() {
-        super("management.Team", [
+        super("management.Department", [
             { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
             { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "leader_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "member_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
+            { no: 3, name: "description", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "employee_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<Team>): Team {
+    create(value?: PartialMessage<Department>): Department {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.id = "";
         message.name = "";
-        message.description = "";
-        message.leaderId = "";
-        message.memberIds = [];
-        if (value !== undefined)
-            reflectionMergePartial<Team>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Team): Team {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
-                    break;
-                case /* string name */ 2:
-                    message.name = reader.string();
-                    break;
-                case /* string description */ 3:
-                    message.description = reader.string();
-                    break;
-                case /* string leader_id */ 4:
-                    message.leaderId = reader.string();
-                    break;
-                case /* repeated string member_ids */ 5:
-                    message.memberIds.push(reader.string());
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: Team, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string name = 2; */
-        if (message.name !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.name);
-        /* string description = 3; */
-        if (message.description !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.description);
-        /* string leader_id = 4; */
-        if (message.leaderId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.leaderId);
-        /* repeated string member_ids = 5; */
-        for (let i = 0; i < message.memberIds.length; i++)
-            writer.tag(5, WireType.LengthDelimited).string(message.memberIds[i]);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.Team
- */
-export const Team = new Team$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class Board$Type extends MessageType<Board> {
-    constructor() {
-        super("management.Board", [
-            { no: 1, name: "id", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<Board>): Board {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = 0;
-        message.name = "";
-        message.teamId = "";
-        if (value !== undefined)
-            reflectionMergePartial<Board>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Board): Board {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* int32 id */ 1:
-                    message.id = reader.int32();
-                    break;
-                case /* string name */ 2:
-                    message.name = reader.string();
-                    break;
-                case /* string team_id */ 3:
-                    message.teamId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: Board, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* int32 id = 1; */
-        if (message.id !== 0)
-            writer.tag(1, WireType.Varint).int32(message.id);
-        /* string name = 2; */
-        if (message.name !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.name);
-        /* string team_id = 3; */
-        if (message.teamId !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.teamId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.Board
- */
-export const Board = new Board$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class BoardSection$Type extends MessageType<BoardSection> {
-    constructor() {
-        super("management.BoardSection", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "hidden", kind: "scalar", T: 8 /*ScalarType.BOOL*/ },
-            { no: 6, name: "task_limit", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 7, name: "task_board_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 8, name: "order", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 9, name: "task_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<BoardSection>): BoardSection {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = "";
-        message.name = "";
-        message.color = "";
-        message.description = "";
-        message.hidden = false;
-        message.taskLimit = 0;
-        message.taskBoardId = "";
-        message.order = 0;
-        message.taskIds = [];
-        if (value !== undefined)
-            reflectionMergePartial<BoardSection>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BoardSection): BoardSection {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
-                    break;
-                case /* string name */ 2:
-                    message.name = reader.string();
-                    break;
-                case /* string color */ 3:
-                    message.color = reader.string();
-                    break;
-                case /* string description */ 4:
-                    message.description = reader.string();
-                    break;
-                case /* bool hidden */ 5:
-                    message.hidden = reader.bool();
-                    break;
-                case /* int32 task_limit */ 6:
-                    message.taskLimit = reader.int32();
-                    break;
-                case /* string task_board_id */ 7:
-                    message.taskBoardId = reader.string();
-                    break;
-                case /* int32 order */ 8:
-                    message.order = reader.int32();
-                    break;
-                case /* repeated string task_ids */ 9:
-                    message.taskIds.push(reader.string());
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: BoardSection, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string name = 2; */
-        if (message.name !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.name);
-        /* string color = 3; */
-        if (message.color !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.color);
-        /* string description = 4; */
-        if (message.description !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.description);
-        /* bool hidden = 5; */
-        if (message.hidden !== false)
-            writer.tag(5, WireType.Varint).bool(message.hidden);
-        /* int32 task_limit = 6; */
-        if (message.taskLimit !== 0)
-            writer.tag(6, WireType.Varint).int32(message.taskLimit);
-        /* string task_board_id = 7; */
-        if (message.taskBoardId !== "")
-            writer.tag(7, WireType.LengthDelimited).string(message.taskBoardId);
-        /* int32 order = 8; */
-        if (message.order !== 0)
-            writer.tag(8, WireType.Varint).int32(message.order);
-        /* repeated string task_ids = 9; */
-        for (let i = 0; i < message.taskIds.length; i++)
-            writer.tag(9, WireType.LengthDelimited).string(message.taskIds[i]);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.BoardSection
- */
-export const BoardSection = new BoardSection$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class Task$Type extends MessageType<Task> {
-    constructor() {
-        super("management.Task", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "board_section_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "order", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 6, name: "fields", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => TaskField },
-            { no: 7, name: "label_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
-            { no: 8, name: "comments", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => TaskComment },
-            { no: 9, name: "issuer_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 10, name: "assignee_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<Task>): Task {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = "";
-        message.title = "";
-        message.description = "";
-        message.boardSectionId = "";
-        message.order = 0;
-        message.fields = [];
-        message.labelIds = [];
-        message.comments = [];
-        message.issuerId = "";
-        message.assigneeIds = [];
-        if (value !== undefined)
-            reflectionMergePartial<Task>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Task): Task {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
-                    break;
-                case /* string title */ 2:
-                    message.title = reader.string();
-                    break;
-                case /* string description */ 3:
-                    message.description = reader.string();
-                    break;
-                case /* string board_section_id */ 4:
-                    message.boardSectionId = reader.string();
-                    break;
-                case /* int32 order */ 5:
-                    message.order = reader.int32();
-                    break;
-                case /* repeated management.TaskField fields */ 6:
-                    message.fields.push(TaskField.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                case /* repeated string label_ids */ 7:
-                    message.labelIds.push(reader.string());
-                    break;
-                case /* repeated management.TaskComment comments */ 8:
-                    message.comments.push(TaskComment.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                case /* string issuer_id */ 9:
-                    message.issuerId = reader.string();
-                    break;
-                case /* repeated string assignee_ids */ 10:
-                    message.assigneeIds.push(reader.string());
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: Task, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string title = 2; */
-        if (message.title !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.title);
-        /* string description = 3; */
-        if (message.description !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.description);
-        /* string board_section_id = 4; */
-        if (message.boardSectionId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.boardSectionId);
-        /* int32 order = 5; */
-        if (message.order !== 0)
-            writer.tag(5, WireType.Varint).int32(message.order);
-        /* repeated management.TaskField fields = 6; */
-        for (let i = 0; i < message.fields.length; i++)
-            TaskField.internalBinaryWrite(message.fields[i], writer.tag(6, WireType.LengthDelimited).fork(), options).join();
-        /* repeated string label_ids = 7; */
-        for (let i = 0; i < message.labelIds.length; i++)
-            writer.tag(7, WireType.LengthDelimited).string(message.labelIds[i]);
-        /* repeated management.TaskComment comments = 8; */
-        for (let i = 0; i < message.comments.length; i++)
-            TaskComment.internalBinaryWrite(message.comments[i], writer.tag(8, WireType.LengthDelimited).fork(), options).join();
-        /* string issuer_id = 9; */
-        if (message.issuerId !== "")
-            writer.tag(9, WireType.LengthDelimited).string(message.issuerId);
-        /* repeated string assignee_ids = 10; */
-        for (let i = 0; i < message.assigneeIds.length; i++)
-            writer.tag(10, WireType.LengthDelimited).string(message.assigneeIds[i]);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.Task
- */
-export const Task = new Task$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class TaskField$Type extends MessageType<TaskField> {
-    constructor() {
-        super("management.TaskField", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "type", kind: "enum", T: () => ["management.TaskFieldType", TaskFieldType, "TASK_FIELD_TYPE_"] },
-            { no: 4, name: "value", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<TaskField>): TaskField {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = "";
-        message.name = "";
-        message.type = 0;
-        message.value = "";
-        message.teamId = "";
-        if (value !== undefined)
-            reflectionMergePartial<TaskField>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TaskField): TaskField {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
-                    break;
-                case /* string name */ 2:
-                    message.name = reader.string();
-                    break;
-                case /* management.TaskFieldType type */ 3:
-                    message.type = reader.int32();
-                    break;
-                case /* string value */ 4:
-                    message.value = reader.string();
-                    break;
-                case /* string team_id */ 5:
-                    message.teamId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: TaskField, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string name = 2; */
-        if (message.name !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.name);
-        /* management.TaskFieldType type = 3; */
-        if (message.type !== 0)
-            writer.tag(3, WireType.Varint).int32(message.type);
-        /* string value = 4; */
-        if (message.value !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.value);
-        /* string team_id = 5; */
-        if (message.teamId !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.teamId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.TaskField
- */
-export const TaskField = new TaskField$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class TaskLabel$Type extends MessageType<TaskLabel> {
-    constructor() {
-        super("management.TaskLabel", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<TaskLabel>): TaskLabel {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = "";
-        message.name = "";
-        message.description = "";
-        message.color = "";
-        message.teamId = "";
-        if (value !== undefined)
-            reflectionMergePartial<TaskLabel>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TaskLabel): TaskLabel {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
-                    break;
-                case /* string name */ 2:
-                    message.name = reader.string();
-                    break;
-                case /* string description */ 3:
-                    message.description = reader.string();
-                    break;
-                case /* string color */ 4:
-                    message.color = reader.string();
-                    break;
-                case /* string team_id */ 5:
-                    message.teamId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: TaskLabel, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string name = 2; */
-        if (message.name !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.name);
-        /* string description = 3; */
-        if (message.description !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.description);
-        /* string color = 4; */
-        if (message.color !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.color);
-        /* string team_id = 5; */
-        if (message.teamId !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.teamId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.TaskLabel
- */
-export const TaskLabel = new TaskLabel$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class TaskComment$Type extends MessageType<TaskComment> {
-    constructor() {
-        super("management.TaskComment", [
-            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "sender_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "attachments", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => FileMetadata },
-            { no: 6, name: "timestamp", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<TaskComment>): TaskComment {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.id = "";
-        message.message = "";
-        message.senderId = "";
-        message.taskId = "";
-        message.attachments = [];
-        message.timestamp = "";
-        if (value !== undefined)
-            reflectionMergePartial<TaskComment>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: TaskComment): TaskComment {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string id */ 1:
-                    message.id = reader.string();
-                    break;
-                case /* string message */ 2:
-                    message.message = reader.string();
-                    break;
-                case /* string sender_id */ 3:
-                    message.senderId = reader.string();
-                    break;
-                case /* string task_id */ 4:
-                    message.taskId = reader.string();
-                    break;
-                case /* repeated storage.FileMetadata attachments */ 5:
-                    message.attachments.push(FileMetadata.internalBinaryRead(reader, reader.uint32(), options));
-                    break;
-                case /* string timestamp */ 6:
-                    message.timestamp = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: TaskComment, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.id !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.id);
-        /* string message = 2; */
-        if (message.message !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.message);
-        /* string sender_id = 3; */
-        if (message.senderId !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.senderId);
-        /* string task_id = 4; */
-        if (message.taskId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.taskId);
-        /* repeated storage.FileMetadata attachments = 5; */
-        for (let i = 0; i < message.attachments.length; i++)
-            FileMetadata.internalBinaryWrite(message.attachments[i], writer.tag(5, WireType.LengthDelimited).fork(), options).join();
-        /* string timestamp = 6; */
-        if (message.timestamp !== "")
-            writer.tag(6, WireType.LengthDelimited).string(message.timestamp);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.TaskComment
- */
-export const TaskComment = new TaskComment$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class CreateEmployeeRequest$Type extends MessageType<CreateEmployeeRequest> {
-    constructor() {
-        super("management.CreateEmployeeRequest", [
-            { no: 1, name: "full_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "role", kind: "enum", T: () => ["management.Role", Role, "ROLE_"] },
-            { no: 4, name: "position", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 6, name: "avatar_file_id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
-            { no: 7, name: "avatar_cover_photo_file_id", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<CreateEmployeeRequest>): CreateEmployeeRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.fullName = "";
-        message.address = "";
-        message.role = 0;
-        message.position = "";
-        message.email = "";
-        if (value !== undefined)
-            reflectionMergePartial<CreateEmployeeRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateEmployeeRequest): CreateEmployeeRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string full_name */ 1:
-                    message.fullName = reader.string();
-                    break;
-                case /* string address */ 2:
-                    message.address = reader.string();
-                    break;
-                case /* management.Role role */ 3:
-                    message.role = reader.int32();
-                    break;
-                case /* string position */ 4:
-                    message.position = reader.string();
-                    break;
-                case /* string email */ 5:
-                    message.email = reader.string();
-                    break;
-                case /* optional string avatar_file_id */ 6:
-                    message.avatarFileId = reader.string();
-                    break;
-                case /* optional string avatar_cover_photo_file_id */ 7:
-                    message.avatarCoverPhotoFileId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: CreateEmployeeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string full_name = 1; */
-        if (message.fullName !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.fullName);
-        /* string address = 2; */
-        if (message.address !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.address);
-        /* management.Role role = 3; */
-        if (message.role !== 0)
-            writer.tag(3, WireType.Varint).int32(message.role);
-        /* string position = 4; */
-        if (message.position !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.position);
-        /* string email = 5; */
-        if (message.email !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.email);
-        /* optional string avatar_file_id = 6; */
-        if (message.avatarFileId !== undefined)
-            writer.tag(6, WireType.LengthDelimited).string(message.avatarFileId);
-        /* optional string avatar_cover_photo_file_id = 7; */
-        if (message.avatarCoverPhotoFileId !== undefined)
-            writer.tag(7, WireType.LengthDelimited).string(message.avatarCoverPhotoFileId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.CreateEmployeeRequest
- */
-export const CreateEmployeeRequest = new CreateEmployeeRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class CreateEmployeeResponse$Type extends MessageType<CreateEmployeeResponse> {
-    constructor() {
-        super("management.CreateEmployeeResponse", [
-            { no: 1, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "password", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<CreateEmployeeResponse>): CreateEmployeeResponse {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.email = "";
-        message.password = "";
-        if (value !== undefined)
-            reflectionMergePartial<CreateEmployeeResponse>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateEmployeeResponse): CreateEmployeeResponse {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string email */ 1:
-                    message.email = reader.string();
-                    break;
-                case /* string password */ 2:
-                    message.password = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: CreateEmployeeResponse, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string email = 1; */
-        if (message.email !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.email);
-        /* string password = 2; */
-        if (message.password !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.password);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.CreateEmployeeResponse
- */
-export const CreateEmployeeResponse = new CreateEmployeeResponse$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class GetEmployeeRequest$Type extends MessageType<GetEmployeeRequest> {
-    constructor() {
-        super("management.GetEmployeeRequest", [
-            { no: 1, name: "employee_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "user_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "role", kind: "enum", oneof: "request", T: () => ["management.Role", Role, "ROLE_"] }
-        ]);
-    }
-    create(value?: PartialMessage<GetEmployeeRequest>): GetEmployeeRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial<GetEmployeeRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetEmployeeRequest): GetEmployeeRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string employee_id */ 1:
-                    message.request = {
-                        oneofKind: "employeeId",
-                        employeeId: reader.string()
-                    };
-                    break;
-                case /* string user_id */ 2:
-                    message.request = {
-                        oneofKind: "userId",
-                        userId: reader.string()
-                    };
-                    break;
-                case /* management.Role role */ 3:
-                    message.request = {
-                        oneofKind: "role",
-                        role: reader.int32()
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: GetEmployeeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string employee_id = 1; */
-        if (message.request.oneofKind === "employeeId")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.employeeId);
-        /* string user_id = 2; */
-        if (message.request.oneofKind === "userId")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.userId);
-        /* management.Role role = 3; */
-        if (message.request.oneofKind === "role")
-            writer.tag(3, WireType.Varint).int32(message.request.role);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.GetEmployeeRequest
- */
-export const GetEmployeeRequest = new GetEmployeeRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class BatchGetEmployeesRequest$Type extends MessageType<BatchGetEmployeesRequest> {
-    constructor() {
-        super("management.BatchGetEmployeesRequest", [
-            { no: 1, name: "employee_ids", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<BatchGetEmployeesRequest>): BatchGetEmployeesRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
         message.employeeIds = [];
         if (value !== undefined)
-            reflectionMergePartial<BatchGetEmployeesRequest>(this, message, value);
+            reflectionMergePartial<Department>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: BatchGetEmployeesRequest): BatchGetEmployeesRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: Department): Department {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* repeated string employee_ids */ 1:
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* string name */ 2:
+                    message.name = reader.string();
+                    break;
+                case /* optional string description */ 3:
+                    message.description = reader.string();
+                    break;
+                case /* repeated string employee_ids */ 4:
                     message.employeeIds.push(reader.string());
                     break;
                 default:
@@ -2022,10 +1302,19 @@ class BatchGetEmployeesRequest$Type extends MessageType<BatchGetEmployeesRequest
         }
         return message;
     }
-    internalBinaryWrite(message: BatchGetEmployeesRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* repeated string employee_ids = 1; */
+    internalBinaryWrite(message: Department, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string name = 2; */
+        if (message.name !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.name);
+        /* optional string description = 3; */
+        if (message.description !== undefined)
+            writer.tag(3, WireType.LengthDelimited).string(message.description);
+        /* repeated string employee_ids = 4; */
         for (let i = 0; i < message.employeeIds.length; i++)
-            writer.tag(1, WireType.LengthDelimited).string(message.employeeIds[i]);
+            writer.tag(4, WireType.LengthDelimited).string(message.employeeIds[i]);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2033,68 +1322,70 @@ class BatchGetEmployeesRequest$Type extends MessageType<BatchGetEmployeesRequest
     }
 }
 /**
- * @generated MessageType for protobuf message management.BatchGetEmployeesRequest
+ * @generated MessageType for protobuf message management.Department
  */
-export const BatchGetEmployeesRequest = new BatchGetEmployeesRequest$Type();
+export const Department = new Department$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class UpdateEmployeeRequest$Type extends MessageType<UpdateEmployeeRequest> {
+class JobInformation$Type extends MessageType<JobInformation> {
     constructor() {
-        super("management.UpdateEmployeeRequest", [
-            { no: 1, name: "role", kind: "enum", oneof: "request", T: () => ["management.Role", Role, "ROLE_"] },
-            { no: 2, name: "full_name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "address", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "position", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 5, name: "avatar_file", kind: "message", oneof: "request", T: () => FileMetadata },
-            { no: 6, name: "conver_photo_file", kind: "message", oneof: "request", T: () => FileMetadata }
+        super("management.JobInformation", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "department_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "supervisor_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "work_location", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "start_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "salary", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 9, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<UpdateEmployeeRequest>): UpdateEmployeeRequest {
+    create(value?: PartialMessage<JobInformation>): JobInformation {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
+        message.id = "";
+        message.title = "";
+        message.employeeId = "";
+        message.departmentId = "";
+        message.supervisorId = "";
+        message.workLocation = "";
+        message.startDate = "";
+        message.salary = "";
+        message.currency = "";
         if (value !== undefined)
-            reflectionMergePartial<UpdateEmployeeRequest>(this, message, value);
+            reflectionMergePartial<JobInformation>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateEmployeeRequest): UpdateEmployeeRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: JobInformation): JobInformation {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* management.Role role */ 1:
-                    message.request = {
-                        oneofKind: "role",
-                        role: reader.int32()
-                    };
+                case /* string id */ 1:
+                    message.id = reader.string();
                     break;
-                case /* string full_name */ 2:
-                    message.request = {
-                        oneofKind: "fullName",
-                        fullName: reader.string()
-                    };
+                case /* string title */ 2:
+                    message.title = reader.string();
                     break;
-                case /* string address */ 3:
-                    message.request = {
-                        oneofKind: "address",
-                        address: reader.string()
-                    };
+                case /* string employee_id */ 3:
+                    message.employeeId = reader.string();
                     break;
-                case /* string position */ 4:
-                    message.request = {
-                        oneofKind: "position",
-                        position: reader.string()
-                    };
+                case /* string department_id */ 4:
+                    message.departmentId = reader.string();
                     break;
-                case /* storage.FileMetadata avatar_file */ 5:
-                    message.request = {
-                        oneofKind: "avatarFile",
-                        avatarFile: FileMetadata.internalBinaryRead(reader, reader.uint32(), options, (message.request as any).avatarFile)
-                    };
+                case /* string supervisor_id */ 5:
+                    message.supervisorId = reader.string();
                     break;
-                case /* storage.FileMetadata conver_photo_file */ 6:
-                    message.request = {
-                        oneofKind: "converPhotoFile",
-                        converPhotoFile: FileMetadata.internalBinaryRead(reader, reader.uint32(), options, (message.request as any).converPhotoFile)
-                    };
+                case /* string work_location */ 6:
+                    message.workLocation = reader.string();
+                    break;
+                case /* string start_date */ 7:
+                    message.startDate = reader.string();
+                    break;
+                case /* string salary */ 8:
+                    message.salary = reader.string();
+                    break;
+                case /* string currency */ 9:
+                    message.currency = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2107,25 +1398,34 @@ class UpdateEmployeeRequest$Type extends MessageType<UpdateEmployeeRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: UpdateEmployeeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* management.Role role = 1; */
-        if (message.request.oneofKind === "role")
-            writer.tag(1, WireType.Varint).int32(message.request.role);
-        /* string full_name = 2; */
-        if (message.request.oneofKind === "fullName")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.fullName);
-        /* string address = 3; */
-        if (message.request.oneofKind === "address")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.address);
-        /* string position = 4; */
-        if (message.request.oneofKind === "position")
-            writer.tag(4, WireType.LengthDelimited).string(message.request.position);
-        /* storage.FileMetadata avatar_file = 5; */
-        if (message.request.oneofKind === "avatarFile")
-            FileMetadata.internalBinaryWrite(message.request.avatarFile, writer.tag(5, WireType.LengthDelimited).fork(), options).join();
-        /* storage.FileMetadata conver_photo_file = 6; */
-        if (message.request.oneofKind === "converPhotoFile")
-            FileMetadata.internalBinaryWrite(message.request.converPhotoFile, writer.tag(6, WireType.LengthDelimited).fork(), options).join();
+    internalBinaryWrite(message: JobInformation, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string title = 2; */
+        if (message.title !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.title);
+        /* string employee_id = 3; */
+        if (message.employeeId !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.employeeId);
+        /* string department_id = 4; */
+        if (message.departmentId !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.departmentId);
+        /* string supervisor_id = 5; */
+        if (message.supervisorId !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.supervisorId);
+        /* string work_location = 6; */
+        if (message.workLocation !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.workLocation);
+        /* string start_date = 7; */
+        if (message.startDate !== "")
+            writer.tag(7, WireType.LengthDelimited).string(message.startDate);
+        /* string salary = 8; */
+        if (message.salary !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.salary);
+        /* string currency = 9; */
+        if (message.currency !== "")
+            writer.tag(9, WireType.LengthDelimited).string(message.currency);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2133,19 +1433,1477 @@ class UpdateEmployeeRequest$Type extends MessageType<UpdateEmployeeRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.UpdateEmployeeRequest
+ * @generated MessageType for protobuf message management.JobInformation
  */
-export const UpdateEmployeeRequest = new UpdateEmployeeRequest$Type();
+export const JobInformation = new JobInformation$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class EmployeeEmergencyInformation$Type extends MessageType<EmployeeEmergencyInformation> {
+    constructor() {
+        super("management.EmployeeEmergencyInformation", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "tel_number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "mobile_number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "health_conditions", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "contact_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<EmployeeEmergencyInformation>): EmployeeEmergencyInformation {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.employeeId = "";
+        message.address = "";
+        message.healthConditions = [];
+        message.contactName = "";
+        if (value !== undefined)
+            reflectionMergePartial<EmployeeEmergencyInformation>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: EmployeeEmergencyInformation): EmployeeEmergencyInformation {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* string employee_id */ 2:
+                    message.employeeId = reader.string();
+                    break;
+                case /* string address */ 3:
+                    message.address = reader.string();
+                    break;
+                case /* optional string tel_number */ 4:
+                    message.telNumber = reader.string();
+                    break;
+                case /* optional string mobile_number */ 5:
+                    message.mobileNumber = reader.string();
+                    break;
+                case /* repeated string health_conditions */ 6:
+                    message.healthConditions.push(reader.string());
+                    break;
+                case /* string contact_name */ 7:
+                    message.contactName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: EmployeeEmergencyInformation, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string employee_id = 2; */
+        if (message.employeeId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.employeeId);
+        /* string address = 3; */
+        if (message.address !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.address);
+        /* optional string tel_number = 4; */
+        if (message.telNumber !== undefined)
+            writer.tag(4, WireType.LengthDelimited).string(message.telNumber);
+        /* optional string mobile_number = 5; */
+        if (message.mobileNumber !== undefined)
+            writer.tag(5, WireType.LengthDelimited).string(message.mobileNumber);
+        /* repeated string health_conditions = 6; */
+        for (let i = 0; i < message.healthConditions.length; i++)
+            writer.tag(6, WireType.LengthDelimited).string(message.healthConditions[i]);
+        /* string contact_name = 7; */
+        if (message.contactName !== "")
+            writer.tag(7, WireType.LengthDelimited).string(message.contactName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.EmployeeEmergencyInformation
+ */
+export const EmployeeEmergencyInformation = new EmployeeEmergencyInformation$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PersonnelAction$Type extends MessageType<PersonnelAction> {
+    constructor() {
+        super("management.PersonnelAction", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "action_type", kind: "enum", T: () => ["management.EmployeePanActionType", EmployeePanActionType, "EMPLOYEE_PAN_ACTION_TYPE_"] },
+            { no: 4, name: "old_value", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "new_value", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "effective_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "status", kind: "enum", T: () => ["management.EmployeePanActionStatus", EmployeePanActionStatus, "EMPLOYEE_PAN_ACTION_STATUS_"] },
+            { no: 8, name: "requested_by", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 9, name: "approved_by", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<PersonnelAction>): PersonnelAction {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.employeeId = "";
+        message.actionType = 0;
+        message.oldValue = "";
+        message.newValue = "";
+        message.effectiveDate = "";
+        message.status = 0;
+        message.requestedBy = "";
+        message.approvedBy = "";
+        if (value !== undefined)
+            reflectionMergePartial<PersonnelAction>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: PersonnelAction): PersonnelAction {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* string employee_id */ 2:
+                    message.employeeId = reader.string();
+                    break;
+                case /* management.EmployeePanActionType action_type */ 3:
+                    message.actionType = reader.int32();
+                    break;
+                case /* string old_value */ 4:
+                    message.oldValue = reader.string();
+                    break;
+                case /* string new_value */ 5:
+                    message.newValue = reader.string();
+                    break;
+                case /* string effective_date */ 6:
+                    message.effectiveDate = reader.string();
+                    break;
+                case /* management.EmployeePanActionStatus status */ 7:
+                    message.status = reader.int32();
+                    break;
+                case /* string requested_by */ 8:
+                    message.requestedBy = reader.string();
+                    break;
+                case /* string approved_by */ 9:
+                    message.approvedBy = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: PersonnelAction, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string employee_id = 2; */
+        if (message.employeeId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.employeeId);
+        /* management.EmployeePanActionType action_type = 3; */
+        if (message.actionType !== 0)
+            writer.tag(3, WireType.Varint).int32(message.actionType);
+        /* string old_value = 4; */
+        if (message.oldValue !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.oldValue);
+        /* string new_value = 5; */
+        if (message.newValue !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.newValue);
+        /* string effective_date = 6; */
+        if (message.effectiveDate !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.effectiveDate);
+        /* management.EmployeePanActionStatus status = 7; */
+        if (message.status !== 0)
+            writer.tag(7, WireType.Varint).int32(message.status);
+        /* string requested_by = 8; */
+        if (message.requestedBy !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.requestedBy);
+        /* string approved_by = 9; */
+        if (message.approvedBy !== "")
+            writer.tag(9, WireType.LengthDelimited).string(message.approvedBy);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.PersonnelAction
+ */
+export const PersonnelAction = new PersonnelAction$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreateEmployeeRequest$Type extends MessageType<CreateEmployeeRequest> {
+    constructor() {
+        super("management.CreateEmployeeRequest", [
+            { no: 1, name: "avatar_photo", kind: "message", T: () => FileMetadata },
+            { no: 2, name: "cover_photo", kind: "message", T: () => FileMetadata },
+            { no: 3, name: "first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "middle_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "tel_number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "mobile_Number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 9, name: "status", kind: "enum", T: () => ["management.EmployeeStatus", EmployeeStatus, "EMPLOYEE_STATUS_"] },
+            { no: 10, name: "contract_type", kind: "enum", T: () => ["management.EmployeeContractType", EmployeeContractType] },
+            { no: 11, name: "phil_nat_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 12, name: "birth_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 13, name: "special_interests", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 14, name: "learning_institutions", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 15, name: "spouse_first_name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 16, name: "spouse_middle_name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 17, name: "spouse_last_name", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 18, name: "spouse_employer", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<CreateEmployeeRequest>): CreateEmployeeRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.firstName = "";
+        message.middleName = "";
+        message.lastName = "";
+        message.email = "";
+        message.status = 0;
+        message.contractType = 0;
+        message.philNatId = "";
+        message.birthDate = "";
+        message.specialInterests = [];
+        message.learningInstitutions = [];
+        if (value !== undefined)
+            reflectionMergePartial<CreateEmployeeRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateEmployeeRequest): CreateEmployeeRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* optional storage.FileMetadata avatar_photo */ 1:
+                    message.avatarPhoto = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.avatarPhoto);
+                    break;
+                case /* optional storage.FileMetadata cover_photo */ 2:
+                    message.coverPhoto = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.coverPhoto);
+                    break;
+                case /* string first_name */ 3:
+                    message.firstName = reader.string();
+                    break;
+                case /* string middle_name */ 4:
+                    message.middleName = reader.string();
+                    break;
+                case /* string last_name */ 5:
+                    message.lastName = reader.string();
+                    break;
+                case /* optional string tel_number */ 6:
+                    message.telNumber = reader.string();
+                    break;
+                case /* optional string mobile_Number */ 7:
+                    message.mobileNumber = reader.string();
+                    break;
+                case /* string email */ 8:
+                    message.email = reader.string();
+                    break;
+                case /* management.EmployeeStatus status */ 9:
+                    message.status = reader.int32();
+                    break;
+                case /* management.EmployeeContractType contract_type */ 10:
+                    message.contractType = reader.int32();
+                    break;
+                case /* string phil_nat_id */ 11:
+                    message.philNatId = reader.string();
+                    break;
+                case /* string birth_date */ 12:
+                    message.birthDate = reader.string();
+                    break;
+                case /* repeated string special_interests */ 13:
+                    message.specialInterests.push(reader.string());
+                    break;
+                case /* repeated string learning_institutions */ 14:
+                    message.learningInstitutions.push(reader.string());
+                    break;
+                case /* optional string spouse_first_name */ 15:
+                    message.spouseFirstName = reader.string();
+                    break;
+                case /* optional string spouse_middle_name */ 16:
+                    message.spouseMiddleName = reader.string();
+                    break;
+                case /* optional string spouse_last_name */ 17:
+                    message.spouseLastName = reader.string();
+                    break;
+                case /* optional string spouse_employer */ 18:
+                    message.spouseEmployer = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CreateEmployeeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* optional storage.FileMetadata avatar_photo = 1; */
+        if (message.avatarPhoto)
+            FileMetadata.internalBinaryWrite(message.avatarPhoto, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        /* optional storage.FileMetadata cover_photo = 2; */
+        if (message.coverPhoto)
+            FileMetadata.internalBinaryWrite(message.coverPhoto, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+        /* string first_name = 3; */
+        if (message.firstName !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.firstName);
+        /* string middle_name = 4; */
+        if (message.middleName !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.middleName);
+        /* string last_name = 5; */
+        if (message.lastName !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.lastName);
+        /* optional string tel_number = 6; */
+        if (message.telNumber !== undefined)
+            writer.tag(6, WireType.LengthDelimited).string(message.telNumber);
+        /* optional string mobile_Number = 7; */
+        if (message.mobileNumber !== undefined)
+            writer.tag(7, WireType.LengthDelimited).string(message.mobileNumber);
+        /* string email = 8; */
+        if (message.email !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.email);
+        /* management.EmployeeStatus status = 9; */
+        if (message.status !== 0)
+            writer.tag(9, WireType.Varint).int32(message.status);
+        /* management.EmployeeContractType contract_type = 10; */
+        if (message.contractType !== 0)
+            writer.tag(10, WireType.Varint).int32(message.contractType);
+        /* string phil_nat_id = 11; */
+        if (message.philNatId !== "")
+            writer.tag(11, WireType.LengthDelimited).string(message.philNatId);
+        /* string birth_date = 12; */
+        if (message.birthDate !== "")
+            writer.tag(12, WireType.LengthDelimited).string(message.birthDate);
+        /* repeated string special_interests = 13; */
+        for (let i = 0; i < message.specialInterests.length; i++)
+            writer.tag(13, WireType.LengthDelimited).string(message.specialInterests[i]);
+        /* repeated string learning_institutions = 14; */
+        for (let i = 0; i < message.learningInstitutions.length; i++)
+            writer.tag(14, WireType.LengthDelimited).string(message.learningInstitutions[i]);
+        /* optional string spouse_first_name = 15; */
+        if (message.spouseFirstName !== undefined)
+            writer.tag(15, WireType.LengthDelimited).string(message.spouseFirstName);
+        /* optional string spouse_middle_name = 16; */
+        if (message.spouseMiddleName !== undefined)
+            writer.tag(16, WireType.LengthDelimited).string(message.spouseMiddleName);
+        /* optional string spouse_last_name = 17; */
+        if (message.spouseLastName !== undefined)
+            writer.tag(17, WireType.LengthDelimited).string(message.spouseLastName);
+        /* optional string spouse_employer = 18; */
+        if (message.spouseEmployer !== undefined)
+            writer.tag(18, WireType.LengthDelimited).string(message.spouseEmployer);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.CreateEmployeeRequest
+ */
+export const CreateEmployeeRequest = new CreateEmployeeRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class GetEmployeeRequest$Type extends MessageType<GetEmployeeRequest> {
+    constructor() {
+        super("management.GetEmployeeRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<GetEmployeeRequest>): GetEmployeeRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        if (value !== undefined)
+            reflectionMergePartial<GetEmployeeRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetEmployeeRequest): GetEmployeeRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: GetEmployeeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.GetEmployeeRequest
+ */
+export const GetEmployeeRequest = new GetEmployeeRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class GetEmployeesByDepartmentRequest$Type extends MessageType<GetEmployeesByDepartmentRequest> {
+    constructor() {
+        super("management.GetEmployeesByDepartmentRequest", [
+            { no: 1, name: "department_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<GetEmployeesByDepartmentRequest>): GetEmployeesByDepartmentRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.departmentId = "";
+        if (value !== undefined)
+            reflectionMergePartial<GetEmployeesByDepartmentRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetEmployeesByDepartmentRequest): GetEmployeesByDepartmentRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string department_id */ 1:
+                    message.departmentId = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: GetEmployeesByDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string department_id = 1; */
+        if (message.departmentId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.departmentId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.GetEmployeesByDepartmentRequest
+ */
+export const GetEmployeesByDepartmentRequest = new GetEmployeesByDepartmentRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeAvatarRequest$Type extends MessageType<ChangeEmployeeAvatarRequest> {
+    constructor() {
+        super("management.ChangeEmployeeAvatarRequest", [
+            { no: 1, name: "avatar_photo", kind: "message", T: () => FileMetadata }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeAvatarRequest>): ChangeEmployeeAvatarRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeAvatarRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeAvatarRequest): ChangeEmployeeAvatarRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* storage.FileMetadata avatar_photo */ 1:
+                    message.avatarPhoto = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.avatarPhoto);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeAvatarRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* storage.FileMetadata avatar_photo = 1; */
+        if (message.avatarPhoto)
+            FileMetadata.internalBinaryWrite(message.avatarPhoto, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeAvatarRequest
+ */
+export const ChangeEmployeeAvatarRequest = new ChangeEmployeeAvatarRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeCoverPhotoRequest$Type extends MessageType<ChangeEmployeeCoverPhotoRequest> {
+    constructor() {
+        super("management.ChangeEmployeeCoverPhotoRequest", [
+            { no: 1, name: "cover_photo", kind: "message", T: () => FileMetadata }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeCoverPhotoRequest>): ChangeEmployeeCoverPhotoRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeCoverPhotoRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeCoverPhotoRequest): ChangeEmployeeCoverPhotoRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* storage.FileMetadata cover_photo */ 1:
+                    message.coverPhoto = FileMetadata.internalBinaryRead(reader, reader.uint32(), options, message.coverPhoto);
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeCoverPhotoRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* storage.FileMetadata cover_photo = 1; */
+        if (message.coverPhoto)
+            FileMetadata.internalBinaryWrite(message.coverPhoto, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeCoverPhotoRequest
+ */
+export const ChangeEmployeeCoverPhotoRequest = new ChangeEmployeeCoverPhotoRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeFirstNameRequest$Type extends MessageType<ChangeEmployeeFirstNameRequest> {
+    constructor() {
+        super("management.ChangeEmployeeFirstNameRequest", [
+            { no: 1, name: "first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeFirstNameRequest>): ChangeEmployeeFirstNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.firstName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeFirstNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeFirstNameRequest): ChangeEmployeeFirstNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string first_name */ 1:
+                    message.firstName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeFirstNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string first_name = 1; */
+        if (message.firstName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.firstName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeFirstNameRequest
+ */
+export const ChangeEmployeeFirstNameRequest = new ChangeEmployeeFirstNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeMiddleNameRequest$Type extends MessageType<ChangeEmployeeMiddleNameRequest> {
+    constructor() {
+        super("management.ChangeEmployeeMiddleNameRequest", [
+            { no: 1, name: "middle_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeMiddleNameRequest>): ChangeEmployeeMiddleNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.middleName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeMiddleNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeMiddleNameRequest): ChangeEmployeeMiddleNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string middle_name */ 1:
+                    message.middleName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeMiddleNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string middle_name = 1; */
+        if (message.middleName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.middleName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeMiddleNameRequest
+ */
+export const ChangeEmployeeMiddleNameRequest = new ChangeEmployeeMiddleNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeLastNameRequest$Type extends MessageType<ChangeEmployeeLastNameRequest> {
+    constructor() {
+        super("management.ChangeEmployeeLastNameRequest", [
+            { no: 1, name: "last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeLastNameRequest>): ChangeEmployeeLastNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.lastName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeLastNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeLastNameRequest): ChangeEmployeeLastNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string last_name */ 1:
+                    message.lastName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeLastNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string last_name = 1; */
+        if (message.lastName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.lastName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeLastNameRequest
+ */
+export const ChangeEmployeeLastNameRequest = new ChangeEmployeeLastNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeTelNumberRequest$Type extends MessageType<ChangeEmployeeTelNumberRequest> {
+    constructor() {
+        super("management.ChangeEmployeeTelNumberRequest", [
+            { no: 1, name: "tel_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeTelNumberRequest>): ChangeEmployeeTelNumberRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.telNumber = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeTelNumberRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeTelNumberRequest): ChangeEmployeeTelNumberRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string tel_number */ 1:
+                    message.telNumber = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeTelNumberRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string tel_number = 1; */
+        if (message.telNumber !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.telNumber);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeTelNumberRequest
+ */
+export const ChangeEmployeeTelNumberRequest = new ChangeEmployeeTelNumberRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeMobileNumberRequest$Type extends MessageType<ChangeEmployeeMobileNumberRequest> {
+    constructor() {
+        super("management.ChangeEmployeeMobileNumberRequest", [
+            { no: 1, name: "mobile_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeMobileNumberRequest>): ChangeEmployeeMobileNumberRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mobileNumber = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeMobileNumberRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeMobileNumberRequest): ChangeEmployeeMobileNumberRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string mobile_number */ 1:
+                    message.mobileNumber = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeMobileNumberRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string mobile_number = 1; */
+        if (message.mobileNumber !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.mobileNumber);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeMobileNumberRequest
+ */
+export const ChangeEmployeeMobileNumberRequest = new ChangeEmployeeMobileNumberRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeEmailRequest$Type extends MessageType<ChangeEmployeeEmailRequest> {
+    constructor() {
+        super("management.ChangeEmployeeEmailRequest", [
+            { no: 1, name: "email", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeEmailRequest>): ChangeEmployeeEmailRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.email = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeEmailRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeEmailRequest): ChangeEmployeeEmailRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string email */ 1:
+                    message.email = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeEmailRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string email = 1; */
+        if (message.email !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.email);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeEmailRequest
+ */
+export const ChangeEmployeeEmailRequest = new ChangeEmployeeEmailRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeRoleRequest$Type extends MessageType<ChangeEmployeeRoleRequest> {
+    constructor() {
+        super("management.ChangeEmployeeRoleRequest", [
+            { no: 1, name: "role", kind: "enum", T: () => ["management.EmployeeRole", EmployeeRole] }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeRoleRequest>): ChangeEmployeeRoleRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.role = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeRoleRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeRoleRequest): ChangeEmployeeRoleRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* management.EmployeeRole role */ 1:
+                    message.role = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeRoleRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* management.EmployeeRole role = 1; */
+        if (message.role !== 0)
+            writer.tag(1, WireType.Varint).int32(message.role);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeRoleRequest
+ */
+export const ChangeEmployeeRoleRequest = new ChangeEmployeeRoleRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeStatusRequest$Type extends MessageType<ChangeEmployeeStatusRequest> {
+    constructor() {
+        super("management.ChangeEmployeeStatusRequest", [
+            { no: 1, name: "status", kind: "enum", T: () => ["management.EmployeeStatus", EmployeeStatus, "EMPLOYEE_STATUS_"] }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeStatusRequest>): ChangeEmployeeStatusRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.status = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeStatusRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeStatusRequest): ChangeEmployeeStatusRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* management.EmployeeStatus status */ 1:
+                    message.status = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeStatusRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* management.EmployeeStatus status = 1; */
+        if (message.status !== 0)
+            writer.tag(1, WireType.Varint).int32(message.status);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeStatusRequest
+ */
+export const ChangeEmployeeStatusRequest = new ChangeEmployeeStatusRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmployeeContractTypeRequest$Type extends MessageType<ChangeEmployeeContractTypeRequest> {
+    constructor() {
+        super("management.ChangeEmployeeContractTypeRequest", [
+            { no: 1, name: "contract_type", kind: "enum", T: () => ["management.EmployeeContractType", EmployeeContractType] }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmployeeContractTypeRequest>): ChangeEmployeeContractTypeRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.contractType = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmployeeContractTypeRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmployeeContractTypeRequest): ChangeEmployeeContractTypeRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* management.EmployeeContractType contract_type */ 1:
+                    message.contractType = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmployeeContractTypeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* management.EmployeeContractType contract_type = 1; */
+        if (message.contractType !== 0)
+            writer.tag(1, WireType.Varint).int32(message.contractType);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeEmployeeContractTypeRequest
+ */
+export const ChangeEmployeeContractTypeRequest = new ChangeEmployeeContractTypeRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangePhilNatIDRequest$Type extends MessageType<ChangePhilNatIDRequest> {
+    constructor() {
+        super("management.ChangePhilNatIDRequest", [
+            { no: 1, name: "phil_nat_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangePhilNatIDRequest>): ChangePhilNatIDRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.philNatId = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangePhilNatIDRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangePhilNatIDRequest): ChangePhilNatIDRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string phil_nat_id */ 1:
+                    message.philNatId = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangePhilNatIDRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string phil_nat_id = 1; */
+        if (message.philNatId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.philNatId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangePhilNatIDRequest
+ */
+export const ChangePhilNatIDRequest = new ChangePhilNatIDRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeBirthDateRequest$Type extends MessageType<ChangeBirthDateRequest> {
+    constructor() {
+        super("management.ChangeBirthDateRequest", [
+            { no: 1, name: "birth_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeBirthDateRequest>): ChangeBirthDateRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.birthDate = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeBirthDateRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeBirthDateRequest): ChangeBirthDateRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string birth_date */ 1:
+                    message.birthDate = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeBirthDateRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string birth_date = 1; */
+        if (message.birthDate !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.birthDate);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeBirthDateRequest
+ */
+export const ChangeBirthDateRequest = new ChangeBirthDateRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class AddSpecialInterestRequest$Type extends MessageType<AddSpecialInterestRequest> {
+    constructor() {
+        super("management.AddSpecialInterestRequest", [
+            { no: 1, name: "special_interest", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<AddSpecialInterestRequest>): AddSpecialInterestRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.specialInterest = "";
+        if (value !== undefined)
+            reflectionMergePartial<AddSpecialInterestRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AddSpecialInterestRequest): AddSpecialInterestRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string special_interest */ 1:
+                    message.specialInterest = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: AddSpecialInterestRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string special_interest = 1; */
+        if (message.specialInterest !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.specialInterest);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.AddSpecialInterestRequest
+ */
+export const AddSpecialInterestRequest = new AddSpecialInterestRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RemoveSpecialInterestRequest$Type extends MessageType<RemoveSpecialInterestRequest> {
+    constructor() {
+        super("management.RemoveSpecialInterestRequest", [
+            { no: 1, name: "special_interest", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RemoveSpecialInterestRequest>): RemoveSpecialInterestRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.specialInterest = "";
+        if (value !== undefined)
+            reflectionMergePartial<RemoveSpecialInterestRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveSpecialInterestRequest): RemoveSpecialInterestRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string special_interest */ 1:
+                    message.specialInterest = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RemoveSpecialInterestRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string special_interest = 1; */
+        if (message.specialInterest !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.specialInterest);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.RemoveSpecialInterestRequest
+ */
+export const RemoveSpecialInterestRequest = new RemoveSpecialInterestRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class AddLearningInstitutionRequest$Type extends MessageType<AddLearningInstitutionRequest> {
+    constructor() {
+        super("management.AddLearningInstitutionRequest", [
+            { no: 1, name: "learning_institution", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<AddLearningInstitutionRequest>): AddLearningInstitutionRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.learningInstitution = "";
+        if (value !== undefined)
+            reflectionMergePartial<AddLearningInstitutionRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AddLearningInstitutionRequest): AddLearningInstitutionRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string learning_institution */ 1:
+                    message.learningInstitution = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: AddLearningInstitutionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string learning_institution = 1; */
+        if (message.learningInstitution !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.learningInstitution);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.AddLearningInstitutionRequest
+ */
+export const AddLearningInstitutionRequest = new AddLearningInstitutionRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RemoveLearningInstitutionRequest$Type extends MessageType<RemoveLearningInstitutionRequest> {
+    constructor() {
+        super("management.RemoveLearningInstitutionRequest", [
+            { no: 1, name: "learning_institution", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RemoveLearningInstitutionRequest>): RemoveLearningInstitutionRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.learningInstitution = "";
+        if (value !== undefined)
+            reflectionMergePartial<RemoveLearningInstitutionRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveLearningInstitutionRequest): RemoveLearningInstitutionRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string learning_institution */ 1:
+                    message.learningInstitution = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RemoveLearningInstitutionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string learning_institution = 1; */
+        if (message.learningInstitution !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.learningInstitution);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.RemoveLearningInstitutionRequest
+ */
+export const RemoveLearningInstitutionRequest = new RemoveLearningInstitutionRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeSpouseFirstNameRequest$Type extends MessageType<ChangeSpouseFirstNameRequest> {
+    constructor() {
+        super("management.ChangeSpouseFirstNameRequest", [
+            { no: 1, name: "spouse_first_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeSpouseFirstNameRequest>): ChangeSpouseFirstNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.spouseFirstName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeSpouseFirstNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeSpouseFirstNameRequest): ChangeSpouseFirstNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string spouse_first_name */ 1:
+                    message.spouseFirstName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeSpouseFirstNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string spouse_first_name = 1; */
+        if (message.spouseFirstName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.spouseFirstName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeSpouseFirstNameRequest
+ */
+export const ChangeSpouseFirstNameRequest = new ChangeSpouseFirstNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeSpouseMiddleNameRequest$Type extends MessageType<ChangeSpouseMiddleNameRequest> {
+    constructor() {
+        super("management.ChangeSpouseMiddleNameRequest", [
+            { no: 1, name: "spouse_middle_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeSpouseMiddleNameRequest>): ChangeSpouseMiddleNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.spouseMiddleName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeSpouseMiddleNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeSpouseMiddleNameRequest): ChangeSpouseMiddleNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string spouse_middle_name */ 1:
+                    message.spouseMiddleName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeSpouseMiddleNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string spouse_middle_name = 1; */
+        if (message.spouseMiddleName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.spouseMiddleName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeSpouseMiddleNameRequest
+ */
+export const ChangeSpouseMiddleNameRequest = new ChangeSpouseMiddleNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeSpouseLastNameRequest$Type extends MessageType<ChangeSpouseLastNameRequest> {
+    constructor() {
+        super("management.ChangeSpouseLastNameRequest", [
+            { no: 1, name: "spouse_last_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeSpouseLastNameRequest>): ChangeSpouseLastNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.spouseLastName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeSpouseLastNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeSpouseLastNameRequest): ChangeSpouseLastNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string spouse_last_name */ 1:
+                    message.spouseLastName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeSpouseLastNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string spouse_last_name = 1; */
+        if (message.spouseLastName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.spouseLastName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeSpouseLastNameRequest
+ */
+export const ChangeSpouseLastNameRequest = new ChangeSpouseLastNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeSpouseEmployerRequest$Type extends MessageType<ChangeSpouseEmployerRequest> {
+    constructor() {
+        super("management.ChangeSpouseEmployerRequest", [
+            { no: 1, name: "spouse_employer", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeSpouseEmployerRequest>): ChangeSpouseEmployerRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.spouseEmployer = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeSpouseEmployerRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeSpouseEmployerRequest): ChangeSpouseEmployerRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string spouse_employer */ 1:
+                    message.spouseEmployer = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeSpouseEmployerRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string spouse_employer = 1; */
+        if (message.spouseEmployer !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.spouseEmployer);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangeSpouseEmployerRequest
+ */
+export const ChangeSpouseEmployerRequest = new ChangeSpouseEmployerRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class RemoveEmployeeRequest$Type extends MessageType<RemoveEmployeeRequest> {
     constructor() {
         super("management.RemoveEmployeeRequest", [
-            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
     create(value?: PartialMessage<RemoveEmployeeRequest>): RemoveEmployeeRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.employeeId = "";
+        message.id = "";
         if (value !== undefined)
             reflectionMergePartial<RemoveEmployeeRequest>(this, message, value);
         return message;
@@ -2155,8 +2913,8 @@ class RemoveEmployeeRequest$Type extends MessageType<RemoveEmployeeRequest> {
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string employee_id */ 1:
-                    message.employeeId = reader.string();
+                case /* string id */ 1:
+                    message.id = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2170,9 +2928,9 @@ class RemoveEmployeeRequest$Type extends MessageType<RemoveEmployeeRequest> {
         return message;
     }
     internalBinaryWrite(message: RemoveEmployeeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string employee_id = 1; */
-        if (message.employeeId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2184,24 +2942,21 @@ class RemoveEmployeeRequest$Type extends MessageType<RemoveEmployeeRequest> {
  */
 export const RemoveEmployeeRequest = new RemoveEmployeeRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class CreateTeamRequest$Type extends MessageType<CreateTeamRequest> {
+class CreateDepartmentRequest$Type extends MessageType<CreateDepartmentRequest> {
     constructor() {
-        super("management.CreateTeamRequest", [
+        super("management.CreateDepartmentRequest", [
             { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "leader_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "description", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<CreateTeamRequest>): CreateTeamRequest {
+    create(value?: PartialMessage<CreateDepartmentRequest>): CreateDepartmentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.name = "";
-        message.description = "";
-        message.leaderId = "";
         if (value !== undefined)
-            reflectionMergePartial<CreateTeamRequest>(this, message, value);
+            reflectionMergePartial<CreateDepartmentRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateTeamRequest): CreateTeamRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateDepartmentRequest): CreateDepartmentRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -2209,11 +2964,8 @@ class CreateTeamRequest$Type extends MessageType<CreateTeamRequest> {
                 case /* string name */ 1:
                     message.name = reader.string();
                     break;
-                case /* string description */ 2:
+                case /* optional string description */ 2:
                     message.description = reader.string();
-                    break;
-                case /* string leader_id */ 3:
-                    message.leaderId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2226,16 +2978,13 @@ class CreateTeamRequest$Type extends MessageType<CreateTeamRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: CreateTeamRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: CreateDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string name = 1; */
         if (message.name !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.name);
-        /* string description = 2; */
-        if (message.description !== "")
+        /* optional string description = 2; */
+        if (message.description !== undefined)
             writer.tag(2, WireType.LengthDelimited).string(message.description);
-        /* string leader_id = 3; */
-        if (message.leaderId !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.leaderId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2243,30 +2992,35 @@ class CreateTeamRequest$Type extends MessageType<CreateTeamRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.CreateTeamRequest
+ * @generated MessageType for protobuf message management.CreateDepartmentRequest
  */
-export const CreateTeamRequest = new CreateTeamRequest$Type();
+export const CreateDepartmentRequest = new CreateDepartmentRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class AddTeamMemberRequest$Type extends MessageType<AddTeamMemberRequest> {
+class AddEmployeeToDepartmentRequest$Type extends MessageType<AddEmployeeToDepartmentRequest> {
     constructor() {
-        super("management.AddTeamMemberRequest", [
-            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.AddEmployeeToDepartmentRequest", [
+            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "department_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<AddTeamMemberRequest>): AddTeamMemberRequest {
+    create(value?: PartialMessage<AddEmployeeToDepartmentRequest>): AddEmployeeToDepartmentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.employeeId = "";
+        message.departmentId = "";
         if (value !== undefined)
-            reflectionMergePartial<AddTeamMemberRequest>(this, message, value);
+            reflectionMergePartial<AddEmployeeToDepartmentRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AddTeamMemberRequest): AddTeamMemberRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AddEmployeeToDepartmentRequest): AddEmployeeToDepartmentRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* string employee_id */ 1:
                     message.employeeId = reader.string();
+                    break;
+                case /* string department_id */ 2:
+                    message.departmentId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2279,10 +3033,13 @@ class AddTeamMemberRequest$Type extends MessageType<AddTeamMemberRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: AddTeamMemberRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: AddEmployeeToDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string employee_id = 1; */
         if (message.employeeId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
+        /* string department_id = 2; */
+        if (message.departmentId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.departmentId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2290,30 +3047,35 @@ class AddTeamMemberRequest$Type extends MessageType<AddTeamMemberRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.AddTeamMemberRequest
+ * @generated MessageType for protobuf message management.AddEmployeeToDepartmentRequest
  */
-export const AddTeamMemberRequest = new AddTeamMemberRequest$Type();
+export const AddEmployeeToDepartmentRequest = new AddEmployeeToDepartmentRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class RemoveTeamMemberRequest$Type extends MessageType<RemoveTeamMemberRequest> {
+class RemoveEmployeeFromDepartmentRequest$Type extends MessageType<RemoveEmployeeFromDepartmentRequest> {
     constructor() {
-        super("management.RemoveTeamMemberRequest", [
-            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.RemoveEmployeeFromDepartmentRequest", [
+            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "department_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<RemoveTeamMemberRequest>): RemoveTeamMemberRequest {
+    create(value?: PartialMessage<RemoveEmployeeFromDepartmentRequest>): RemoveEmployeeFromDepartmentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.employeeId = "";
+        message.departmentId = "";
         if (value !== undefined)
-            reflectionMergePartial<RemoveTeamMemberRequest>(this, message, value);
+            reflectionMergePartial<RemoveEmployeeFromDepartmentRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveTeamMemberRequest): RemoveTeamMemberRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveEmployeeFromDepartmentRequest): RemoveEmployeeFromDepartmentRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* string employee_id */ 1:
                     message.employeeId = reader.string();
+                    break;
+                case /* string department_id */ 2:
+                    message.departmentId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2326,10 +3088,13 @@ class RemoveTeamMemberRequest$Type extends MessageType<RemoveTeamMemberRequest> 
         }
         return message;
     }
-    internalBinaryWrite(message: RemoveTeamMemberRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: RemoveEmployeeFromDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string employee_id = 1; */
         if (message.employeeId !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
+        /* string department_id = 2; */
+        if (message.departmentId !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.departmentId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2337,47 +3102,30 @@ class RemoveTeamMemberRequest$Type extends MessageType<RemoveTeamMemberRequest> 
     }
 }
 /**
- * @generated MessageType for protobuf message management.RemoveTeamMemberRequest
+ * @generated MessageType for protobuf message management.RemoveEmployeeFromDepartmentRequest
  */
-export const RemoveTeamMemberRequest = new RemoveTeamMemberRequest$Type();
+export const RemoveEmployeeFromDepartmentRequest = new RemoveEmployeeFromDepartmentRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class GetTeamRequest$Type extends MessageType<GetTeamRequest> {
+class GetDepartmentRequest$Type extends MessageType<GetDepartmentRequest> {
     constructor() {
-        super("management.GetTeamRequest", [
-            { no: 1, name: "id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "leader_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
+        super("management.GetDepartmentRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<GetTeamRequest>): GetTeamRequest {
+    create(value?: PartialMessage<GetDepartmentRequest>): GetDepartmentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
+        message.id = "";
         if (value !== undefined)
-            reflectionMergePartial<GetTeamRequest>(this, message, value);
+            reflectionMergePartial<GetDepartmentRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetTeamRequest): GetTeamRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetDepartmentRequest): GetDepartmentRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* string id */ 1:
-                    message.request = {
-                        oneofKind: "id",
-                        id: reader.string()
-                    };
-                    break;
-                case /* string name */ 2:
-                    message.request = {
-                        oneofKind: "name",
-                        name: reader.string()
-                    };
-                    break;
-                case /* string leader_id */ 3:
-                    message.request = {
-                        oneofKind: "leaderId",
-                        leaderId: reader.string()
-                    };
+                    message.id = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2390,16 +3138,10 @@ class GetTeamRequest$Type extends MessageType<GetTeamRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetTeamRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: GetDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string id = 1; */
-        if (message.request.oneofKind === "id")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.id);
-        /* string name = 2; */
-        if (message.request.oneofKind === "name")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.name);
-        /* string leader_id = 3; */
-        if (message.request.oneofKind === "leaderId")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.leaderId);
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2407,256 +3149,24 @@ class GetTeamRequest$Type extends MessageType<GetTeamRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.GetTeamRequest
+ * @generated MessageType for protobuf message management.GetDepartmentRequest
  */
-export const GetTeamRequest = new GetTeamRequest$Type();
+export const GetDepartmentRequest = new GetDepartmentRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class UpdateTeamRequest$Type extends MessageType<UpdateTeamRequest> {
+class UpdateDepartmentNameRequest$Type extends MessageType<UpdateDepartmentNameRequest> {
     constructor() {
-        super("management.UpdateTeamRequest", [
-            { no: 1, name: "name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "description", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "leader_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<UpdateTeamRequest>): UpdateTeamRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial<UpdateTeamRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateTeamRequest): UpdateTeamRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string name */ 1:
-                    message.request = {
-                        oneofKind: "name",
-                        name: reader.string()
-                    };
-                    break;
-                case /* string description */ 2:
-                    message.request = {
-                        oneofKind: "description",
-                        description: reader.string()
-                    };
-                    break;
-                case /* string leader_id */ 3:
-                    message.request = {
-                        oneofKind: "leaderId",
-                        leaderId: reader.string()
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: UpdateTeamRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.request.oneofKind === "name")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.name);
-        /* string description = 2; */
-        if (message.request.oneofKind === "description")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.description);
-        /* string leader_id = 3; */
-        if (message.request.oneofKind === "leaderId")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.leaderId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.UpdateTeamRequest
- */
-export const UpdateTeamRequest = new UpdateTeamRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class RemoveTeamRequest$Type extends MessageType<RemoveTeamRequest> {
-    constructor() {
-        super("management.RemoveTeamRequest", [
-            { no: 1, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<RemoveTeamRequest>): RemoveTeamRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.teamId = "";
-        if (value !== undefined)
-            reflectionMergePartial<RemoveTeamRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveTeamRequest): RemoveTeamRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string team_id */ 1:
-                    message.teamId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: RemoveTeamRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string team_id = 1; */
-        if (message.teamId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.teamId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.RemoveTeamRequest
- */
-export const RemoveTeamRequest = new RemoveTeamRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class CreateBoardRequest$Type extends MessageType<CreateBoardRequest> {
-    constructor() {
-        super("management.CreateBoardRequest", [
-            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<CreateBoardRequest>): CreateBoardRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.name = "";
-        message.teamId = "";
-        if (value !== undefined)
-            reflectionMergePartial<CreateBoardRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateBoardRequest): CreateBoardRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string name */ 1:
-                    message.name = reader.string();
-                    break;
-                case /* string team_id */ 2:
-                    message.teamId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: CreateBoardRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.name !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.name);
-        /* string team_id = 2; */
-        if (message.teamId !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.teamId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.CreateBoardRequest
- */
-export const CreateBoardRequest = new CreateBoardRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class GetBoardRequest$Type extends MessageType<GetBoardRequest> {
-    constructor() {
-        super("management.GetBoardRequest", [
-            { no: 1, name: "name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "team_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<GetBoardRequest>): GetBoardRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial<GetBoardRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetBoardRequest): GetBoardRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string name */ 1:
-                    message.request = {
-                        oneofKind: "name",
-                        name: reader.string()
-                    };
-                    break;
-                case /* string team_id */ 2:
-                    message.request = {
-                        oneofKind: "teamId",
-                        teamId: reader.string()
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: GetBoardRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.request.oneofKind === "name")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.name);
-        /* string team_id = 2; */
-        if (message.request.oneofKind === "teamId")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.teamId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.GetBoardRequest
- */
-export const GetBoardRequest = new GetBoardRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class UpdateBoardRequest$Type extends MessageType<UpdateBoardRequest> {
-    constructor() {
-        super("management.UpdateBoardRequest", [
+        super("management.UpdateDepartmentNameRequest", [
             { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<UpdateBoardRequest>): UpdateBoardRequest {
+    create(value?: PartialMessage<UpdateDepartmentNameRequest>): UpdateDepartmentNameRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.name = "";
         if (value !== undefined)
-            reflectionMergePartial<UpdateBoardRequest>(this, message, value);
+            reflectionMergePartial<UpdateDepartmentNameRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateBoardRequest): UpdateBoardRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateDepartmentNameRequest): UpdateDepartmentNameRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -2675,7 +3185,7 @@ class UpdateBoardRequest$Type extends MessageType<UpdateBoardRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: UpdateBoardRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: UpdateDepartmentNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string name = 1; */
         if (message.name !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.name);
@@ -2686,98 +3196,31 @@ class UpdateBoardRequest$Type extends MessageType<UpdateBoardRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.UpdateBoardRequest
+ * @generated MessageType for protobuf message management.UpdateDepartmentNameRequest
  */
-export const UpdateBoardRequest = new UpdateBoardRequest$Type();
+export const UpdateDepartmentNameRequest = new UpdateDepartmentNameRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class RemoveBoardRequest$Type extends MessageType<RemoveBoardRequest> {
+class UpdateDepartmentDescriptionRequest$Type extends MessageType<UpdateDepartmentDescriptionRequest> {
     constructor() {
-        super("management.RemoveBoardRequest", [
-            { no: 1, name: "board_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.UpdateDepartmentDescriptionRequest", [
+            { no: 1, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<RemoveBoardRequest>): RemoveBoardRequest {
+    create(value?: PartialMessage<UpdateDepartmentDescriptionRequest>): UpdateDepartmentDescriptionRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.boardId = "";
-        if (value !== undefined)
-            reflectionMergePartial<RemoveBoardRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveBoardRequest): RemoveBoardRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string board_id */ 1:
-                    message.boardId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: RemoveBoardRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string board_id = 1; */
-        if (message.boardId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.boardId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.RemoveBoardRequest
- */
-export const RemoveBoardRequest = new RemoveBoardRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class CreateBoardSectionRequest$Type extends MessageType<CreateBoardSectionRequest> {
-    constructor() {
-        super("management.CreateBoardSectionRequest", [
-            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "task_limit", kind: "scalar", T: 5 /*ScalarType.INT32*/ },
-            { no: 5, name: "task_board_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<CreateBoardSectionRequest>): CreateBoardSectionRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.name = "";
-        message.color = "";
         message.description = "";
-        message.taskLimit = 0;
-        message.taskBoardId = "";
         if (value !== undefined)
-            reflectionMergePartial<CreateBoardSectionRequest>(this, message, value);
+            reflectionMergePartial<UpdateDepartmentDescriptionRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateBoardSectionRequest): CreateBoardSectionRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateDepartmentDescriptionRequest): UpdateDepartmentDescriptionRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string name */ 1:
-                    message.name = reader.string();
-                    break;
-                case /* string color */ 2:
-                    message.color = reader.string();
-                    break;
-                case /* string description */ 3:
+                case /* string description */ 1:
                     message.description = reader.string();
                     break;
-                case /* int32 task_limit */ 4:
-                    message.taskLimit = reader.int32();
-                    break;
-                case /* string task_board_id */ 5:
-                    message.taskBoardId = reader.string();
-                    break;
                 default:
                     let u = options.readUnknownField;
                     if (u === "throw")
@@ -2789,22 +3232,10 @@ class CreateBoardSectionRequest$Type extends MessageType<CreateBoardSectionReque
         }
         return message;
     }
-    internalBinaryWrite(message: CreateBoardSectionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.name !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.name);
-        /* string color = 2; */
-        if (message.color !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.color);
-        /* string description = 3; */
+    internalBinaryWrite(message: UpdateDepartmentDescriptionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string description = 1; */
         if (message.description !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.description);
-        /* int32 task_limit = 4; */
-        if (message.taskLimit !== 0)
-            writer.tag(4, WireType.Varint).int32(message.taskLimit);
-        /* string task_board_id = 5; */
-        if (message.taskBoardId !== "")
-            writer.tag(5, WireType.LengthDelimited).string(message.taskBoardId);
+            writer.tag(1, WireType.LengthDelimited).string(message.description);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2812,30 +3243,30 @@ class CreateBoardSectionRequest$Type extends MessageType<CreateBoardSectionReque
     }
 }
 /**
- * @generated MessageType for protobuf message management.CreateBoardSectionRequest
+ * @generated MessageType for protobuf message management.UpdateDepartmentDescriptionRequest
  */
-export const CreateBoardSectionRequest = new CreateBoardSectionRequest$Type();
+export const UpdateDepartmentDescriptionRequest = new UpdateDepartmentDescriptionRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class GetBoardSectionRequest$Type extends MessageType<GetBoardSectionRequest> {
+class RemoveDepartmentRequest$Type extends MessageType<RemoveDepartmentRequest> {
     constructor() {
-        super("management.GetBoardSectionRequest", [
-            { no: 1, name: "board_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.RemoveDepartmentRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<GetBoardSectionRequest>): GetBoardSectionRequest {
+    create(value?: PartialMessage<RemoveDepartmentRequest>): RemoveDepartmentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.boardId = "";
+        message.id = "";
         if (value !== undefined)
-            reflectionMergePartial<GetBoardSectionRequest>(this, message, value);
+            reflectionMergePartial<RemoveDepartmentRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetBoardSectionRequest): GetBoardSectionRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveDepartmentRequest): RemoveDepartmentRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string board_id */ 1:
-                    message.boardId = reader.string();
+                case /* string id */ 1:
+                    message.id = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -2848,10 +3279,10 @@ class GetBoardSectionRequest$Type extends MessageType<GetBoardSectionRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetBoardSectionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string board_id = 1; */
-        if (message.boardId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.boardId);
+    internalBinaryWrite(message: RemoveDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -2859,177 +3290,38 @@ class GetBoardSectionRequest$Type extends MessageType<GetBoardSectionRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.GetBoardSectionRequest
+ * @generated MessageType for protobuf message management.RemoveDepartmentRequest
  */
-export const GetBoardSectionRequest = new GetBoardSectionRequest$Type();
+export const RemoveDepartmentRequest = new RemoveDepartmentRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class UpdateBoardSectionRequest$Type extends MessageType<UpdateBoardSectionRequest> {
+class CreateJobInformationRequest$Type extends MessageType<CreateJobInformationRequest> {
     constructor() {
-        super("management.UpdateBoardSectionRequest", [
-            { no: 1, name: "name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "color", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "description", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "hidden", kind: "scalar", oneof: "request", T: 8 /*ScalarType.BOOL*/ },
-            { no: 5, name: "task_limit", kind: "scalar", oneof: "request", T: 5 /*ScalarType.INT32*/ },
-            { no: 6, name: "order", kind: "scalar", oneof: "request", T: 5 /*ScalarType.INT32*/ }
-        ]);
-    }
-    create(value?: PartialMessage<UpdateBoardSectionRequest>): UpdateBoardSectionRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial<UpdateBoardSectionRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateBoardSectionRequest): UpdateBoardSectionRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string name */ 1:
-                    message.request = {
-                        oneofKind: "name",
-                        name: reader.string()
-                    };
-                    break;
-                case /* string color */ 2:
-                    message.request = {
-                        oneofKind: "color",
-                        color: reader.string()
-                    };
-                    break;
-                case /* string description */ 3:
-                    message.request = {
-                        oneofKind: "description",
-                        description: reader.string()
-                    };
-                    break;
-                case /* bool hidden */ 4:
-                    message.request = {
-                        oneofKind: "hidden",
-                        hidden: reader.bool()
-                    };
-                    break;
-                case /* int32 task_limit */ 5:
-                    message.request = {
-                        oneofKind: "taskLimit",
-                        taskLimit: reader.int32()
-                    };
-                    break;
-                case /* int32 order */ 6:
-                    message.request = {
-                        oneofKind: "order",
-                        order: reader.int32()
-                    };
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: UpdateBoardSectionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.request.oneofKind === "name")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.name);
-        /* string color = 2; */
-        if (message.request.oneofKind === "color")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.color);
-        /* string description = 3; */
-        if (message.request.oneofKind === "description")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.description);
-        /* bool hidden = 4; */
-        if (message.request.oneofKind === "hidden")
-            writer.tag(4, WireType.Varint).bool(message.request.hidden);
-        /* int32 task_limit = 5; */
-        if (message.request.oneofKind === "taskLimit")
-            writer.tag(5, WireType.Varint).int32(message.request.taskLimit);
-        /* int32 order = 6; */
-        if (message.request.oneofKind === "order")
-            writer.tag(6, WireType.Varint).int32(message.request.order);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.UpdateBoardSectionRequest
- */
-export const UpdateBoardSectionRequest = new UpdateBoardSectionRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class RemoveBoardSectionRequest$Type extends MessageType<RemoveBoardSectionRequest> {
-    constructor() {
-        super("management.RemoveBoardSectionRequest", [
-            { no: 1, name: "board_section_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<RemoveBoardSectionRequest>): RemoveBoardSectionRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.boardSectionId = "";
-        if (value !== undefined)
-            reflectionMergePartial<RemoveBoardSectionRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveBoardSectionRequest): RemoveBoardSectionRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string board_section_id */ 1:
-                    message.boardSectionId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: RemoveBoardSectionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string board_section_id = 1; */
-        if (message.boardSectionId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.boardSectionId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.RemoveBoardSectionRequest
- */
-export const RemoveBoardSectionRequest = new RemoveBoardSectionRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class CreateTaskRequest$Type extends MessageType<CreateTaskRequest> {
-    constructor() {
-        super("management.CreateTaskRequest", [
+        super("management.CreateJobInformationRequest", [
             { no: 1, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "board_section_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "issuer_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+            { no: 2, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "department_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "supervisor_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "work_location", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "start_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 7, name: "salary", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 8, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<CreateTaskRequest>): CreateTaskRequest {
+    create(value?: PartialMessage<CreateJobInformationRequest>): CreateJobInformationRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
         message.title = "";
-        message.description = "";
-        message.boardSectionId = "";
-        message.issuerId = "";
+        message.employeeId = "";
+        message.departmentId = "";
+        message.supervisorId = "";
+        message.workLocation = "";
+        message.startDate = "";
+        message.salary = "";
+        message.currency = "";
         if (value !== undefined)
-            reflectionMergePartial<CreateTaskRequest>(this, message, value);
+            reflectionMergePartial<CreateJobInformationRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateTaskRequest): CreateTaskRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateJobInformationRequest): CreateJobInformationRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
@@ -3037,14 +3329,26 @@ class CreateTaskRequest$Type extends MessageType<CreateTaskRequest> {
                 case /* string title */ 1:
                     message.title = reader.string();
                     break;
-                case /* string description */ 2:
-                    message.description = reader.string();
+                case /* string employee_id */ 2:
+                    message.employeeId = reader.string();
                     break;
-                case /* string board_section_id */ 3:
-                    message.boardSectionId = reader.string();
+                case /* string department_id */ 3:
+                    message.departmentId = reader.string();
                     break;
-                case /* string issuer_id */ 4:
-                    message.issuerId = reader.string();
+                case /* string supervisor_id */ 4:
+                    message.supervisorId = reader.string();
+                    break;
+                case /* string work_location */ 5:
+                    message.workLocation = reader.string();
+                    break;
+                case /* string start_date */ 6:
+                    message.startDate = reader.string();
+                    break;
+                case /* string salary */ 7:
+                    message.salary = reader.string();
+                    break;
+                case /* string currency */ 8:
+                    message.currency = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3057,74 +3361,31 @@ class CreateTaskRequest$Type extends MessageType<CreateTaskRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: CreateTaskRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: CreateJobInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string title = 1; */
         if (message.title !== "")
             writer.tag(1, WireType.LengthDelimited).string(message.title);
-        /* string description = 2; */
-        if (message.description !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.description);
-        /* string board_section_id = 3; */
-        if (message.boardSectionId !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.boardSectionId);
-        /* string issuer_id = 4; */
-        if (message.issuerId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.issuerId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.CreateTaskRequest
- */
-export const CreateTaskRequest = new CreateTaskRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class AssignTaskRequest$Type extends MessageType<AssignTaskRequest> {
-    constructor() {
-        super("management.AssignTaskRequest", [
-            { no: 1, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<AssignTaskRequest>): AssignTaskRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskId = "";
-        message.employeeId = "";
-        if (value !== undefined)
-            reflectionMergePartial<AssignTaskRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AssignTaskRequest): AssignTaskRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string task_id */ 1:
-                    message.taskId = reader.string();
-                    break;
-                case /* string employee_id */ 2:
-                    message.employeeId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: AssignTaskRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_id = 1; */
-        if (message.taskId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskId);
         /* string employee_id = 2; */
         if (message.employeeId !== "")
             writer.tag(2, WireType.LengthDelimited).string(message.employeeId);
+        /* string department_id = 3; */
+        if (message.departmentId !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.departmentId);
+        /* string supervisor_id = 4; */
+        if (message.supervisorId !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.supervisorId);
+        /* string work_location = 5; */
+        if (message.workLocation !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.workLocation);
+        /* string start_date = 6; */
+        if (message.startDate !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.startDate);
+        /* string salary = 7; */
+        if (message.salary !== "")
+            writer.tag(7, WireType.LengthDelimited).string(message.salary);
+        /* string currency = 8; */
+        if (message.currency !== "")
+            writer.tag(8, WireType.LengthDelimited).string(message.currency);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3132,149 +3393,30 @@ class AssignTaskRequest$Type extends MessageType<AssignTaskRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.AssignTaskRequest
+ * @generated MessageType for protobuf message management.CreateJobInformationRequest
  */
-export const AssignTaskRequest = new AssignTaskRequest$Type();
+export const CreateJobInformationRequest = new CreateJobInformationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class RemoveAssignTaskRequest$Type extends MessageType<RemoveAssignTaskRequest> {
+class GetJobInformationRequest$Type extends MessageType<GetJobInformationRequest> {
     constructor() {
-        super("management.RemoveAssignTaskRequest", [
-            { no: 1, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.GetJobInformationRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<RemoveAssignTaskRequest>): RemoveAssignTaskRequest {
+    create(value?: PartialMessage<GetJobInformationRequest>): GetJobInformationRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskId = "";
-        message.employeeId = "";
+        message.id = "";
         if (value !== undefined)
-            reflectionMergePartial<RemoveAssignTaskRequest>(this, message, value);
+            reflectionMergePartial<GetJobInformationRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveAssignTaskRequest): RemoveAssignTaskRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string task_id */ 1:
-                    message.taskId = reader.string();
-                    break;
-                case /* string employee_id */ 2:
-                    message.employeeId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: RemoveAssignTaskRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_id = 1; */
-        if (message.taskId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskId);
-        /* string employee_id = 2; */
-        if (message.employeeId !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.employeeId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.RemoveAssignTaskRequest
- */
-export const RemoveAssignTaskRequest = new RemoveAssignTaskRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class GetTaskFromSectionRequest$Type extends MessageType<GetTaskFromSectionRequest> {
-    constructor() {
-        super("management.GetTaskFromSectionRequest", [
-            { no: 1, name: "board_section_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<GetTaskFromSectionRequest>): GetTaskFromSectionRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.boardSectionId = "";
-        if (value !== undefined)
-            reflectionMergePartial<GetTaskFromSectionRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetTaskFromSectionRequest): GetTaskFromSectionRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string board_section_id */ 1:
-                    message.boardSectionId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: GetTaskFromSectionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string board_section_id = 1; */
-        if (message.boardSectionId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.boardSectionId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.GetTaskFromSectionRequest
- */
-export const GetTaskFromSectionRequest = new GetTaskFromSectionRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class GetTaskRequest$Type extends MessageType<GetTaskRequest> {
-    constructor() {
-        super("management.GetTaskRequest", [
-            { no: 1, name: "id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "issuer_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "assignee_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<GetTaskRequest>): GetTaskRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial<GetTaskRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetTaskRequest): GetTaskRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetJobInformationRequest): GetJobInformationRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* string id */ 1:
-                    message.request = {
-                        oneofKind: "id",
-                        id: reader.string()
-                    };
-                    break;
-                case /* string issuer_id */ 2:
-                    message.request = {
-                        oneofKind: "issuerId",
-                        issuerId: reader.string()
-                    };
-                    break;
-                case /* string assignee_id */ 3:
-                    message.request = {
-                        oneofKind: "assigneeId",
-                        assigneeId: reader.string()
-                    };
+                    message.id = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3287,16 +3429,10 @@ class GetTaskRequest$Type extends MessageType<GetTaskRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetTaskRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: GetJobInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string id = 1; */
-        if (message.request.oneofKind === "id")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.id);
-        /* string issuer_id = 2; */
-        if (message.request.oneofKind === "issuerId")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.issuerId);
-        /* string assignee_id = 3; */
-        if (message.request.oneofKind === "assigneeId")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.assigneeId);
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3304,109 +3440,30 @@ class GetTaskRequest$Type extends MessageType<GetTaskRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.GetTaskRequest
+ * @generated MessageType for protobuf message management.GetJobInformationRequest
  */
-export const GetTaskRequest = new GetTaskRequest$Type();
+export const GetJobInformationRequest = new GetJobInformationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class MoveTaskToBoardRequest$Type extends MessageType<MoveTaskToBoardRequest> {
+class ChangeJobTitleRequest$Type extends MessageType<ChangeJobTitleRequest> {
     constructor() {
-        super("management.MoveTaskToBoardRequest", [
-            { no: 1, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "board_section_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobTitleRequest", [
+            { no: 1, name: "title", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<MoveTaskToBoardRequest>): MoveTaskToBoardRequest {
+    create(value?: PartialMessage<ChangeJobTitleRequest>): ChangeJobTitleRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskId = "";
-        message.boardSectionId = "";
+        message.title = "";
         if (value !== undefined)
-            reflectionMergePartial<MoveTaskToBoardRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobTitleRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: MoveTaskToBoardRequest): MoveTaskToBoardRequest {
-        let message = target ?? this.create(), end = reader.pos + length;
-        while (reader.pos < end) {
-            let [fieldNo, wireType] = reader.tag();
-            switch (fieldNo) {
-                case /* string task_id */ 1:
-                    message.taskId = reader.string();
-                    break;
-                case /* string board_section_id */ 2:
-                    message.boardSectionId = reader.string();
-                    break;
-                default:
-                    let u = options.readUnknownField;
-                    if (u === "throw")
-                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
-                    let d = reader.skip(wireType);
-                    if (u !== false)
-                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
-            }
-        }
-        return message;
-    }
-    internalBinaryWrite(message: MoveTaskToBoardRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_id = 1; */
-        if (message.taskId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskId);
-        /* string board_section_id = 2; */
-        if (message.boardSectionId !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.boardSectionId);
-        let u = options.writeUnknownFields;
-        if (u !== false)
-            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
-        return writer;
-    }
-}
-/**
- * @generated MessageType for protobuf message management.MoveTaskToBoardRequest
- */
-export const MoveTaskToBoardRequest = new MoveTaskToBoardRequest$Type();
-// @generated message type with reflection information, may provide speed optimized methods
-class UpdateTaskRequest$Type extends MessageType<UpdateTaskRequest> {
-    constructor() {
-        super("management.UpdateTaskRequest", [
-            { no: 1, name: "title", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "description", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "board_section_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "issuer_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
-        ]);
-    }
-    create(value?: PartialMessage<UpdateTaskRequest>): UpdateTaskRequest {
-        const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
-        if (value !== undefined)
-            reflectionMergePartial<UpdateTaskRequest>(this, message, value);
-        return message;
-    }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateTaskRequest): UpdateTaskRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobTitleRequest): ChangeJobTitleRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* string title */ 1:
-                    message.request = {
-                        oneofKind: "title",
-                        title: reader.string()
-                    };
-                    break;
-                case /* string description */ 2:
-                    message.request = {
-                        oneofKind: "description",
-                        description: reader.string()
-                    };
-                    break;
-                case /* string board_section_id */ 3:
-                    message.request = {
-                        oneofKind: "boardSectionId",
-                        boardSectionId: reader.string()
-                    };
-                    break;
-                case /* string issuer_id */ 4:
-                    message.request = {
-                        oneofKind: "issuerId",
-                        issuerId: reader.string()
-                    };
+                    message.title = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3419,19 +3476,10 @@ class UpdateTaskRequest$Type extends MessageType<UpdateTaskRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: UpdateTaskRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: ChangeJobTitleRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string title = 1; */
-        if (message.request.oneofKind === "title")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.title);
-        /* string description = 2; */
-        if (message.request.oneofKind === "description")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.description);
-        /* string board_section_id = 3; */
-        if (message.request.oneofKind === "boardSectionId")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.boardSectionId);
-        /* string issuer_id = 4; */
-        if (message.request.oneofKind === "issuerId")
-            writer.tag(4, WireType.LengthDelimited).string(message.request.issuerId);
+        if (message.title !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.title);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3439,30 +3487,30 @@ class UpdateTaskRequest$Type extends MessageType<UpdateTaskRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.UpdateTaskRequest
+ * @generated MessageType for protobuf message management.ChangeJobTitleRequest
  */
-export const UpdateTaskRequest = new UpdateTaskRequest$Type();
+export const ChangeJobTitleRequest = new ChangeJobTitleRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class RemoveTaskRequest$Type extends MessageType<RemoveTaskRequest> {
+class ChangeJobDepartmentRequest$Type extends MessageType<ChangeJobDepartmentRequest> {
     constructor() {
-        super("management.RemoveTaskRequest", [
-            { no: 1, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobDepartmentRequest", [
+            { no: 1, name: "department_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<RemoveTaskRequest>): RemoveTaskRequest {
+    create(value?: PartialMessage<ChangeJobDepartmentRequest>): ChangeJobDepartmentRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskId = "";
+        message.departmentId = "";
         if (value !== undefined)
-            reflectionMergePartial<RemoveTaskRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobDepartmentRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveTaskRequest): RemoveTaskRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobDepartmentRequest): ChangeJobDepartmentRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string task_id */ 1:
-                    message.taskId = reader.string();
+                case /* string department_id */ 1:
+                    message.departmentId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3475,10 +3523,10 @@ class RemoveTaskRequest$Type extends MessageType<RemoveTaskRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: RemoveTaskRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_id = 1; */
-        if (message.taskId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskId);
+    internalBinaryWrite(message: ChangeJobDepartmentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string department_id = 1; */
+        if (message.departmentId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.departmentId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3486,45 +3534,30 @@ class RemoveTaskRequest$Type extends MessageType<RemoveTaskRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.RemoveTaskRequest
+ * @generated MessageType for protobuf message management.ChangeJobDepartmentRequest
  */
-export const RemoveTaskRequest = new RemoveTaskRequest$Type();
+export const ChangeJobDepartmentRequest = new ChangeJobDepartmentRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class CreateTaskLabelRequest$Type extends MessageType<CreateTaskLabelRequest> {
+class ChangeJobSupervisorRequest$Type extends MessageType<ChangeJobSupervisorRequest> {
     constructor() {
-        super("management.CreateTaskLabelRequest", [
-            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "description", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "color", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobSupervisorRequest", [
+            { no: 1, name: "supervisor_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<CreateTaskLabelRequest>): CreateTaskLabelRequest {
+    create(value?: PartialMessage<ChangeJobSupervisorRequest>): ChangeJobSupervisorRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.name = "";
-        message.description = "";
-        message.color = "";
-        message.teamId = "";
+        message.supervisorId = "";
         if (value !== undefined)
-            reflectionMergePartial<CreateTaskLabelRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobSupervisorRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateTaskLabelRequest): CreateTaskLabelRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobSupervisorRequest): ChangeJobSupervisorRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string name */ 1:
-                    message.name = reader.string();
-                    break;
-                case /* string description */ 2:
-                    message.description = reader.string();
-                    break;
-                case /* string color */ 3:
-                    message.color = reader.string();
-                    break;
-                case /* string team_id */ 4:
-                    message.teamId = reader.string();
+                case /* string supervisor_id */ 1:
+                    message.supervisorId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3537,19 +3570,10 @@ class CreateTaskLabelRequest$Type extends MessageType<CreateTaskLabelRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: CreateTaskLabelRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.name !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.name);
-        /* string description = 2; */
-        if (message.description !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.description);
-        /* string color = 3; */
-        if (message.color !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.color);
-        /* string team_id = 4; */
-        if (message.teamId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.teamId);
+    internalBinaryWrite(message: ChangeJobSupervisorRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string supervisor_id = 1; */
+        if (message.supervisorId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.supervisorId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3557,47 +3581,30 @@ class CreateTaskLabelRequest$Type extends MessageType<CreateTaskLabelRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.CreateTaskLabelRequest
+ * @generated MessageType for protobuf message management.ChangeJobSupervisorRequest
  */
-export const CreateTaskLabelRequest = new CreateTaskLabelRequest$Type();
+export const ChangeJobSupervisorRequest = new ChangeJobSupervisorRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class GetTaskLabelRequest$Type extends MessageType<GetTaskLabelRequest> {
+class ChangeJobWorkLocationRequest$Type extends MessageType<ChangeJobWorkLocationRequest> {
     constructor() {
-        super("management.GetTaskLabelRequest", [
-            { no: 1, name: "id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "task_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "team_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobWorkLocationRequest", [
+            { no: 1, name: "work_location", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<GetTaskLabelRequest>): GetTaskLabelRequest {
+    create(value?: PartialMessage<ChangeJobWorkLocationRequest>): ChangeJobWorkLocationRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
+        message.workLocation = "";
         if (value !== undefined)
-            reflectionMergePartial<GetTaskLabelRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobWorkLocationRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetTaskLabelRequest): GetTaskLabelRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobWorkLocationRequest): ChangeJobWorkLocationRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string id */ 1:
-                    message.request = {
-                        oneofKind: "id",
-                        id: reader.string()
-                    };
-                    break;
-                case /* string task_id */ 2:
-                    message.request = {
-                        oneofKind: "taskId",
-                        taskId: reader.string()
-                    };
-                    break;
-                case /* string team_id */ 3:
-                    message.request = {
-                        oneofKind: "teamId",
-                        teamId: reader.string()
-                    };
+                case /* string work_location */ 1:
+                    message.workLocation = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3610,16 +3617,10 @@ class GetTaskLabelRequest$Type extends MessageType<GetTaskLabelRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetTaskLabelRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string id = 1; */
-        if (message.request.oneofKind === "id")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.id);
-        /* string task_id = 2; */
-        if (message.request.oneofKind === "taskId")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.taskId);
-        /* string team_id = 3; */
-        if (message.request.oneofKind === "teamId")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.teamId);
+    internalBinaryWrite(message: ChangeJobWorkLocationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string work_location = 1; */
+        if (message.workLocation !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.workLocation);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3627,47 +3628,30 @@ class GetTaskLabelRequest$Type extends MessageType<GetTaskLabelRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.GetTaskLabelRequest
+ * @generated MessageType for protobuf message management.ChangeJobWorkLocationRequest
  */
-export const GetTaskLabelRequest = new GetTaskLabelRequest$Type();
+export const ChangeJobWorkLocationRequest = new ChangeJobWorkLocationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class UpdateTaskLabelRequest$Type extends MessageType<UpdateTaskLabelRequest> {
+class ChangeJobStartDateRequest$Type extends MessageType<ChangeJobStartDateRequest> {
     constructor() {
-        super("management.UpdateTaskLabelRequest", [
-            { no: 1, name: "name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "description", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "color", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobStartDateRequest", [
+            { no: 1, name: "start_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<UpdateTaskLabelRequest>): UpdateTaskLabelRequest {
+    create(value?: PartialMessage<ChangeJobStartDateRequest>): ChangeJobStartDateRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
+        message.startDate = "";
         if (value !== undefined)
-            reflectionMergePartial<UpdateTaskLabelRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobStartDateRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateTaskLabelRequest): UpdateTaskLabelRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobStartDateRequest): ChangeJobStartDateRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string name */ 1:
-                    message.request = {
-                        oneofKind: "name",
-                        name: reader.string()
-                    };
-                    break;
-                case /* string description */ 2:
-                    message.request = {
-                        oneofKind: "description",
-                        description: reader.string()
-                    };
-                    break;
-                case /* string color */ 3:
-                    message.request = {
-                        oneofKind: "color",
-                        color: reader.string()
-                    };
+                case /* string start_date */ 1:
+                    message.startDate = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3680,16 +3664,10 @@ class UpdateTaskLabelRequest$Type extends MessageType<UpdateTaskLabelRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: UpdateTaskLabelRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.request.oneofKind === "name")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.name);
-        /* string description = 2; */
-        if (message.request.oneofKind === "description")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.description);
-        /* string color = 3; */
-        if (message.request.oneofKind === "color")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.color);
+    internalBinaryWrite(message: ChangeJobStartDateRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string start_date = 1; */
+        if (message.startDate !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.startDate);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3697,30 +3675,30 @@ class UpdateTaskLabelRequest$Type extends MessageType<UpdateTaskLabelRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.UpdateTaskLabelRequest
+ * @generated MessageType for protobuf message management.ChangeJobStartDateRequest
  */
-export const UpdateTaskLabelRequest = new UpdateTaskLabelRequest$Type();
+export const ChangeJobStartDateRequest = new ChangeJobStartDateRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class RemoveTaskLabelRequest$Type extends MessageType<RemoveTaskLabelRequest> {
+class ChangeJobSalaryRequest$Type extends MessageType<ChangeJobSalaryRequest> {
     constructor() {
-        super("management.RemoveTaskLabelRequest", [
-            { no: 1, name: "task_label_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobSalaryRequest", [
+            { no: 1, name: "salary", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<RemoveTaskLabelRequest>): RemoveTaskLabelRequest {
+    create(value?: PartialMessage<ChangeJobSalaryRequest>): ChangeJobSalaryRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskLabelId = "";
+        message.salary = "";
         if (value !== undefined)
-            reflectionMergePartial<RemoveTaskLabelRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobSalaryRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveTaskLabelRequest): RemoveTaskLabelRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobSalaryRequest): ChangeJobSalaryRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string task_label_id */ 1:
-                    message.taskLabelId = reader.string();
+                case /* string salary */ 1:
+                    message.salary = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3733,10 +3711,10 @@ class RemoveTaskLabelRequest$Type extends MessageType<RemoveTaskLabelRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: RemoveTaskLabelRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_label_id = 1; */
-        if (message.taskLabelId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskLabelId);
+    internalBinaryWrite(message: ChangeJobSalaryRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string salary = 1; */
+        if (message.salary !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.salary);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3744,45 +3722,30 @@ class RemoveTaskLabelRequest$Type extends MessageType<RemoveTaskLabelRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.RemoveTaskLabelRequest
+ * @generated MessageType for protobuf message management.ChangeJobSalaryRequest
  */
-export const RemoveTaskLabelRequest = new RemoveTaskLabelRequest$Type();
+export const ChangeJobSalaryRequest = new ChangeJobSalaryRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class CreateTaskFieldRequest$Type extends MessageType<CreateTaskFieldRequest> {
+class ChangeJobCurrencyRequest$Type extends MessageType<ChangeJobCurrencyRequest> {
     constructor() {
-        super("management.CreateTaskFieldRequest", [
-            { no: 1, name: "name", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "type", kind: "enum", T: () => ["management.TaskFieldType", TaskFieldType, "TASK_FIELD_TYPE_"] },
-            { no: 3, name: "value", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "team_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeJobCurrencyRequest", [
+            { no: 1, name: "currency", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<CreateTaskFieldRequest>): CreateTaskFieldRequest {
+    create(value?: PartialMessage<ChangeJobCurrencyRequest>): ChangeJobCurrencyRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.name = "";
-        message.type = 0;
-        message.value = "";
-        message.teamId = "";
+        message.currency = "";
         if (value !== undefined)
-            reflectionMergePartial<CreateTaskFieldRequest>(this, message, value);
+            reflectionMergePartial<ChangeJobCurrencyRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateTaskFieldRequest): CreateTaskFieldRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeJobCurrencyRequest): ChangeJobCurrencyRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string name */ 1:
-                    message.name = reader.string();
-                    break;
-                case /* management.TaskFieldType type */ 2:
-                    message.type = reader.int32();
-                    break;
-                case /* string value */ 3:
-                    message.value = reader.string();
-                    break;
-                case /* string team_id */ 4:
-                    message.teamId = reader.string();
+                case /* string currency */ 1:
+                    message.currency = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3795,19 +3758,10 @@ class CreateTaskFieldRequest$Type extends MessageType<CreateTaskFieldRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: CreateTaskFieldRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.name !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.name);
-        /* management.TaskFieldType type = 2; */
-        if (message.type !== 0)
-            writer.tag(2, WireType.Varint).int32(message.type);
-        /* string value = 3; */
-        if (message.value !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.value);
-        /* string team_id = 4; */
-        if (message.teamId !== "")
-            writer.tag(4, WireType.LengthDelimited).string(message.teamId);
+    internalBinaryWrite(message: ChangeJobCurrencyRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string currency = 1; */
+        if (message.currency !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.currency);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3815,47 +3769,30 @@ class CreateTaskFieldRequest$Type extends MessageType<CreateTaskFieldRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.CreateTaskFieldRequest
+ * @generated MessageType for protobuf message management.ChangeJobCurrencyRequest
  */
-export const CreateTaskFieldRequest = new CreateTaskFieldRequest$Type();
+export const ChangeJobCurrencyRequest = new ChangeJobCurrencyRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class GetTaskFieldRequest$Type extends MessageType<GetTaskFieldRequest> {
+class RemoveJobInformationRequest$Type extends MessageType<RemoveJobInformationRequest> {
     constructor() {
-        super("management.GetTaskFieldRequest", [
-            { no: 1, name: "id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "team_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "task_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
+        super("management.RemoveJobInformationRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<GetTaskFieldRequest>): GetTaskFieldRequest {
+    create(value?: PartialMessage<RemoveJobInformationRequest>): RemoveJobInformationRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
+        message.id = "";
         if (value !== undefined)
-            reflectionMergePartial<GetTaskFieldRequest>(this, message, value);
+            reflectionMergePartial<RemoveJobInformationRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetTaskFieldRequest): GetTaskFieldRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveJobInformationRequest): RemoveJobInformationRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
                 case /* string id */ 1:
-                    message.request = {
-                        oneofKind: "id",
-                        id: reader.string()
-                    };
-                    break;
-                case /* string team_id */ 2:
-                    message.request = {
-                        oneofKind: "teamId",
-                        teamId: reader.string()
-                    };
-                    break;
-                case /* string task_id */ 3:
-                    message.request = {
-                        oneofKind: "taskId",
-                        taskId: reader.string()
-                    };
+                    message.id = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3868,16 +3805,10 @@ class GetTaskFieldRequest$Type extends MessageType<GetTaskFieldRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetTaskFieldRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    internalBinaryWrite(message: RemoveJobInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
         /* string id = 1; */
-        if (message.request.oneofKind === "id")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.id);
-        /* string team_id = 2; */
-        if (message.request.oneofKind === "teamId")
-            writer.tag(2, WireType.LengthDelimited).string(message.request.teamId);
-        /* string task_id = 3; */
-        if (message.request.oneofKind === "taskId")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.taskId);
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3885,54 +3816,53 @@ class GetTaskFieldRequest$Type extends MessageType<GetTaskFieldRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.GetTaskFieldRequest
+ * @generated MessageType for protobuf message management.RemoveJobInformationRequest
  */
-export const GetTaskFieldRequest = new GetTaskFieldRequest$Type();
+export const RemoveJobInformationRequest = new RemoveJobInformationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class UpdateTaskFieldRequest$Type extends MessageType<UpdateTaskFieldRequest> {
+class CreateEmergencyInformationRequest$Type extends MessageType<CreateEmergencyInformationRequest> {
     constructor() {
-        super("management.UpdateTaskFieldRequest", [
-            { no: 1, name: "name", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "type", kind: "enum", oneof: "request", T: () => ["management.TaskFieldType", TaskFieldType, "TASK_FIELD_TYPE_"] },
-            { no: 3, name: "value", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "team_id", kind: "scalar", oneof: "request", T: 9 /*ScalarType.STRING*/ }
+        super("management.CreateEmergencyInformationRequest", [
+            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 3, name: "tel_number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "mobile_number", kind: "scalar", opt: true, T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "health_conditions", kind: "scalar", repeat: 2 /*RepeatType.UNPACKED*/, T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "contact_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<UpdateTaskFieldRequest>): UpdateTaskFieldRequest {
+    create(value?: PartialMessage<CreateEmergencyInformationRequest>): CreateEmergencyInformationRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.request = { oneofKind: undefined };
+        message.employeeId = "";
+        message.address = "";
+        message.healthConditions = [];
+        message.contactName = "";
         if (value !== undefined)
-            reflectionMergePartial<UpdateTaskFieldRequest>(this, message, value);
+            reflectionMergePartial<CreateEmergencyInformationRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: UpdateTaskFieldRequest): UpdateTaskFieldRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateEmergencyInformationRequest): CreateEmergencyInformationRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string name */ 1:
-                    message.request = {
-                        oneofKind: "name",
-                        name: reader.string()
-                    };
+                case /* string employee_id */ 1:
+                    message.employeeId = reader.string();
                     break;
-                case /* management.TaskFieldType type */ 2:
-                    message.request = {
-                        oneofKind: "type",
-                        type: reader.int32()
-                    };
+                case /* string address */ 2:
+                    message.address = reader.string();
                     break;
-                case /* string value */ 3:
-                    message.request = {
-                        oneofKind: "value",
-                        value: reader.string()
-                    };
+                case /* optional string tel_number */ 3:
+                    message.telNumber = reader.string();
                     break;
-                case /* string team_id */ 4:
-                    message.request = {
-                        oneofKind: "teamId",
-                        teamId: reader.string()
-                    };
+                case /* optional string mobile_number */ 4:
+                    message.mobileNumber = reader.string();
+                    break;
+                case /* repeated string health_conditions */ 5:
+                    message.healthConditions.push(reader.string());
+                    break;
+                case /* string contact_name */ 6:
+                    message.contactName = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -3945,19 +3875,25 @@ class UpdateTaskFieldRequest$Type extends MessageType<UpdateTaskFieldRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: UpdateTaskFieldRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string name = 1; */
-        if (message.request.oneofKind === "name")
-            writer.tag(1, WireType.LengthDelimited).string(message.request.name);
-        /* management.TaskFieldType type = 2; */
-        if (message.request.oneofKind === "type")
-            writer.tag(2, WireType.Varint).int32(message.request.type);
-        /* string value = 3; */
-        if (message.request.oneofKind === "value")
-            writer.tag(3, WireType.LengthDelimited).string(message.request.value);
-        /* string team_id = 4; */
-        if (message.request.oneofKind === "teamId")
-            writer.tag(4, WireType.LengthDelimited).string(message.request.teamId);
+    internalBinaryWrite(message: CreateEmergencyInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string employee_id = 1; */
+        if (message.employeeId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
+        /* string address = 2; */
+        if (message.address !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.address);
+        /* optional string tel_number = 3; */
+        if (message.telNumber !== undefined)
+            writer.tag(3, WireType.LengthDelimited).string(message.telNumber);
+        /* optional string mobile_number = 4; */
+        if (message.mobileNumber !== undefined)
+            writer.tag(4, WireType.LengthDelimited).string(message.mobileNumber);
+        /* repeated string health_conditions = 5; */
+        for (let i = 0; i < message.healthConditions.length; i++)
+            writer.tag(5, WireType.LengthDelimited).string(message.healthConditions[i]);
+        /* string contact_name = 6; */
+        if (message.contactName !== "")
+            writer.tag(6, WireType.LengthDelimited).string(message.contactName);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -3965,30 +3901,30 @@ class UpdateTaskFieldRequest$Type extends MessageType<UpdateTaskFieldRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.UpdateTaskFieldRequest
+ * @generated MessageType for protobuf message management.CreateEmergencyInformationRequest
  */
-export const UpdateTaskFieldRequest = new UpdateTaskFieldRequest$Type();
+export const CreateEmergencyInformationRequest = new CreateEmergencyInformationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class RemoveTaskFieldRequest$Type extends MessageType<RemoveTaskFieldRequest> {
+class GetEmergencyInformationRequest$Type extends MessageType<GetEmergencyInformationRequest> {
     constructor() {
-        super("management.RemoveTaskFieldRequest", [
-            { no: 1, name: "task_field_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.GetEmergencyInformationRequest", [
+            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<RemoveTaskFieldRequest>): RemoveTaskFieldRequest {
+    create(value?: PartialMessage<GetEmergencyInformationRequest>): GetEmergencyInformationRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskFieldId = "";
+        message.employeeId = "";
         if (value !== undefined)
-            reflectionMergePartial<RemoveTaskFieldRequest>(this, message, value);
+            reflectionMergePartial<GetEmergencyInformationRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveTaskFieldRequest): RemoveTaskFieldRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetEmergencyInformationRequest): GetEmergencyInformationRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string task_field_id */ 1:
-                    message.taskFieldId = reader.string();
+                case /* string employee_id */ 1:
+                    message.employeeId = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -4001,10 +3937,10 @@ class RemoveTaskFieldRequest$Type extends MessageType<RemoveTaskFieldRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: RemoveTaskFieldRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_field_id = 1; */
-        if (message.taskFieldId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskFieldId);
+    internalBinaryWrite(message: GetEmergencyInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string employee_id = 1; */
+        if (message.employeeId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -4012,45 +3948,30 @@ class RemoveTaskFieldRequest$Type extends MessageType<RemoveTaskFieldRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.RemoveTaskFieldRequest
+ * @generated MessageType for protobuf message management.GetEmergencyInformationRequest
  */
-export const RemoveTaskFieldRequest = new RemoveTaskFieldRequest$Type();
+export const GetEmergencyInformationRequest = new GetEmergencyInformationRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class CreateTaskCommentRequest$Type extends MessageType<CreateTaskCommentRequest> {
+class ChangeEmergencyInformationAddressRequest$Type extends MessageType<ChangeEmergencyInformationAddressRequest> {
     constructor() {
-        super("management.CreateTaskCommentRequest", [
-            { no: 1, name: "message", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 2, name: "sender_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 3, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-            { no: 4, name: "attachments", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => FileMetadata }
+        super("management.ChangeEmergencyInformationAddressRequest", [
+            { no: 1, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<CreateTaskCommentRequest>): CreateTaskCommentRequest {
+    create(value?: PartialMessage<ChangeEmergencyInformationAddressRequest>): ChangeEmergencyInformationAddressRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.message = "";
-        message.senderId = "";
-        message.taskId = "";
-        message.attachments = [];
+        message.address = "";
         if (value !== undefined)
-            reflectionMergePartial<CreateTaskCommentRequest>(this, message, value);
+            reflectionMergePartial<ChangeEmergencyInformationAddressRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreateTaskCommentRequest): CreateTaskCommentRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmergencyInformationAddressRequest): ChangeEmergencyInformationAddressRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string message */ 1:
-                    message.message = reader.string();
-                    break;
-                case /* string sender_id */ 2:
-                    message.senderId = reader.string();
-                    break;
-                case /* string task_id */ 3:
-                    message.taskId = reader.string();
-                    break;
-                case /* repeated storage.FileMetadata attachments */ 4:
-                    message.attachments.push(FileMetadata.internalBinaryRead(reader, reader.uint32(), options));
+                case /* string address */ 1:
+                    message.address = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -4063,19 +3984,10 @@ class CreateTaskCommentRequest$Type extends MessageType<CreateTaskCommentRequest
         }
         return message;
     }
-    internalBinaryWrite(message: CreateTaskCommentRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string message = 1; */
-        if (message.message !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.message);
-        /* string sender_id = 2; */
-        if (message.senderId !== "")
-            writer.tag(2, WireType.LengthDelimited).string(message.senderId);
-        /* string task_id = 3; */
-        if (message.taskId !== "")
-            writer.tag(3, WireType.LengthDelimited).string(message.taskId);
-        /* repeated storage.FileMetadata attachments = 4; */
-        for (let i = 0; i < message.attachments.length; i++)
-            FileMetadata.internalBinaryWrite(message.attachments[i], writer.tag(4, WireType.LengthDelimited).fork(), options).join();
+    internalBinaryWrite(message: ChangeEmergencyInformationAddressRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string address = 1; */
+        if (message.address !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.address);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -4083,30 +3995,30 @@ class CreateTaskCommentRequest$Type extends MessageType<CreateTaskCommentRequest
     }
 }
 /**
- * @generated MessageType for protobuf message management.CreateTaskCommentRequest
+ * @generated MessageType for protobuf message management.ChangeEmergencyInformationAddressRequest
  */
-export const CreateTaskCommentRequest = new CreateTaskCommentRequest$Type();
+export const ChangeEmergencyInformationAddressRequest = new ChangeEmergencyInformationAddressRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
-class GetTaskCommentsRequest$Type extends MessageType<GetTaskCommentsRequest> {
+class ChangeEmergencyInformationTelNumberRequest$Type extends MessageType<ChangeEmergencyInformationTelNumberRequest> {
     constructor() {
-        super("management.GetTaskCommentsRequest", [
-            { no: 1, name: "task_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        super("management.ChangeEmergencyInformationTelNumberRequest", [
+            { no: 1, name: "tel_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
         ]);
     }
-    create(value?: PartialMessage<GetTaskCommentsRequest>): GetTaskCommentsRequest {
+    create(value?: PartialMessage<ChangeEmergencyInformationTelNumberRequest>): ChangeEmergencyInformationTelNumberRequest {
         const message = globalThis.Object.create((this.messagePrototype!));
-        message.taskId = "";
+        message.telNumber = "";
         if (value !== undefined)
-            reflectionMergePartial<GetTaskCommentsRequest>(this, message, value);
+            reflectionMergePartial<ChangeEmergencyInformationTelNumberRequest>(this, message, value);
         return message;
     }
-    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetTaskCommentsRequest): GetTaskCommentsRequest {
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmergencyInformationTelNumberRequest): ChangeEmergencyInformationTelNumberRequest {
         let message = target ?? this.create(), end = reader.pos + length;
         while (reader.pos < end) {
             let [fieldNo, wireType] = reader.tag();
             switch (fieldNo) {
-                case /* string task_id */ 1:
-                    message.taskId = reader.string();
+                case /* string tel_number */ 1:
+                    message.telNumber = reader.string();
                     break;
                 default:
                     let u = options.readUnknownField;
@@ -4119,10 +4031,10 @@ class GetTaskCommentsRequest$Type extends MessageType<GetTaskCommentsRequest> {
         }
         return message;
     }
-    internalBinaryWrite(message: GetTaskCommentsRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-        /* string task_id = 1; */
-        if (message.taskId !== "")
-            writer.tag(1, WireType.LengthDelimited).string(message.taskId);
+    internalBinaryWrite(message: ChangeEmergencyInformationTelNumberRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string tel_number = 1; */
+        if (message.telNumber !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.telNumber);
         let u = options.writeUnknownFields;
         if (u !== false)
             (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
@@ -4130,63 +4042,803 @@ class GetTaskCommentsRequest$Type extends MessageType<GetTaskCommentsRequest> {
     }
 }
 /**
- * @generated MessageType for protobuf message management.GetTaskCommentsRequest
+ * @generated MessageType for protobuf message management.ChangeEmergencyInformationTelNumberRequest
  */
-export const GetTaskCommentsRequest = new GetTaskCommentsRequest$Type();
+export const ChangeEmergencyInformationTelNumberRequest = new ChangeEmergencyInformationTelNumberRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmergencyInformationMobileNumberRequest$Type extends MessageType<ChangeEmergencyInformationMobileNumberRequest> {
+    constructor() {
+        super("management.ChangeEmergencyInformationMobileNumberRequest", [
+            { no: 1, name: "mobile_number", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmergencyInformationMobileNumberRequest>): ChangeEmergencyInformationMobileNumberRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.mobileNumber = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmergencyInformationMobileNumberRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmergencyInformationMobileNumberRequest): ChangeEmergencyInformationMobileNumberRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string mobile_number */ 1:
+                    message.mobileNumber = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmergencyInformationMobileNumberRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string mobile_number = 1; */
+        if (message.mobileNumber !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.mobileNumber);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
 /**
- * @generated ServiceType for protobuf service management.EmployeeService
+ * @generated MessageType for protobuf message management.ChangeEmergencyInformationMobileNumberRequest
  */
-export const EmployeeService = new ServiceType("management.EmployeeService", [
-    { name: "CreateEmployee", options: {}, I: CreateEmployeeRequest, O: CreateEmployeeResponse },
-    { name: "GetEmployee", serverStreaming: true, options: {}, I: CreateEmployeeRequest, O: Employee },
-    { name: "BatchGetEmployees", serverStreaming: true, options: {}, I: BatchGetEmployeesRequest, O: Employee },
-    { name: "UpdateEmployee", options: {}, I: UpdateEmployeeRequest, O: Employee },
-    { name: "RemoveEmployee", options: {}, I: RemoveEmployeeRequest, O: Empty }
-]);
+export const ChangeEmergencyInformationMobileNumberRequest = new ChangeEmergencyInformationMobileNumberRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangeEmergencyInformationContactNameRequest$Type extends MessageType<ChangeEmergencyInformationContactNameRequest> {
+    constructor() {
+        super("management.ChangeEmergencyInformationContactNameRequest", [
+            { no: 1, name: "contact_name", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangeEmergencyInformationContactNameRequest>): ChangeEmergencyInformationContactNameRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.contactName = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangeEmergencyInformationContactNameRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangeEmergencyInformationContactNameRequest): ChangeEmergencyInformationContactNameRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string contact_name */ 1:
+                    message.contactName = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangeEmergencyInformationContactNameRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string contact_name = 1; */
+        if (message.contactName !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.contactName);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
 /**
- * @generated ServiceType for protobuf service management.TeamService
+ * @generated MessageType for protobuf message management.ChangeEmergencyInformationContactNameRequest
  */
-export const TeamService = new ServiceType("management.TeamService", [
-    { name: "CreateTeam", options: {}, I: CreateTeamRequest, O: Team },
-    { name: "AddTeamMember", options: {}, I: AddTeamMemberRequest, O: Team },
-    { name: "RemoveTeamMember", options: {}, I: RemoveTeamMemberRequest, O: Team },
-    { name: "GetTeam", options: {}, I: GetTeamRequest, O: Team },
-    { name: "GetTeams", serverStreaming: true, options: {}, I: Empty, O: Team },
-    { name: "UpdateTeam", options: {}, I: UpdateTeamRequest, O: Team },
-    { name: "RemoveTeam", options: {}, I: RemoveTeamRequest, O: Empty }
-]);
+export const ChangeEmergencyInformationContactNameRequest = new ChangeEmergencyInformationContactNameRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RemoveEmergencyInformationRequest$Type extends MessageType<RemoveEmergencyInformationRequest> {
+    constructor() {
+        super("management.RemoveEmergencyInformationRequest", [
+            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RemoveEmergencyInformationRequest>): RemoveEmergencyInformationRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.employeeId = "";
+        if (value !== undefined)
+            reflectionMergePartial<RemoveEmergencyInformationRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveEmergencyInformationRequest): RemoveEmergencyInformationRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string employee_id */ 1:
+                    message.employeeId = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RemoveEmergencyInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string employee_id = 1; */
+        if (message.employeeId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
 /**
- * @generated ServiceType for protobuf service management.TaskService
+ * @generated MessageType for protobuf message management.RemoveEmergencyInformationRequest
  */
-export const TaskService = new ServiceType("management.TaskService", [
-    { name: "CreateBoard", options: {}, I: CreateBoardRequest, O: Board },
-    { name: "GetBoard", options: {}, I: GetBoardRequest, O: Board },
-    { name: "GetBoards", serverStreaming: true, options: {}, I: GetBoardRequest, O: Board },
-    { name: "UpdateBoard", options: {}, I: UpdateBoardRequest, O: Board },
-    { name: "RemoveBoard", options: {}, I: RemoveBoardRequest, O: Empty },
-    { name: "CreateBoardSection", options: {}, I: CreateBoardSectionRequest, O: BoardSection },
-    { name: "GetBoardSections", serverStreaming: true, options: {}, I: GetBoardSectionRequest, O: BoardSection },
-    { name: "UpdateBoardSection", options: {}, I: UpdateBoardSectionRequest, O: BoardSection },
-    { name: "RemoveBoardSection", options: {}, I: RemoveBoardSectionRequest, O: Empty },
-    { name: "CreateTask", options: {}, I: CreateTaskRequest, O: Task },
-    { name: "AssignTask", options: {}, I: AssignTaskRequest, O: Task },
-    { name: "RemoveAssignTask", options: {}, I: RemoveAssignTaskRequest, O: Task },
-    { name: "GetTasksFromSection", serverStreaming: true, options: {}, I: GetTaskFromSectionRequest, O: Task },
-    { name: "GetTask", options: {}, I: GetTaskRequest, O: Task },
-    { name: "GetTasks", serverStreaming: true, options: {}, I: GetTaskRequest, O: Task },
-    { name: "MoveTaskToBoardSection", options: {}, I: MoveTaskToBoardRequest, O: Empty },
-    { name: "UpdateTask", options: {}, I: UpdateTaskRequest, O: Task },
-    { name: "RemoveTask", options: {}, I: RemoveTaskRequest, O: Empty },
-    { name: "CreateTaskLabel", options: {}, I: CreateTaskLabelRequest, O: TaskLabel },
-    { name: "GetTaskLabel", options: {}, I: GetTaskLabelRequest, O: TaskLabel },
-    { name: "GetTaskLabels", serverStreaming: true, options: {}, I: GetTaskLabelRequest, O: TaskLabel },
-    { name: "UpdateTaskLabel", options: {}, I: UpdateTaskLabelRequest, O: TaskLabel },
-    { name: "RemoveTaskLabel", options: {}, I: RemoveTaskLabelRequest, O: Empty },
-    { name: "CreateTaskField", options: {}, I: CreateTaskFieldRequest, O: TaskField },
-    { name: "GetTaskField", options: {}, I: GetTaskFieldRequest, O: TaskField },
-    { name: "GetTaskFields", serverStreaming: true, options: {}, I: GetTaskFieldRequest, O: TaskField },
-    { name: "UpdateTaskField", options: {}, I: UpdateTaskFieldRequest, O: TaskField },
-    { name: "RemoveTaskField", options: {}, I: RemoveTaskFieldRequest, O: Empty },
-    { name: "CreateTaskComment", options: {}, I: CreateTaskCommentRequest, O: TaskComment },
-    { name: "GetTaskComments", serverStreaming: true, options: {}, I: GetTaskCommentsRequest, O: TaskComment }
+export const RemoveEmergencyInformationRequest = new RemoveEmergencyInformationRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class AddEmergencyInformationHealthConditionRequest$Type extends MessageType<AddEmergencyInformationHealthConditionRequest> {
+    constructor() {
+        super("management.AddEmergencyInformationHealthConditionRequest", [
+            { no: 1, name: "health_condition", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<AddEmergencyInformationHealthConditionRequest>): AddEmergencyInformationHealthConditionRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.healthCondition = "";
+        if (value !== undefined)
+            reflectionMergePartial<AddEmergencyInformationHealthConditionRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: AddEmergencyInformationHealthConditionRequest): AddEmergencyInformationHealthConditionRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string health_condition */ 1:
+                    message.healthCondition = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: AddEmergencyInformationHealthConditionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string health_condition = 1; */
+        if (message.healthCondition !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.healthCondition);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.AddEmergencyInformationHealthConditionRequest
+ */
+export const AddEmergencyInformationHealthConditionRequest = new AddEmergencyInformationHealthConditionRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RemoveEmergencyInformationHealthConditionRequest$Type extends MessageType<RemoveEmergencyInformationHealthConditionRequest> {
+    constructor() {
+        super("management.RemoveEmergencyInformationHealthConditionRequest", [
+            { no: 1, name: "health_condition", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RemoveEmergencyInformationHealthConditionRequest>): RemoveEmergencyInformationHealthConditionRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.healthCondition = "";
+        if (value !== undefined)
+            reflectionMergePartial<RemoveEmergencyInformationHealthConditionRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemoveEmergencyInformationHealthConditionRequest): RemoveEmergencyInformationHealthConditionRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string health_condition */ 1:
+                    message.healthCondition = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RemoveEmergencyInformationHealthConditionRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string health_condition = 1; */
+        if (message.healthCondition !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.healthCondition);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.RemoveEmergencyInformationHealthConditionRequest
+ */
+export const RemoveEmergencyInformationHealthConditionRequest = new RemoveEmergencyInformationHealthConditionRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class CreatePANRequest$Type extends MessageType<CreatePANRequest> {
+    constructor() {
+        super("management.CreatePANRequest", [
+            { no: 1, name: "employee_id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "action_type", kind: "enum", T: () => ["management.EmployeePanActionType", EmployeePanActionType, "EMPLOYEE_PAN_ACTION_TYPE_"] },
+            { no: 3, name: "old_value", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 4, name: "new_value", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 5, name: "effective_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 6, name: "status", kind: "enum", T: () => ["management.EmployeePanActionStatus", EmployeePanActionStatus, "EMPLOYEE_PAN_ACTION_STATUS_"] }
+        ]);
+    }
+    create(value?: PartialMessage<CreatePANRequest>): CreatePANRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.employeeId = "";
+        message.actionType = 0;
+        message.oldValue = "";
+        message.newValue = "";
+        message.effectiveDate = "";
+        message.status = 0;
+        if (value !== undefined)
+            reflectionMergePartial<CreatePANRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: CreatePANRequest): CreatePANRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string employee_id */ 1:
+                    message.employeeId = reader.string();
+                    break;
+                case /* management.EmployeePanActionType action_type */ 2:
+                    message.actionType = reader.int32();
+                    break;
+                case /* string old_value */ 3:
+                    message.oldValue = reader.string();
+                    break;
+                case /* string new_value */ 4:
+                    message.newValue = reader.string();
+                    break;
+                case /* string effective_date */ 5:
+                    message.effectiveDate = reader.string();
+                    break;
+                case /* management.EmployeePanActionStatus status */ 6:
+                    message.status = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: CreatePANRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string employee_id = 1; */
+        if (message.employeeId !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.employeeId);
+        /* management.EmployeePanActionType action_type = 2; */
+        if (message.actionType !== 0)
+            writer.tag(2, WireType.Varint).int32(message.actionType);
+        /* string old_value = 3; */
+        if (message.oldValue !== "")
+            writer.tag(3, WireType.LengthDelimited).string(message.oldValue);
+        /* string new_value = 4; */
+        if (message.newValue !== "")
+            writer.tag(4, WireType.LengthDelimited).string(message.newValue);
+        /* string effective_date = 5; */
+        if (message.effectiveDate !== "")
+            writer.tag(5, WireType.LengthDelimited).string(message.effectiveDate);
+        /* management.EmployeePanActionStatus status = 6; */
+        if (message.status !== 0)
+            writer.tag(6, WireType.Varint).int32(message.status);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.CreatePANRequest
+ */
+export const CreatePANRequest = new CreatePANRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class GetPANInformationRequest$Type extends MessageType<GetPANInformationRequest> {
+    constructor() {
+        super("management.GetPANInformationRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<GetPANInformationRequest>): GetPANInformationRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        if (value !== undefined)
+            reflectionMergePartial<GetPANInformationRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: GetPANInformationRequest): GetPANInformationRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: GetPANInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.GetPANInformationRequest
+ */
+export const GetPANInformationRequest = new GetPANInformationRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangePANActionTypeRequest$Type extends MessageType<ChangePANActionTypeRequest> {
+    constructor() {
+        super("management.ChangePANActionTypeRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "action_type", kind: "enum", T: () => ["management.EmployeePanActionType", EmployeePanActionType, "EMPLOYEE_PAN_ACTION_TYPE_"] }
+        ]);
+    }
+    create(value?: PartialMessage<ChangePANActionTypeRequest>): ChangePANActionTypeRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.actionType = 0;
+        if (value !== undefined)
+            reflectionMergePartial<ChangePANActionTypeRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangePANActionTypeRequest): ChangePANActionTypeRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* management.EmployeePanActionType action_type */ 2:
+                    message.actionType = reader.int32();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangePANActionTypeRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* management.EmployeePanActionType action_type = 2; */
+        if (message.actionType !== 0)
+            writer.tag(2, WireType.Varint).int32(message.actionType);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangePANActionTypeRequest
+ */
+export const ChangePANActionTypeRequest = new ChangePANActionTypeRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangePANOldValueRequest$Type extends MessageType<ChangePANOldValueRequest> {
+    constructor() {
+        super("management.ChangePANOldValueRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "old_value", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangePANOldValueRequest>): ChangePANOldValueRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.oldValue = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangePANOldValueRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangePANOldValueRequest): ChangePANOldValueRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* string old_value */ 2:
+                    message.oldValue = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangePANOldValueRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string old_value = 2; */
+        if (message.oldValue !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.oldValue);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangePANOldValueRequest
+ */
+export const ChangePANOldValueRequest = new ChangePANOldValueRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangePANNewValueRequest$Type extends MessageType<ChangePANNewValueRequest> {
+    constructor() {
+        super("management.ChangePANNewValueRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "new_value", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangePANNewValueRequest>): ChangePANNewValueRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.newValue = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangePANNewValueRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangePANNewValueRequest): ChangePANNewValueRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* string new_value */ 2:
+                    message.newValue = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangePANNewValueRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string new_value = 2; */
+        if (message.newValue !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.newValue);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangePANNewValueRequest
+ */
+export const ChangePANNewValueRequest = new ChangePANNewValueRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ChangePANEffectiveDateRequest$Type extends MessageType<ChangePANEffectiveDateRequest> {
+    constructor() {
+        super("management.ChangePANEffectiveDateRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+            { no: 2, name: "effective_date", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ChangePANEffectiveDateRequest>): ChangePANEffectiveDateRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        message.effectiveDate = "";
+        if (value !== undefined)
+            reflectionMergePartial<ChangePANEffectiveDateRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ChangePANEffectiveDateRequest): ChangePANEffectiveDateRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                case /* string effective_date */ 2:
+                    message.effectiveDate = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ChangePANEffectiveDateRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        /* string effective_date = 2; */
+        if (message.effectiveDate !== "")
+            writer.tag(2, WireType.LengthDelimited).string(message.effectiveDate);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ChangePANEffectiveDateRequest
+ */
+export const ChangePANEffectiveDateRequest = new ChangePANEffectiveDateRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class ApprovePANRequest$Type extends MessageType<ApprovePANRequest> {
+    constructor() {
+        super("management.ApprovePANRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<ApprovePANRequest>): ApprovePANRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        if (value !== undefined)
+            reflectionMergePartial<ApprovePANRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: ApprovePANRequest): ApprovePANRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: ApprovePANRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.ApprovePANRequest
+ */
+export const ApprovePANRequest = new ApprovePANRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RejectPANRequest$Type extends MessageType<RejectPANRequest> {
+    constructor() {
+        super("management.RejectPANRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RejectPANRequest>): RejectPANRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        if (value !== undefined)
+            reflectionMergePartial<RejectPANRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RejectPANRequest): RejectPANRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RejectPANRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.RejectPANRequest
+ */
+export const RejectPANRequest = new RejectPANRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class RemovePANInformationRequest$Type extends MessageType<RemovePANInformationRequest> {
+    constructor() {
+        super("management.RemovePANInformationRequest", [
+            { no: 1, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ }
+        ]);
+    }
+    create(value?: PartialMessage<RemovePANInformationRequest>): RemovePANInformationRequest {
+        const message = globalThis.Object.create((this.messagePrototype!));
+        message.id = "";
+        if (value !== undefined)
+            reflectionMergePartial<RemovePANInformationRequest>(this, message, value);
+        return message;
+    }
+    internalBinaryRead(reader: IBinaryReader, length: number, options: BinaryReadOptions, target?: RemovePANInformationRequest): RemovePANInformationRequest {
+        let message = target ?? this.create(), end = reader.pos + length;
+        while (reader.pos < end) {
+            let [fieldNo, wireType] = reader.tag();
+            switch (fieldNo) {
+                case /* string id */ 1:
+                    message.id = reader.string();
+                    break;
+                default:
+                    let u = options.readUnknownField;
+                    if (u === "throw")
+                        throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+                    let d = reader.skip(wireType);
+                    if (u !== false)
+                        (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+            }
+        }
+        return message;
+    }
+    internalBinaryWrite(message: RemovePANInformationRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+        /* string id = 1; */
+        if (message.id !== "")
+            writer.tag(1, WireType.LengthDelimited).string(message.id);
+        let u = options.writeUnknownFields;
+        if (u !== false)
+            (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+        return writer;
+    }
+}
+/**
+ * @generated MessageType for protobuf message management.RemovePANInformationRequest
+ */
+export const RemovePANInformationRequest = new RemovePANInformationRequest$Type();
+/**
+ * @generated ServiceType for protobuf service management.HumanResourceService
+ */
+export const HumanResourceService = new ServiceType("management.HumanResourceService", [
+    { name: "CreateEmployee", options: {}, I: CreateEmployeeRequest, O: Empty },
+    { name: "CreateManager", options: {}, I: CreateEmployeeRequest, O: Empty },
+    { name: "CreateAdmin", options: {}, I: CreateEmployeeRequest, O: Empty },
+    { name: "AddSpecialInterest", options: {}, I: AddSpecialInterestRequest, O: Empty },
+    { name: "AddLearningInstitution", options: {}, I: AddLearningInstitutionRequest, O: Empty },
+    { name: "GetEmployee", options: {}, I: GetEmployeeRequest, O: Employee },
+    { name: "GetEmployeesByDepartment", serverStreaming: true, options: {}, I: GetEmployeesByDepartmentRequest, O: Employee },
+    { name: "ChangeEmployeeAvatar", options: {}, I: ChangeEmployeeAvatarRequest, O: Empty },
+    { name: "ChangeEmployeeCoverPhoto", options: {}, I: ChangeEmployeeCoverPhotoRequest, O: Empty },
+    { name: "ChangeEmployeeFirstName", options: {}, I: ChangeEmployeeFirstNameRequest, O: Empty },
+    { name: "ChangeEmployeeMiddleName", options: {}, I: ChangeEmployeeMiddleNameRequest, O: Empty },
+    { name: "ChangeEmployeeLastName", options: {}, I: ChangeEmployeeLastNameRequest, O: Empty },
+    { name: "ChangeEmployeeTelNumber", options: {}, I: ChangeEmployeeTelNumberRequest, O: Empty },
+    { name: "ChangeEmployeeMobileNumber", options: {}, I: ChangeEmployeeMobileNumberRequest, O: Empty },
+    { name: "ChangeEmployeeEmail", options: {}, I: ChangeEmployeeEmailRequest, O: Empty },
+    { name: "ChangeEmployeeRole", options: {}, I: ChangeEmployeeRoleRequest, O: Empty },
+    { name: "ChangeEmployeeStatus", options: {}, I: ChangeEmployeeStatusRequest, O: Empty },
+    { name: "ChangeEmployeeContractType", options: {}, I: ChangeEmployeeContractTypeRequest, O: Empty },
+    { name: "ChangePhilNatID", options: {}, I: ChangePhilNatIDRequest, O: Empty },
+    { name: "ChangeBirthDate", options: {}, I: ChangeBirthDateRequest, O: Empty },
+    { name: "ChangeSpouseFirstName", options: {}, I: ChangeSpouseFirstNameRequest, O: Empty },
+    { name: "ChangeSpouseMiddleName", options: {}, I: ChangeSpouseMiddleNameRequest, O: Empty },
+    { name: "ChangeSpouseLastName", options: {}, I: ChangeSpouseLastNameRequest, O: Empty },
+    { name: "ChangeSpouseEmployer", options: {}, I: ChangeSpouseEmployerRequest, O: Empty },
+    { name: "RemoveEmployee", options: {}, I: RemoveEmployeeRequest, O: Empty },
+    { name: "RemoveSpecialInterest", options: {}, I: RemoveSpecialInterestRequest, O: Empty },
+    { name: "RemoveLearningInstitition", options: {}, I: RemoveLearningInstitutionRequest, O: Empty },
+    { name: "CreateDepartment", options: {}, I: CreateDepartmentRequest, O: Empty },
+    { name: "AddEmployeeToDepartment", options: {}, I: AddEmployeeToDepartmentRequest, O: Empty },
+    { name: "GetDepartment", options: {}, I: GetDepartmentRequest, O: Department },
+    { name: "UpdateDepartmentName", options: {}, I: UpdateDepartmentNameRequest, O: Empty },
+    { name: "UpdateDepartmentDescription", options: {}, I: UpdateDepartmentDescriptionRequest, O: Empty },
+    { name: "RemoveDepartment", options: {}, I: RemoveDepartmentRequest, O: Empty },
+    { name: "RemoveEmployeeToDepartment", options: {}, I: RemoveEmployeeFromDepartmentRequest, O: Empty },
+    { name: "CreateJobInformation", options: {}, I: CreateJobInformationRequest, O: Empty },
+    { name: "GetJobInformation", options: {}, I: GetJobInformationRequest, O: JobInformation },
+    { name: "ChangeJobTitle", options: {}, I: ChangeJobTitleRequest, O: Empty },
+    { name: "ChangeJobDepartment", options: {}, I: ChangeJobDepartmentRequest, O: Empty },
+    { name: "ChangeJobSupervisor", options: {}, I: ChangeJobSupervisorRequest, O: Empty },
+    { name: "ChangeJobWorkLocation", options: {}, I: ChangeJobWorkLocationRequest, O: Empty },
+    { name: "ChangeJobStartDate", options: {}, I: ChangeJobStartDateRequest, O: Empty },
+    { name: "ChangeJobSalary", options: {}, I: ChangeJobSalaryRequest, O: Empty },
+    { name: "ChangeJobCurrency", options: {}, I: ChangeJobCurrencyRequest, O: Empty },
+    { name: "RemoveJobInformation", options: {}, I: RemoveJobInformationRequest, O: Empty },
+    { name: "CreateEmergencyInformation", options: {}, I: CreateEmergencyInformationRequest, O: Empty },
+    { name: "AddEmergencyInformationHealthCondition", options: {}, I: AddEmergencyInformationHealthConditionRequest, O: Empty },
+    { name: "GetEmergencyInformation", options: {}, I: GetEmergencyInformationRequest, O: EmployeeEmergencyInformation },
+    { name: "ChangeEmergencyInformationAddress", options: {}, I: ChangeEmergencyInformationAddressRequest, O: Empty },
+    { name: "ChangeEmergencyInformationTelNumber", options: {}, I: ChangeEmergencyInformationTelNumberRequest, O: Empty },
+    { name: "ChangeEmergencyInformationMobileNumber", options: {}, I: ChangeEmergencyInformationMobileNumberRequest, O: Empty },
+    { name: "ChangeEmergencyInformationContactName", options: {}, I: ChangeEmergencyInformationContactNameRequest, O: Empty },
+    { name: "RemoveEmergencyInformation", options: {}, I: RemoveEmergencyInformationRequest, O: Empty },
+    { name: "RemoveEmergencyInformationHealthCondition", options: {}, I: RemoveEmergencyInformationHealthConditionRequest, O: Empty },
+    { name: "CreatePANEmployeeRequest", options: {}, I: CreatePANRequest, O: Empty },
+    { name: "GetPANInformation", options: {}, I: GetPANInformationRequest, O: PersonnelAction },
+    { name: "ChangePANActionType", options: {}, I: ChangePANActionTypeRequest, O: Empty },
+    { name: "ChangePANOldValue", options: {}, I: ChangePANOldValueRequest, O: Empty },
+    { name: "ChangePANNewValue", options: {}, I: ChangePANNewValueRequest, O: Empty },
+    { name: "ChangePANEffectiveDate", options: {}, I: ChangePANEffectiveDateRequest, O: Empty },
+    { name: "ApprovePAN", options: {}, I: ApprovePANRequest, O: Empty },
+    { name: "RejectPAN", options: {}, I: RejectPANRequest, O: Empty },
+    { name: "RemovePANInformation", options: {}, I: RemovePANInformationRequest, O: Empty }
 ]);
