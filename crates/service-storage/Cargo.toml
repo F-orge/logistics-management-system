@@ -16,7 +16,6 @@ sea-orm = { workspace = true }
 service-authentication = { path = "../service-authentication" }
 futures = { workspace = true }
 tempdir = "0.3.7"
-uuid = { workspace = true }
 tracing = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }
