@@ -1,7 +1,0 @@
-services:
-  postgres:
-    image: postgres:17.2-alpine3.20
-    ports:
-      - "5432:5432"
-    env_file:
-      - .env

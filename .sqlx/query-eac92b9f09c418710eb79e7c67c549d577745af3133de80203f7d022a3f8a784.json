@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select auth.basic_user_login($1,$2) as token",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "token",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Varchar"
+      ]
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "eac92b9f09c418710eb79e7c67c549d577745af3133de80203f7d022a3f8a784"
+}
