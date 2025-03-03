@@ -1,0 +1,14 @@
+{% extends "partials/base.html.jinja" %}
+{% block body %}
+  <main>
+    {% include "partials/components/header.html.jinja" %}
+    <article class="space-y-24">
+      {% include "partials/home/hero.html.jinja" %}
+      {% include "partials/home/services.html.jinja" %}
+      {% include "partials/home/workflow.html.jinja" %}
+      {% include "partials/home/testimonials.html.jinja" %}
+      {% include "partials/home/contact.html.jinja" %}
+    </article>
+    {% include "partials/components/footer.html.jinja" %}
+  </main>
+{% endblock body %}

@@ -19,14 +19,18 @@ import {
 } from "@/components/ui/sidebar";
 import { SidebarHeader } from "./routes";
 import Link from "next/link";
-
+import { usePathname } from "next/navigation";
 export function SystemSwitcher({
   systems,
 }: {
   systems: SidebarHeader[];
 }) {
+  const pathname = usePathname();
+
   const { isMobile } = useSidebar();
-  const [activeSystem, setActiveTeam] = React.useState(systems[0]);
+  const [activeSystem, setActiveTeam] = React.useState(
+    systems.filter((v) => pathname.startsWith(v.href))[0],
+  );
 
   return (
     <SidebarMenu>

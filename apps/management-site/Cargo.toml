@@ -1,0 +1,17 @@
+[package]
+name = "management-site"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+tonic = { workspace = true }
+service-authentication = { workspace = true }
+garde = { workspace = true }
+serde = { workspace = true }
+askama = { workspace = true }
+askama_axum = { workspace = true }
+include_dir = { workspace = true }
+tower-serve-static = { workspace = true }

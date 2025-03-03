@@ -1,0 +1,36 @@
+<form action='{{ "/login" }}' method="post">
+  <div class="w-96">
+    <label class="label label-text">Email</label>
+    {% if let Some(email_err) = self.email_error %}
+      <input type="email" name="email" class="input is-invalid peer">
+      <span class="label">
+        <span class="label-text-alt">
+          {{ email_err }}
+          Enter your email address
+        </span>
+      </span>
+    {% else %}
+      <input type="email" name="email" class="input">
+      <span class="label">
+        <span class="label-text-alt">Enter your email address</span>
+      </span>
+    {% endif %}
+  </div>
+  <div class="w-96">
+    <label class="label label-text">Password</label>
+    {% if let Some(password_err) = self.password_error %}
+      <input type="password" name="password" class="input is-invalid peer">
+      <span class="label">
+        <span class="label-text-alt">
+          <label for="">Error: {{ password_err }}</label>
+        </span>
+      </span>
+    {% else %}
+      <input type="password" name="password" class="input peer">
+      <span class="label">
+        <span class="label-text-alt">Enter your password</span>
+      </span>
+    {% endif %}
+  </div>
+  <button class="btn btn-primary w-full" type="submit">Sign in</button>
+</form>

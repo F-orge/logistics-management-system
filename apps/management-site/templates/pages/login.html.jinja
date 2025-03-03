@@ -1,0 +1,9 @@
+{% extends "partials/base.html.jinja" %}
+{% block body %}
+  <main class="grid grid-cols-2 h-full">
+    <div>Logo</div>
+    <div class="border rounded-md p-4 flex flex-col justify-center items-center h-full shadow-md">
+      {% include "partials/login/form.html.jinja" %}
+    </div>
+  </main>
+{% endblock body %}

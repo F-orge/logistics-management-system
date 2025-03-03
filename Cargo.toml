@@ -20,6 +20,8 @@ members = [
   "crates/lib-core",
   "crates/lib-entity",
   "crates/lib-security",
+  "apps/marketing",
+  "apps/management-site",
 ]
 
 
@@ -100,10 +102,12 @@ tower-http = { version = "0.6.2", features = [
   "timeout",
   "trace",
 ] }
-askama = "0.12.1"
-askama_axum = "0.4.0"
 axum-extra = { version = "0.9.0", features = ["cookie"] }
 hyper-util = "0.1.10"
+
+# Templating
+askama = { version = "0.12.1", features = ["with-axum"] }
+askama_axum = "0.4.0"
 
 # Validation
 garde = { version = "0.20.0", features = ["derive", "serde", "email"] }
@@ -113,6 +117,11 @@ dotenv = "0.15.0"
 
 # Utilities
 uuid = { version = "1.15.1", features = ["v4"] }
+
+# Embedded
+rust-embed = "8.6.0"
+include_dir = "0.7.4"
+tower-serve-static = "0.1.1"
 
 [dependencies]
 service-storage = { path = "./crates/service-storage" }
