@@ -176,60 +176,80 @@ pub struct GetEmployeesByDepartmentRequest {
 pub struct ChangeEmployeeAvatarRequest {
     #[prost(message, optional, tag = "1")]
     pub avatar_photo: ::core::option::Option<super::storage::FileMetadata>,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeCoverPhotoRequest {
     #[prost(message, optional, tag = "1")]
     pub cover_photo: ::core::option::Option<super::storage::FileMetadata>,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeFirstNameRequest {
     #[prost(string, tag = "1")]
     pub first_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeMiddleNameRequest {
     #[prost(string, tag = "1")]
     pub middle_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeLastNameRequest {
     #[prost(string, tag = "1")]
     pub last_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeTelNumberRequest {
     #[prost(string, tag = "1")]
     pub tel_number: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeMobileNumberRequest {
     #[prost(string, tag = "1")]
     pub mobile_number: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeEmailRequest {
     #[prost(string, tag = "1")]
     pub email: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeRoleRequest {
     #[prost(enumeration = "EmployeeRole", tag = "1")]
     pub role: i32,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeStatusRequest {
     #[prost(enumeration = "EmployeeStatus", tag = "1")]
     pub status: i32,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, Copy, PartialEq, ::prost::Message)]
@@ -242,60 +262,80 @@ pub struct ChangeEmployeeContractTypeRequest {
 pub struct ChangePhilNatIdRequest {
     #[prost(string, tag = "1")]
     pub phil_nat_id: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeBirthDateRequest {
     #[prost(string, tag = "1")]
     pub birth_date: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddSpecialInterestRequest {
     #[prost(string, tag = "1")]
     pub special_interest: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveSpecialInterestRequest {
     #[prost(string, tag = "1")]
     pub special_interest: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct AddLearningInstitutionRequest {
     #[prost(string, tag = "1")]
     pub learning_institution: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RemoveLearningInstitutionRequest {
     #[prost(string, tag = "1")]
     pub learning_institution: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeSpouseFirstNameRequest {
     #[prost(string, tag = "1")]
     pub spouse_first_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeSpouseMiddleNameRequest {
     #[prost(string, tag = "1")]
     pub spouse_middle_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeSpouseLastNameRequest {
     #[prost(string, tag = "1")]
     pub spouse_last_name: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeSpouseEmployerRequest {
     #[prost(string, tag = "1")]
     pub spouse_employer: ::prost::alloc::string::String,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]

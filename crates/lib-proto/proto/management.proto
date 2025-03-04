@@ -134,51 +134,109 @@ message GetEmployeeRequest { string id = 1; }
 
 message GetEmployeesByDepartmentRequest { string department_id = 1; }
 
-message ChangeEmployeeAvatarRequest { storage.FileMetadata avatar_photo = 1; }
+message ChangeEmployeeAvatarRequest {
+  storage.FileMetadata avatar_photo = 1;
+  string employee_id = 2;
+}
 
 message ChangeEmployeeCoverPhotoRequest {
   storage.FileMetadata cover_photo = 1;
+  string employee_id = 2;
 }
 
-message ChangeEmployeeFirstNameRequest { string first_name = 1; }
+message ChangeEmployeeFirstNameRequest {
+  string first_name = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeMiddleNameRequest { string middle_name = 1; }
+message ChangeEmployeeMiddleNameRequest {
+  string middle_name = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeLastNameRequest { string last_name = 1; }
+message ChangeEmployeeLastNameRequest {
+  string last_name = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeTelNumberRequest { string tel_number = 1; }
+message ChangeEmployeeTelNumberRequest {
+  string tel_number = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeMobileNumberRequest { string mobile_number = 1; }
+message ChangeEmployeeMobileNumberRequest {
+  string mobile_number = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeEmailRequest { string email = 1; }
+message ChangeEmployeeEmailRequest {
+  string email = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeRoleRequest { EmployeeRole role = 1; }
+message ChangeEmployeeRoleRequest {
+  EmployeeRole role = 1;
+  string employee_id = 2;
+}
 
-message ChangeEmployeeStatusRequest { EmployeeStatus status = 1; }
+message ChangeEmployeeStatusRequest {
+  EmployeeStatus status = 1;
+  string employee_id = 2;
+}
 
 message ChangeEmployeeContractTypeRequest {
   EmployeeContractType contract_type = 1;
 }
 
-message ChangePhilNatIDRequest { string phil_nat_id = 1; }
+message ChangePhilNatIDRequest {
+  string phil_nat_id = 1;
+  string employee_id = 2;
+}
 
-message ChangeBirthDateRequest { string birth_date = 1; }
+message ChangeBirthDateRequest {
+  string birth_date = 1;
+  string employee_id = 2;
+}
 
-message AddSpecialInterestRequest { string special_interest = 1; }
+message AddSpecialInterestRequest {
+  string special_interest = 1;
+  string employee_id = 2;
+}
 
-message RemoveSpecialInterestRequest { string special_interest = 1; }
+message RemoveSpecialInterestRequest {
+  string special_interest = 1;
+  string employee_id = 2;
+}
 
-message AddLearningInstitutionRequest { string learning_institution = 1; }
+message AddLearningInstitutionRequest {
+  string learning_institution = 1;
+  string employee_id = 2;
+}
 
-message RemoveLearningInstitutionRequest { string learning_institution = 1; }
+message RemoveLearningInstitutionRequest {
+  string learning_institution = 1;
+  string employee_id = 2;
+}
 
-message ChangeSpouseFirstNameRequest { string spouse_first_name = 1; }
+message ChangeSpouseFirstNameRequest {
+  string spouse_first_name = 1;
+  string employee_id = 2;
+}
 
-message ChangeSpouseMiddleNameRequest { string spouse_middle_name = 1; }
+message ChangeSpouseMiddleNameRequest {
+  string spouse_middle_name = 1;
+  string employee_id = 2;
+}
 
-message ChangeSpouseLastNameRequest { string spouse_last_name = 1; }
+message ChangeSpouseLastNameRequest {
+  string spouse_last_name = 1;
+  string employee_id = 2;
+}
 
-message ChangeSpouseEmployerRequest { string spouse_employer = 1; }
+message ChangeSpouseEmployerRequest {
+  string spouse_employer = 1;
+  string employee_id = 2;
+}
 
 message RemoveEmployeeRequest { string id = 1; }
 

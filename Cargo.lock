@@ -527,40 +527,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "darling"
-version = "0.20.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f63b86c8a8826a49b8c21f08a2d07338eec8d900540f8630dc76284be802989"
-dependencies = [
- "darling_core",
- "darling_macro",
-]
-
-[[package]]
-name = "darling_core"
-version = "0.20.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95133861a8032aaea082871032f5815eb9e98cef03fa916ab4500513994df9e5"
-dependencies = [
- "fnv",
- "ident_case",
- "proc-macro2",
- "quote",
- "syn 2.0.98",
-]
-
-[[package]]
-name = "darling_macro"
-version = "0.20.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d336a2a514f6ccccaa3e09b02d41d35330c07ddf03a62165fcec10bb561c7806"
-dependencies = [
- "darling_core",
- "quote",
- "syn 2.0.98",
-]
-
-[[package]]
 name = "der"
 version = "0.7.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1260,12 +1226,6 @@ dependencies = [
  "quote",
  "syn 2.0.98",
 ]
-
-[[package]]
-name = "ident_case"
-version = "1.0.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "idna"
@@ -2409,7 +2369,6 @@ dependencies = [
  "inherent",
  "ordered-float",
  "rust_decimal",
- "sea-query-derive",
  "serde_json",
  "time",
  "uuid",
@@ -2429,20 +2388,6 @@ dependencies = [
  "sqlx",
  "time",
  "uuid",
-]
-
-[[package]]
-name = "sea-query-derive"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9834af2c4bd8c5162f00c89f1701fb6886119a88062cf76fe842ea9e232b9839"
-dependencies = [
- "darling",
- "heck 0.4.1",
- "proc-macro2",
- "quote",
- "syn 2.0.98",
- "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -2551,11 +2496,15 @@ dependencies = [
 name = "service-human-resource"
 version = "0.1.0"
 dependencies = [
+ "hmac",
  "lib-core",
+ "lib-entity",
  "lib-proto",
- "sea-query",
- "sea-query-binder",
+ "lib-security",
+ "sea-orm",
+ "sha2",
  "sqlx",
+ "tokio",
  "tokio-stream",
  "tonic",
 ]

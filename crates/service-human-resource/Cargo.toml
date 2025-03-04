@@ -6,8 +6,12 @@ edition = "2021"
 [dependencies]
 sqlx = { workspace = true }
 tonic = { workspace = true }
+tokio = { workspace = true }
 tokio-stream = { workspace = true }
-lib-proto = { path = "../../crates/lib-proto" }
-lib-core = { path = "../../crates/lib-core" }
-sea-query = { workspace = true }
-sea-query-binder = { workspace = true }
+lib-proto = { workspace = true }
+lib-core = { workspace = true }
+lib-entity = { workspace = true }
+lib-security = { workspace = true }
+sea-orm = { workspace = true }
+hmac = { workspace = true }
+sha2 = { workspace = true }
