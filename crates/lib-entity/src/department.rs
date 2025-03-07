@@ -12,6 +12,7 @@ pub struct Model {
     pub description: Option<String>,
     pub created_at: DateTime,
     pub updated_at: DateTime,
+    pub employee_ids: Vec<Uuid>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -11,7 +11,7 @@ use sea_orm::{
     DatabaseConnection, EntityTrait, IntoActiveModel, QueryFilter, Set, TransactionTrait,
 };
 use sha2::Sha256;
-use sqlx::{types::Uuid, Pool, Postgres};
+use sqlx::{types::Uuid};
 use tokio_stream::{wrappers::ReceiverStream, StreamExt};
 use tonic::{Response, Status};
 

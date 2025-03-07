@@ -2,6 +2,7 @@
 
 use sea_orm::entity::prelude::*;
 
+
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(schema_name = "logistics", table_name = "job_information")]
 pub struct Model {

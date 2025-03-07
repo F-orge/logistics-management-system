@@ -4,6 +4,50 @@ use super::sea_orm_active_enums::EmployeeContractType;
 use super::sea_orm_active_enums::EmployeeRole;
 use super::sea_orm_active_enums::EmployeeStatus;
 use sea_orm::entity::prelude::*;
+use crate::department;
+use crate::emergency_information;
+use crate::job_information;
+
+impl Into<lib_proto::Department> for department::Model{
+    fn into(self) -> lib_proto::Department {
+        lib_proto::Department {
+            id: self.id.to_string(),
+            name: self.name.to_string(),
+            description: self.description,
+            employee_ids: self.employee_ids.iter().map(|id| id.to_string()).collect(),
+        }
+    }
+}
+
+impl Into<lib_proto::JobInformation> for job_information::Model{
+    fn into(self) -> lib_proto::JobInformation {
+        lib_proto::JobInformation {
+            id: self.id.to_string(),
+            title: self.title.to_string(),
+            employee_id: self.employee_id.to_string(),
+            department_id: self.department_id.to_string(),
+            supervisor_id: self.supervisor_id.to_string(),
+            work_location: self.work_location.to_string(),
+            start_date: self.start_date.to_string(),
+            salary: self.salary.to_string(),
+            currency: self.currency.to_string(),
+        }
+    }
+}
+
+impl Into<lib_proto::EmployeeEmergencyInformation> for emergency_information::Model{
+    fn into(self) -> lib_proto::EmployeeEmergencyInformation {
+        lib_proto::EmployeeEmergencyInformation {
+            id: self.id.to_string(),
+            employee_id: self.employee_id.to_string(),
+            address: self.address.unwrap_or_default(),
+            tel_number: self.tel_number,
+            mobile_number: self.mobile_number,
+            contact_name: self.contact_name,
+            health_conditions: self.health_conditions.unwrap_or_default(),
+        }
+    }
+}
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
 #[sea_orm(schema_name = "logistics", table_name = "employee")]
