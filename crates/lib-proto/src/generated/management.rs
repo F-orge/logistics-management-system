@@ -252,10 +252,12 @@ pub struct ChangeEmployeeStatusRequest {
     pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
-#[derive(Clone, Copy, PartialEq, ::prost::Message)]
+#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct ChangeEmployeeContractTypeRequest {
     #[prost(enumeration = "EmployeeContractType", tag = "1")]
     pub contract_type: i32,
+    #[prost(string, tag = "2")]
+    pub employee_id: ::prost::alloc::string::String,
 }
 #[derive(sqlx::FromRow)]
 #[derive(Clone, PartialEq, ::prost::Message)]

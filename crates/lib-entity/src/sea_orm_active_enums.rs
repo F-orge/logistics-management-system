@@ -9,11 +9,7 @@ pub enum AuthType {
     BasicAuth,
 }
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum)]
-#[sea_orm(
-    rs_type = "String",
-    db_type = "Enum",
-    enum_name = "employee_contract_type"
-)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "employee_contract_type")]
 pub enum EmployeeContractType {
     #[sea_orm(string_value = "FullTime")]
     FullTime,

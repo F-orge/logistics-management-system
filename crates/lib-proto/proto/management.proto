@@ -186,6 +186,7 @@ message ChangeEmployeeStatusRequest {
 
 message ChangeEmployeeContractTypeRequest {
   EmployeeContractType contract_type = 1;
+  string employee_id = 2;
 }
 
 message ChangePhilNatIDRequest {
