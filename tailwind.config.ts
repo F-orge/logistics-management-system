@@ -6,6 +6,7 @@ export default {
 	darkMode: ["class"],
 	content: [
 		"./apps/**/*.{jinja,ts,js}",
+		"./crates/**/*.{jinja,ts,js}",
 		"./node_modules/flyonui/dist/js/*.js",
 	],
 	flyonui: {

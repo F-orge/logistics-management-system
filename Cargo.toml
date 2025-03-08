@@ -89,7 +89,7 @@ tracing-test = "0.2.5"
 
 # Http
 tower = "0.5.2"
-axum = "0.7.9"
+axum = { version = "0.7.9", features = ["macros"] }
 tower-http = { version = "0.6.2", features = [
   "catch-panic",
   "compression-gzip",

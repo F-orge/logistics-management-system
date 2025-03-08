@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/assets/out.css" />
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="/assets/js/flyonui.js"></script>
+    <script src="/assets/js/index.js" defer></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"
             integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
             crossorigin="anonymous"></script>
@@ -15,9 +14,8 @@
       <meta name="keywords" content="" />
     {% endblock metadata %}
   </head>
-  <body class="container mx-auto max-w-7xl p-4 min-h-screen h-screen relative">
+  <body class="container mx-auto max-w-7xl p-4 min-h-screen h-screen">
     {% block body %}
     {% endblock body %}
-    <div id="notification-error" class="absolute bottom-4 flex flex-col gap-5 right-4 z-50"></div>
   </body>
 </html>

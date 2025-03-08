@@ -1,10 +1,17 @@
 use askama::Template;
 use axum::{
     Form, Router,
+    extract::State,
     response::Redirect,
     routing::{get, post},
 };
 use garde::Validate;
+use lib_core::{
+    AppState,
+    error::{AskamaError, AskamaResult, Error},
+};
+use lib_entity::{prelude::*, users};
+use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
 
 #[derive(Template)]
@@ -29,27 +36,26 @@ struct SubmitDTO {
     password: String,
 }
 
-async fn submit(Form(form): Form<SubmitDTO>) -> Result<Redirect, ShowTemplate> {
-    form.validate().map_err(|err| {
-        let (mut email_error, mut password_error) = (None, None);
-        for (path, err) in err.iter() {
-            match path.to_string().as_str() {
-                "email" => email_error = Some(err.message().to_string()),
-                "password" => password_error = Some(err.message().to_string()),
-                _ => {}
-            }
-        }
-        ShowTemplate {
-            email_error,
-            password_error,
-        }
-    })?;
+async fn submit(
+    State(state): State<AppState>,
+    Form(form): Form<SubmitDTO>,
+) -> AskamaResult<Redirect> {
+    form.validate().map_err(|err| Error::Garde(err))?;
 
-    println!("{} {}", form.email, form.password);
+    let model = Users::find()
+        .filter(users::Column::Email.eq(form.email))
+        .one(&state.db)
+        .await
+        .map_err(Error::SeaOrm)?
+        .ok_or(Error::RowNotFound)?;
+
+    if model.password != form.password {
+        return Err(Error::RowNotFound.into());
+    }
 
     Ok(Redirect::permanent("/"))
 }
 
-pub fn routes() -> Router {
+pub fn routes() -> Router<AppState> {
     Router::new().route("/", get(show)).route("/", post(submit))
 }
