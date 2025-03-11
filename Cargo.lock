@@ -1248,10 +1248,13 @@ dependencies = [
  "axum",
  "derive_more",
  "garde",
+ "hmac",
  "hyper-util",
  "rinja",
  "rinja_axum",
  "sea-orm",
+ "serde",
+ "sha2",
  "sqlx",
  "tokio",
  "tokio-stream",
@@ -1270,8 +1273,10 @@ dependencies = [
 name = "lib-security"
 version = "0.1.0"
 dependencies = [
+ "axum",
  "hmac",
  "jwt",
+ "lib-core",
  "serde",
  "sha2",
  "sqlx",
