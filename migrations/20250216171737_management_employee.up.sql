@@ -52,7 +52,7 @@ create table
         birth_date date not null check (birth_date <= current_date - interval '18 years'),
         special_interests varchar(255) [] null,
         learning_institutions varchar(255) [] not null,
-        auth_user_id uuid references logistics.users (id) on delete cascade,
+        auth_user_id uuid not null references logistics.users (id) on delete cascade,
         spouse_first_name varchar(255) null,
         spouse_middle_name varchar(255) null,
         spouse_last_name varchar(255) null,
@@ -73,15 +73,9 @@ create table
         -- note:
         -- markdown compatible text format
         description text null,
+        employees uuid[] not null,
         created_at timestamp not null default current_timestamp,
         updated_at timestamp not null default current_timestamp
-    );
-
-create table
-    logistics.department_employees (
-        department_id uuid references logistics.department (id) on delete cascade,
-        employee_id uuid references logistics.employee (id) on delete cascade,
-        primary key (department_id, employee_id)
     );
 
 create table
@@ -119,34 +113,4 @@ create table
         mobile_number varchar(12) null check (mobile_number ~ '^(09[0-9]{9}|639[0-9]{9})$'),
         contact_name varchar(255) not null,
         health_conditions varchar(255) [] null
-    );
-
--- note:
--- personnel action notice (pan) a document that records and notifies changes to an employee's status, such as a promotion, termination, or salary change
-create type logistics.pan_action_type as enum(
-    'Hire',
-    'Promotion',
-    'SalaryAdjustment',
-    'Termination',
-    'Leave',
-    'Transfer'
-);
-
-create type logistics.pan_action_status as enum('Pending', 'Approved', 'Rejected');
-
-create table
-    logistics.personnel_action (
-        id uuid primary key default gen_random_uuid (),
-        employee_id uuid references logistics.employee (id),
-        action_type logistics.pan_action_type not null,
-        -- note: old_value and new_value are json strings
-        old_value text,
-        new_value text,
-        effective_date date not null,
-        status logistics.pan_action_status not null default 'Pending',
-        requested_by uuid not null references logistics.employee (id),
-        approved_by uuid not null references logistics.employee (id),
-        created_at timestamp not null default current_timestamp,
-        updated_at timestamp not null default current_timestamp,
-        constraint check_status_pending check (status = 'Pending')
     );

@@ -4,8 +4,9 @@ use super::sea_orm_active_enums::EmployeeContractType;
 use super::sea_orm_active_enums::EmployeeRole;
 use super::sea_orm_active_enums::EmployeeStatus;
 use sea_orm::entity::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(schema_name = "logistics", table_name = "employee")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
@@ -26,7 +27,7 @@ pub struct Model {
     pub birth_date: Date,
     pub special_interests: Option<Vec<String>>,
     pub learning_institutions: Vec<String>,
-    pub auth_user_id: Option<Uuid>,
+    pub auth_user_id: Uuid,
     pub spouse_first_name: Option<String>,
     pub spouse_middle_name: Option<String>,
     pub spouse_last_name: Option<String>,
@@ -37,8 +38,6 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::department_employees::Entity")]
-    DepartmentEmployees,
     #[sea_orm(has_many = "super::emergency_information::Entity")]
     EmergencyInformation,
     #[sea_orm(
@@ -51,12 +50,6 @@ pub enum Relation {
     Users,
 }
 
-impl Related<super::department_employees::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::DepartmentEmployees.def()
-    }
-}
-
 impl Related<super::emergency_information::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::EmergencyInformation.def()
@@ -66,15 +59,6 @@ impl Related<super::emergency_information::Entity> for Entity {
 impl Related<super::users::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Users.def()
-    }
-}
-
-impl Related<super::department::Entity> for Entity {
-    fn to() -> RelationDef {
-        super::department_employees::Relation::Department.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::department_employees::Relation::Employee.def().rev())
     }
 }
 

@@ -2,8 +2,9 @@
 
 use super::sea_orm_active_enums::AuthType;
 use sea_orm::entity::prelude::*;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(schema_name = "logistics", table_name = "users")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
@@ -11,6 +12,8 @@ pub struct Model {
     pub auth_type: AuthType,
     #[sea_orm(unique)]
     pub email: String,
+    #[sea_orm(column_name = "_password")]
+    #[serde(skip)]
     pub password: String,
     pub create_at: DateTime,
     pub updated_at: DateTime,
@@ -22,8 +25,8 @@ pub enum Relation {
     Employee,
     #[sea_orm(has_many = "super::file::Entity")]
     File,
-    #[sea_orm(has_many = "super::file_access::Entity")]
-    FileAccess,
+    #[sea_orm(has_many = "super::permissions::Entity")]
+    Permissions,
 }
 
 impl Related<super::employee::Entity> for Entity {
@@ -32,18 +35,15 @@ impl Related<super::employee::Entity> for Entity {
     }
 }
 
-impl Related<super::file_access::Entity> for Entity {
+impl Related<super::file::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::FileAccess.def()
+        Relation::File.def()
     }
 }
 
-impl Related<super::file::Entity> for Entity {
+impl Related<super::permissions::Entity> for Entity {
     fn to() -> RelationDef {
-        super::file_access::Relation::File.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::file_access::Relation::Users.def().rev())
+        Relation::Permissions.def()
     }
 }
 
