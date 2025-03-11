@@ -2,7 +2,12 @@ use axum::{async_trait, extract::FromRequestParts};
 use jwt::VerifyWithKey;
 use lib_core::{AppState, error::Error};
 use lib_entity::permissions;
+use sea_orm::ActiveModelBehavior;
+use sea_orm::ActiveModelTrait;
 use sea_orm::ColumnTrait;
+use sea_orm::IntoActiveModel;
+use sea_orm::Set;
+use sea_orm::TransactionTrait;
 use sea_orm::{DatabaseConnection, EntityName, EntityTrait, QueryFilter};
 use std::collections::BTreeMap;
 
@@ -72,4 +77,70 @@ pub async fn verify_permission(
         .await
         .map_err(Error::SeaOrm)?
         .is_some())
+}
+
+pub async fn grant_permission(
+    db: &DatabaseConnection,
+    claims: &JWTClaim,
+    table: impl EntityName,
+    permissions: Vec<&str>,
+) -> lib_core::result::Result<()> {
+    let trx = db.begin().await.map_err(Error::SeaOrm)?;
+    for perm in permissions.into_iter() {
+        // todo: check first if the permission is already granted
+
+        let model = lib_entity::prelude::Permissions::find()
+            .filter(permissions::Column::UserId.eq(claims.subject))
+            .filter(permissions::Column::Action.eq(perm))
+            .filter(permissions::Column::EntityName.eq(table.table_name()))
+            .one(db)
+            .await
+            .map_err(Error::SeaOrm)?;
+
+        if model.is_some() {
+            continue;
+        }
+
+        let mut model = permissions::ActiveModel::new();
+        model.entity_name = Set(table.table_name().to_string());
+        model.user_id = Set(claims.subject);
+        model.action = Set(perm.to_string());
+        _ = model.insert(&trx);
+    }
+
+    trx.commit().await.map_err(Error::SeaOrm)?;
+
+    Ok(())
+}
+
+pub async fn revoke_permission(
+    db: &DatabaseConnection,
+    claims: &JWTClaim,
+    table: impl EntityName,
+    permissions: Vec<&str>,
+) -> lib_core::result::Result<()> {
+    let trx = db.begin().await.map_err(Error::SeaOrm)?;
+    for perm in permissions.into_iter() {
+        // todo: check first if the permission is is not granted
+
+        let model = lib_entity::prelude::Permissions::find()
+            .filter(permissions::Column::UserId.eq(claims.subject))
+            .filter(permissions::Column::Action.eq(perm))
+            .filter(permissions::Column::EntityName.eq(table.table_name()))
+            .one(db)
+            .await
+            .map_err(Error::SeaOrm)?;
+
+        if model.is_none() {
+            continue;
+        }
+
+        let model = model.ok_or(Error::RowNotFound)?.into_active_model();
+
+        _ = model.delete(&trx).await.map_err(Error::SeaOrm)?;
+    }
+
+    trx.commit().await.map_err(Error::SeaOrm)?;
+
+    Ok(())
 }
