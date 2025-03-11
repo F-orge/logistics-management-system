@@ -13,10 +13,6 @@ path = "cmd/backend.rs"
 
 [workspace]
 members = [
-  # "crates/lib-proto",
-  # "crates/service-human-resource",
-  # "crates/service-authentication",
-  # "crates/service-storage",
   "crates/lib-core",
   "crates/lib-entity",
   "crates/lib-security",
@@ -38,6 +34,11 @@ lib-entity = { path = "crates/lib-entity" }
 lib-security = { path = "crates/lib-security" }
 
 # Service crates
+api-auth = { path = "crates/api-auth" }
+api-file = { path = "crates/api-file" }
+api-human-resource = { path = "crates/api-human-resource" }
+api-inventory = { path = "crates/api-human-resource" }
+api-reservation = { path = "crates/api-reservation" }
 
 # Serializer / Deserializer
 serde = { version = "1.0.215", features = ["derive"] }
