@@ -1298,6 +1298,8 @@ dependencies = [
  "hmac",
  "jwt",
  "lib-core",
+ "lib-entity",
+ "sea-orm",
  "serde",
  "sha2",
  "sqlx",

@@ -1,6 +1,9 @@
 use axum::{async_trait, extract::FromRequestParts};
 use jwt::VerifyWithKey;
 use lib_core::{AppState, error::Error};
+use lib_entity::permissions;
+use sea_orm::ColumnTrait;
+use sea_orm::{DatabaseConnection, EntityName, EntityTrait, QueryFilter};
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
@@ -53,4 +56,20 @@ impl<S> FromRequestParts<S> for JWTClaim {
 
         Ok(claims)
     }
+}
+
+pub async fn verify_permission(
+    db: &DatabaseConnection,
+    claims: &JWTClaim,
+    table: impl EntityName,
+    permissions: Vec<&str>,
+) -> lib_core::result::Result<bool> {
+    Ok(lib_entity::prelude::Permissions::find()
+        .filter(permissions::Column::EntityName.eq(table.table_name()))
+        .filter(permissions::Column::UserId.eq(claims.subject))
+        .filter(permissions::Column::Action.is_in(permissions))
+        .one(db)
+        .await
+        .map_err(Error::SeaOrm)?
+        .is_some())
 }
