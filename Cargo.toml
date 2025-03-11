@@ -22,6 +22,11 @@ members = [
   "crates/lib-security",
   "apps/marketing",
   "apps/management-site",
+  "crates/api-file",
+  "crates/api-auth",
+  "crates/api-human-resource",
+  "crates/api-inventory",
+  "crates/api-reservation",
 ]
 
 

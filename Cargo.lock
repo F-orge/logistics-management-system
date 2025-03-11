@@ -65,6 +65,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "api-auth"
+version = "0.1.0"
+
+[[package]]
+name = "api-file"
+version = "0.1.0"
+
+[[package]]
+name = "api-human-resource"
+version = "0.1.0"
+
+[[package]]
+name = "api-inventory"
+version = "0.1.0"
+
+[[package]]
+name = "api-reservation"
+version = "0.1.0"
+
+[[package]]
 name = "arrayvec"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
