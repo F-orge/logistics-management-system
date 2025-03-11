@@ -9,4 +9,3 @@ serde = { workspace = true }
 jwt = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }
-tonic = { workspace = true }

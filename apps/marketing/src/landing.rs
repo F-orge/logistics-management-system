@@ -1,5 +1,5 @@
-use askama::Template;
 use axum::{Router, routing::get};
+use rinja::Template;
 
 #[derive(Debug, Template)]
 #[template(path = "pages/home.html.jinja")]

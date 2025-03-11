@@ -1,7 +1,9 @@
-use askama::Template;
-use askama_axum::IntoResponse;
-use axum::{http::StatusCode, response::Html};
+use axum::{
+    http::StatusCode,
+    response::{Html, IntoResponse},
+};
 use derive_more::From;
+use rinja::Template;
 use sqlx::types::uuid;
 use tonic::Status;
 
@@ -63,14 +65,14 @@ impl From<Error> for Status {
 pub type AskamaResult<T> = std::result::Result<T, AskamaError>;
 
 #[derive(Debug, Template)]
-#[template(path = "full-page-error.html.jinja")]
+#[template(path = "error.html.jinja")]
 pub struct FullError {
     pub code: u16,
     pub message: String,
 }
 
 #[derive(Debug, Template)]
-#[template(path = "alert-error.html.jinja")]
+#[template(path = "alert.html.jinja", block = "alert")]
 pub struct AlertNotification {
     pub alert_type: AlertNotificationType,
     pub code: u16,
@@ -92,23 +94,18 @@ pub enum AskamaError {
 impl From<Error> for AskamaError {
     fn from(value: Error) -> Self {
         match value {
-            Error::SeaOrm(err) => {
-                println!("{}", err);
-                match err {
-                    sea_orm::DbErr::RecordNotFound(id) => {
-                        Self::AlertNotification(AlertNotification {
-                            alert_type: AlertNotificationType::Error,
-                            code: StatusCode::NOT_FOUND.as_u16(),
-                            title: "Not found".into(),
-                            message: format!("Row not found id: {}", id),
-                        })
-                    }
-                    _ => Self::FullError(FullError {
-                        code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
-                        message: "Internal server error".into(),
-                    }),
-                }
-            }
+            Error::SeaOrm(err) => match err {
+                sea_orm::DbErr::RecordNotFound(id) => Self::AlertNotification(AlertNotification {
+                    alert_type: AlertNotificationType::Error,
+                    code: StatusCode::NOT_FOUND.as_u16(),
+                    title: "Not found".into(),
+                    message: format!("Row not found id: {}", id),
+                }),
+                _ => Self::FullError(FullError {
+                    code: StatusCode::INTERNAL_SERVER_ERROR.as_u16(),
+                    message: "Internal server error".into(),
+                }),
+            },
             Error::Garde(err) => Self::AlertNotification(AlertNotification {
                 alert_type: AlertNotificationType::Error,
                 code: StatusCode::BAD_REQUEST.as_u16(),
@@ -152,7 +149,7 @@ impl From<Error> for AskamaError {
 }
 
 impl IntoResponse for AskamaError {
-    fn into_response(self) -> askama_axum::Response {
+    fn into_response(self) -> axum::response::Response {
         match self {
             Self::FullError(err) => Html(err.render().unwrap_or_default()).into_response(),
             Self::AlertNotification(err) => Html(err.render().unwrap_or_default()).into_response(),

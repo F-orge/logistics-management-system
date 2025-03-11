@@ -1,4 +1,3 @@
-use askama_axum::IntoResponse;
 use axum::{Router, http::StatusCode};
 use error::not_found;
 use include_dir::{Dir, include_dir};
@@ -9,6 +8,7 @@ use tower_serve_static::ServeDir;
 
 mod dashboard;
 mod error;
+mod forgot_password;
 mod login;
 
 static ASSET_DIR: Dir<'static> = include_dir!("public");
@@ -27,6 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let router = Router::new()
         .nest("/", dashboard::routes())
         .nest("/login", login::routes())
+        .nest("/forgot-password", forgot_password::routes())
         .nest_service("/assets", assets_service)
         .nest_service("/assets/js", js_assets_service)
         .fallback(not_found)

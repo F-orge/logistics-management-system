@@ -13,10 +13,10 @@ path = "cmd/backend.rs"
 
 [workspace]
 members = [
-  "crates/lib-proto",
-  "crates/service-human-resource",
-  "crates/service-authentication",
-  "crates/service-storage",
+  # "crates/lib-proto",
+  # "crates/service-human-resource",
+  # "crates/service-authentication",
+  # "crates/service-storage",
   "crates/lib-core",
   "crates/lib-entity",
   "crates/lib-security",
@@ -30,17 +30,9 @@ members = [
 # Core crates
 lib-core = { path = "crates/lib-core" }
 lib-entity = { path = "crates/lib-entity" }
-lib-proto = { path = "crates/lib-proto" }
 lib-security = { path = "crates/lib-security" }
 
 # Service crates
-service-authentication = { path = "crates/service-authentication" }
-service-human-resource = { path = "crates/service-human-resource" }
-service-storage = { path = "crates/service-storage" }
-
-# Grpc
-prost = "0.13.4"
-tonic = { version = "0.12.3", features = ["router"] }
 
 # Serializer / Deserializer
 serde = { version = "1.0.215", features = ["derive"] }
@@ -61,17 +53,6 @@ sqlx = { version = "0.8.2", features = [
   "uuid",
   "chrono",
   "json",
-] }
-sea-query = { version = "0.32.2", features = [
-  "thread-safe",
-  "backend-postgres",
-  "postgres-array",
-  "with-uuid",
-] }
-sea-query-binder = { version = "0.7.0", features = [
-  "sqlx-postgres",
-  "postgres-array",
-  "with-uuid",
 ] }
 sea-orm = { version = "1.1.6", features = ["sqlx-postgres", "runtime-tokio"] }
 
@@ -102,12 +83,12 @@ tower-http = { version = "0.6.2", features = [
   "timeout",
   "trace",
 ] }
-axum-extra = { version = "0.9.0", features = ["cookie"] }
+axum-extra = { version = "0.9.0", features = ["cookie", "form"] }
 hyper-util = "0.1.10"
 
 # Templating
-askama = { version = "0.12.1", features = ["with-axum"] }
-askama_axum = "0.4.0"
+rinja = { version = "0.3.5", features = ["with-axum"] }
+rinja_axum = "0.3.5"
 
 # Validation
 garde = { version = "0.20.0", features = ["derive", "serde", "email"] }
@@ -124,12 +105,9 @@ include_dir = "0.7.4"
 tower-serve-static = "0.1.1"
 
 [dependencies]
-service-storage = { path = "./crates/service-storage" }
-service-authentication = { path = "./crates/service-authentication" }
 tracing-subscriber = { workspace = true }
 tracing = { workspace = true }
 tokio = { workspace = true }
-tonic = { workspace = true }
 dotenv = { workspace = true }
 axum = { workspace = true }
 sea-orm = { workspace = true }

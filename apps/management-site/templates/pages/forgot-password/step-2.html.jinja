@@ -1,0 +1,18 @@
+{% extends "partials/base.html.jinja" %}
+{% block body %}
+  <main class="h-full flex flex-col justify-center items-center">
+    <h1>Email Confirmation</h1>
+    <span class="text-base-content/80 text-sm pb-4">We've send a 6 digit code to your email account</span>
+    <form class="flex flex-col items-center justify-center gap-2.5" action="" method="post">
+      <div class="flex justify-center items-center gap-2.5 w-96" data-pin-input>
+        <input name="code" type="text" class="pin-input" placeholder="○" data-pin-input-item />
+        <input name="code" type="text" class="pin-input" placeholder="○" data-pin-input-item />
+        <input name="code" type="text" class="pin-input" placeholder="○" data-pin-input-item />
+        <input name="code" type="text" class="pin-input" placeholder="○" data-pin-input-item />
+        <input name="code" type="text" class="pin-input" placeholder="○" data-pin-input-item />
+        <input name="code" type="text" class="pin-input" placeholder="○" data-pin-input-item />
+      </div>
+      <button class="btn btn-primary w-full" type="submit">Continue</button>
+    </form>
+  </main>
+{% endblock body %}

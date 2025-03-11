@@ -6,8 +6,7 @@ edition = "2024"
 [dependencies]
 axum = { workspace = true }
 tokio = { workspace = true }
-tonic = { workspace = true }
-askama = { workspace = true }
-askama_axum = { workspace = true }
+rinja = { workspace = true }
+rinja_axum = { workspace = true }
 include_dir = { workspace = true }
 tower-serve-static = { workspace = true }

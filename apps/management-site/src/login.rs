@@ -1,4 +1,3 @@
-use askama::Template;
 use axum::{
     Form, Router,
     extract::State,
@@ -11,21 +10,16 @@ use lib_core::{
     error::{AskamaError, AskamaResult, Error},
 };
 use lib_entity::{prelude::*, users};
+use rinja::Template;
 use sea_orm::{ColumnTrait, EntityTrait, QueryFilter};
 use serde::Deserialize;
 
 #[derive(Template)]
 #[template(path = "pages/login.html.jinja")]
-struct ShowTemplate {
-    email_error: Option<String>,
-    password_error: Option<String>,
-}
+struct ShowTemplate;
 
 async fn show() -> ShowTemplate {
-    ShowTemplate {
-        email_error: None,
-        password_error: None,
-    }
+    ShowTemplate {}
 }
 
 #[derive(Debug, Deserialize, Validate)]
