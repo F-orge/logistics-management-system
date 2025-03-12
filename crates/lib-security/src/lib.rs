@@ -8,7 +8,7 @@ use sea_orm::ColumnTrait;
 use sea_orm::IntoActiveModel;
 use sea_orm::Set;
 use sea_orm::TransactionTrait;
-use sea_orm::{DatabaseConnection, EntityName, EntityTrait, QueryFilter};
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
@@ -34,7 +34,6 @@ pub struct JWTClaim {
     pub claims: BTreeMap<String, String>,
 }
 
-// TODO: implement a extractor for jwtclaims
 #[async_trait]
 impl<S> FromRequestParts<S> for JWTClaim {
     type Rejection = lib_core::error::Error;
@@ -63,14 +62,44 @@ impl<S> FromRequestParts<S> for JWTClaim {
     }
 }
 
+#[derive(Debug, Clone)]
+pub enum Permission {
+    Read,
+    Write,
+    Update,
+    Delete,
+}
+
+impl Into<sea_orm::Value> for Permission {
+    fn into(self) -> sea_orm::Value {
+        match self {
+            Permission::Read => "read".into(),
+            Permission::Write => "write".into(),
+            Permission::Update => "update".into(),
+            Permission::Delete => "delete".into(),
+        }
+    }
+}
+
+impl Into<String> for Permission {
+    fn into(self) -> String {
+        match self {
+            Permission::Read => "read".into(),
+            Permission::Write => "write".into(),
+            Permission::Update => "update".into(),
+            Permission::Delete => "delete".into(),
+        }
+    }
+}
+
 pub async fn verify_permission(
     db: &DatabaseConnection,
     claims: &JWTClaim,
-    table: impl EntityName,
-    permissions: Vec<&str>,
+    table: &str,
+    permissions: Vec<Permission>,
 ) -> lib_core::result::Result<bool> {
     Ok(lib_entity::prelude::Permissions::find()
-        .filter(permissions::Column::EntityName.eq(table.table_name()))
+        .filter(permissions::Column::EntityName.eq(table))
         .filter(permissions::Column::UserId.eq(claims.subject))
         .filter(permissions::Column::Action.is_in(permissions))
         .one(db)
@@ -82,17 +111,15 @@ pub async fn verify_permission(
 pub async fn grant_permission(
     db: &DatabaseConnection,
     claims: &JWTClaim,
-    table: impl EntityName,
-    permissions: Vec<&str>,
+    table: &str,
+    permissions: Vec<Permission>,
 ) -> lib_core::result::Result<()> {
     let trx = db.begin().await.map_err(Error::SeaOrm)?;
     for perm in permissions.into_iter() {
-        // todo: check first if the permission is already granted
-
         let model = lib_entity::prelude::Permissions::find()
             .filter(permissions::Column::UserId.eq(claims.subject))
-            .filter(permissions::Column::Action.eq(perm))
-            .filter(permissions::Column::EntityName.eq(table.table_name()))
+            .filter(permissions::Column::Action.eq(perm.clone()))
+            .filter(permissions::Column::EntityName.eq(table))
             .one(db)
             .await
             .map_err(Error::SeaOrm)?;
@@ -102,10 +129,10 @@ pub async fn grant_permission(
         }
 
         let mut model = permissions::ActiveModel::new();
-        model.entity_name = Set(table.table_name().to_string());
+        model.entity_name = Set(table.to_string());
         model.user_id = Set(claims.subject);
-        model.action = Set(perm.to_string());
-        _ = model.insert(&trx);
+        model.action = Set(perm.into());
+        _ = model.insert(&trx).await.map_err(Error::SeaOrm)?;
     }
 
     trx.commit().await.map_err(Error::SeaOrm)?;
@@ -116,17 +143,15 @@ pub async fn grant_permission(
 pub async fn revoke_permission(
     db: &DatabaseConnection,
     claims: &JWTClaim,
-    table: impl EntityName,
-    permissions: Vec<&str>,
+    table: &str,
+    permissions: Vec<Permission>,
 ) -> lib_core::result::Result<()> {
     let trx = db.begin().await.map_err(Error::SeaOrm)?;
     for perm in permissions.into_iter() {
-        // todo: check first if the permission is is not granted
-
         let model = lib_entity::prelude::Permissions::find()
             .filter(permissions::Column::UserId.eq(claims.subject))
             .filter(permissions::Column::Action.eq(perm))
-            .filter(permissions::Column::EntityName.eq(table.table_name()))
+            .filter(permissions::Column::EntityName.eq(table))
             .one(db)
             .await
             .map_err(Error::SeaOrm)?;

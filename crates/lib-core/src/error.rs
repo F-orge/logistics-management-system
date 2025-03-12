@@ -1,10 +1,5 @@
-use axum::{
-    Json,
-    http::StatusCode,
-    response::{Html, IntoResponse},
-};
+use axum::{Json, response::IntoResponse};
 use derive_more::From;
-use rinja::Template;
 use serde::{Deserialize, Serialize};
 use sqlx::types::uuid;
 
@@ -21,7 +16,7 @@ pub enum Error {
     Io(std::io::Error),
     // -- Validation Error,
     Uuid(uuid::Error),
-    // -- Authentication Error
+    // -- Authentication
     AuthenticationError,
     // -- Authorization
     AuthorizationError,
@@ -32,8 +27,6 @@ pub struct ErrorResponse {
     code: u16,
     message: String,
 }
-
-pub type Result<T> = core::result::Result<T, Error>;
 
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
