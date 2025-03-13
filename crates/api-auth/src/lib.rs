@@ -54,8 +54,6 @@ struct RefreshTokenDTO {
     refresh_token:String,
 }
 
-
-
 #[utoipa::path(
     post, 
     tag = "Authentication", 
