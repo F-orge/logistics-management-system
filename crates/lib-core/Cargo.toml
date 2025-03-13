@@ -17,5 +17,4 @@ hyper-util = { workspace = true }
 tower = { workspace = true }
 axum = { workspace = true }
 garde = { workspace = true }
-rinja = { workspace = true }
-rinja_axum = { workspace = true }
+utoipa = { workspace = true }

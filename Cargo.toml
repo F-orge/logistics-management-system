@@ -7,22 +7,17 @@ authors = [
   "Mhell Francis Bergonio <bergonio.mhell101001@gmail.com>",
 ]
 
-[[bin]]
-name = "backend"
-path = "cmd/backend.rs"
-
 [workspace]
 members = [
   "crates/lib-core",
   "crates/lib-entity",
   "crates/lib-security",
-  "apps/marketing",
-  "apps/management-site",
   "crates/api-file",
   "crates/api-auth",
   "crates/api-human-resource",
   "crates/api-inventory",
-  "crates/api-reservation",
+  "crates/api-chat",
+  "crates/api-sales", "crates/api-mail", "crates/api-notification", "crates/api-monitoring", "crates/api-reports", "crates/api-qr",
 ]
 
 
@@ -37,8 +32,9 @@ lib-security = { path = "crates/lib-security" }
 api-auth = { path = "crates/api-auth" }
 api-file = { path = "crates/api-file" }
 api-human-resource = { path = "crates/api-human-resource" }
-api-inventory = { path = "crates/api-human-resource" }
-api-reservation = { path = "crates/api-reservation" }
+api-inventory = { path = "crates/api-inventory" }
+api-chat = { path = "crates/api-chat" }
+api-sales = { path = "crates/api-sales" }
 
 # Serializer / Deserializer
 serde = { version = "1.0.215", features = ["derive"] }
@@ -76,7 +72,7 @@ tracing-test = "0.2.5"
 
 # Http
 tower = "0.5.2"
-axum = { version = "0.7.9", features = ["macros"] }
+axum = { version = "0.8.1", features = ["macros"] }
 tower-http = { version = "0.6.2", features = [
   "catch-panic",
   "compression-gzip",
@@ -110,7 +106,19 @@ rust-embed = "8.6.0"
 include_dir = "0.7.4"
 tower-serve-static = "0.1.1"
 
+# OpenAPI
+utoipa = { version = "5.3.1", features = ["axum_extras", "uuid"] }
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }
+utoipa-axum = "0.2.0"
+
 [dependencies]
+api-auth = { workspace = true }
+api-human-resource = { workspace = true }
+api-inventory = { workspace = true }
+api-file = { workspace = true }
+api-chat = { workspace = true }
+api-sales = { workspace = true }
+
 tracing-subscriber = { workspace = true }
 tracing = { workspace = true }
 tokio = { workspace = true }
@@ -119,3 +127,7 @@ axum = { workspace = true }
 sea-orm = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }
+utoipa-scalar = { workspace = true }
+utoipa-axum = { workspace = true }
+lib-core = { workspace = true }
+utoipa = { workspace = true }

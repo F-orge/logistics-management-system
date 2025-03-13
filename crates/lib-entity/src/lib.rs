@@ -5,6 +5,7 @@ pub mod prelude;
 pub mod department;
 pub mod emergency_information;
 pub mod employee;
+pub mod extensions;
 pub mod file;
 pub mod job_information;
 pub mod permissions;

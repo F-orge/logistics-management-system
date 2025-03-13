@@ -1,4 +1,4 @@
-use axum::{async_trait, extract::FromRequestParts};
+use axum::extract::FromRequestParts;
 use jwt::VerifyWithKey;
 use lib_core::{AppState, error::Error};
 use lib_entity::permissions;
@@ -34,8 +34,10 @@ pub struct JWTClaim {
     pub claims: BTreeMap<String, String>,
 }
 
-#[async_trait]
-impl<S> FromRequestParts<S> for JWTClaim {
+impl<S> FromRequestParts<S> for JWTClaim
+where
+    S: Send + Sync,
+{
     type Rejection = lib_core::error::Error;
 
     async fn from_request_parts(

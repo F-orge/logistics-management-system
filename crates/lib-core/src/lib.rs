@@ -5,6 +5,7 @@ use sha2::Sha256;
 pub mod error;
 pub mod result;
 // pub mod test;
+pub mod docs;
 pub mod middleware;
 
 #[derive(Debug, Clone)]

@@ -1,14 +1,11 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use lib_core::AppState;
+use utoipa_axum::router::OpenApiRouter;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+pub mod employee;
+pub mod task;
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+pub fn routes() -> OpenApiRouter<AppState> {
+    OpenApiRouter::new()
+        .nest("/task", task::routes())
+        .nest("/employee", employee::routes())
 }

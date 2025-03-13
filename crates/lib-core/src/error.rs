@@ -2,6 +2,7 @@ use axum::{Json, response::IntoResponse};
 use derive_more::From;
 use serde::{Deserialize, Serialize};
 use sqlx::types::uuid;
+use utoipa::ToSchema;
 
 #[derive(From, Debug)]
 pub enum Error {
@@ -22,9 +23,11 @@ pub enum Error {
     AuthorizationError,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ErrorResponse {
+    #[schema(example = 400)]
     code: u16,
+    #[schema(example = "Bad Request")]
     message: String,
 }
 
