@@ -9,4 +9,7 @@ serde = { workspace = true }
 jwt = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }
-tonic = { workspace = true }
+axum = { workspace = true }
+lib-core = { workspace = true }
+sea-orm = { workspace = true }
+lib-entity = { workspace = true }

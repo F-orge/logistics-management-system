@@ -1,0 +1,6 @@
+[env]
+RUST_PORT = "8000"
+RUST_ADDRESS = "0.0.0.0"
+RUST_DATABASE_URL = "postgres://postgres:randompassword@localhost:5432/postgres"
+RUST_JWT_ACCESS_KEY = "lPPZmlMsRRkCxwWE7jusVfHiaFfGEL6iSU6/h+TD4D8="
+RUST_JWT_EXPIRY = "3600"

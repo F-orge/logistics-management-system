@@ -5,11 +5,16 @@ edition = "2024"
 
 [dependencies]
 derive_more = { version = "2.0.1", features = ["from"] }
-tonic = { workspace = true }
 sqlx = { workspace = true }
 tracing = { workspace = true }
+serde = { workspace = true }
 tokio = { workspace = true }
 tokio-stream = { workspace = true }
+hmac = { workspace = true }
+sha2 = { workspace = true }
 sea-orm = { workspace = true }
 hyper-util = { workspace = true }
 tower = { workspace = true }
+axum = { workspace = true }
+garde = { workspace = true }
+utoipa = { workspace = true }

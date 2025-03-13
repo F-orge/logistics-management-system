@@ -1,17 +1,21 @@
-use lib_proto::FileMetadata;
+use sea_orm::{ActiveModelBehavior, Set, prelude::async_trait::async_trait};
 
-use crate::file;
+use crate::{employee, users};
 
-// storage file
-impl Into<lib_proto::FileMetadata> for file::Model {
-    fn into(self) -> lib_proto::FileMetadata {
-        FileMetadata {
-            id: self.id.to_string(),
-            name: self.name,
-            r#type: self.r#type,
-            size: self.size as u32,
-            is_public: self.is_public,
-            owner_id: self.owner_id.to_string(),
+#[async_trait]
+impl ActiveModelBehavior for employee::ActiveModel {
+    async fn before_save<C>(self, db: &C, insert: bool) -> Result<Self, sea_orm::DbErr>
+    where
+        C: sea_orm::ConnectionTrait,
+    {
+        if !insert {
+            return Ok(self);
         }
+
+        let mut user = users::ActiveModel::new();
+
+        // TODO: create auto generated password and email if not exists
+
+        Ok(self)
     }
 }

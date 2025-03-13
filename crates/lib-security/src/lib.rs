@@ -1,8 +1,15 @@
-use hmac::Hmac;
+use axum::extract::FromRequestParts;
 use jwt::VerifyWithKey;
-use sha2::Sha256;
+use lib_core::{AppState, error::Error};
+use lib_entity::permissions;
+use sea_orm::ActiveModelBehavior;
+use sea_orm::ActiveModelTrait;
+use sea_orm::ColumnTrait;
+use sea_orm::IntoActiveModel;
+use sea_orm::Set;
+use sea_orm::TransactionTrait;
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 use std::collections::BTreeMap;
-use tonic::{Status, metadata::MetadataMap};
 
 use serde::{Deserialize, Serialize};
 
@@ -27,40 +34,140 @@ pub struct JWTClaim {
     pub claims: BTreeMap<String, String>,
 }
 
-pub fn get_jwt_claim(
-    metadata: &MetadataMap,
-    encryption_key: &Hmac<Sha256>,
-) -> Result<JWTClaim, Status> {
-    let authorization = metadata
-        .get("authorization")
-        .ok_or(Status::unauthenticated(
-            "Cannot get `authorization` header metadata",
-        ))?
-        .clone();
+impl<S> FromRequestParts<S> for JWTClaim
+where
+    S: Send + Sync,
+{
+    type Rejection = lib_core::error::Error;
 
-    let (auth_type, token) = {
-        let auth_str = authorization
+    async fn from_request_parts(
+        parts: &mut axum::http::request::Parts,
+        _: &S,
+    ) -> Result<Self, Self::Rejection> {
+        let state = parts
+            .extensions
+            .get::<AppState>()
+            .ok_or(Error::AuthenticationError)?;
+
+        let token = parts
+            .headers
+            .get("Authorization")
+            .ok_or(Error::AuthenticationError)?
             .to_str()
-            .map_err(|_| Status::unauthenticated("Cannot get `authorization` header metadata"))?;
-        let mut parts = auth_str.splitn(2, ' ');
-        let auth_type = parts.next().ok_or(Status::unauthenticated(
-            "Cannot get `authorization` header metadata",
-        ))?;
-        let token = parts.next().ok_or(Status::unauthenticated(
-            "Cannot get `authorization` header metadata",
-        ))?;
-        (auth_type, token)
-    };
+            .map_err(|_| Error::AuthenticationError)?;
 
-    if auth_type.to_lowercase() != "bearer" {
-        return Err(Status::unauthenticated(
-            "Cannot get `authorization` header metadata",
-        ));
+        let claims: JWTClaim = token
+            .verify_with_key(&state.key)
+            .map_err(|_| Error::AuthenticationError)?;
+
+        Ok(claims)
+    }
+}
+
+#[derive(Debug, Clone)]
+pub enum Permission {
+    Read,
+    Write,
+    Update,
+    Delete,
+}
+
+impl Into<sea_orm::Value> for Permission {
+    fn into(self) -> sea_orm::Value {
+        match self {
+            Permission::Read => "read".into(),
+            Permission::Write => "write".into(),
+            Permission::Update => "update".into(),
+            Permission::Delete => "delete".into(),
+        }
+    }
+}
+
+impl Into<String> for Permission {
+    fn into(self) -> String {
+        match self {
+            Permission::Read => "read".into(),
+            Permission::Write => "write".into(),
+            Permission::Update => "update".into(),
+            Permission::Delete => "delete".into(),
+        }
+    }
+}
+
+pub async fn verify_permission(
+    db: &DatabaseConnection,
+    claims: &JWTClaim,
+    table: &str,
+    permissions: Vec<Permission>,
+) -> lib_core::result::Result<bool> {
+    Ok(lib_entity::prelude::Permissions::find()
+        .filter(permissions::Column::EntityName.eq(table))
+        .filter(permissions::Column::UserId.eq(claims.subject))
+        .filter(permissions::Column::Action.is_in(permissions))
+        .one(db)
+        .await
+        .map_err(Error::SeaOrm)?
+        .is_some())
+}
+
+pub async fn grant_permission(
+    db: &DatabaseConnection,
+    claims: &JWTClaim,
+    table: &str,
+    permissions: Vec<Permission>,
+) -> lib_core::result::Result<()> {
+    let trx = db.begin().await.map_err(Error::SeaOrm)?;
+    for perm in permissions.into_iter() {
+        let model = lib_entity::prelude::Permissions::find()
+            .filter(permissions::Column::UserId.eq(claims.subject))
+            .filter(permissions::Column::Action.eq(perm.clone()))
+            .filter(permissions::Column::EntityName.eq(table))
+            .one(db)
+            .await
+            .map_err(Error::SeaOrm)?;
+
+        if model.is_some() {
+            continue;
+        }
+
+        let mut model = permissions::ActiveModel::new();
+        model.entity_name = Set(table.to_string());
+        model.user_id = Set(claims.subject);
+        model.action = Set(perm.into());
+        _ = model.insert(&trx).await.map_err(Error::SeaOrm)?;
     }
 
-    let claims: JWTClaim = token
-        .verify_with_key(encryption_key)
-        .map_err(|_| Status::unauthenticated("Cannot get `authorization` header metadata"))?;
+    trx.commit().await.map_err(Error::SeaOrm)?;
 
-    Ok(claims)
+    Ok(())
+}
+
+pub async fn revoke_permission(
+    db: &DatabaseConnection,
+    claims: &JWTClaim,
+    table: &str,
+    permissions: Vec<Permission>,
+) -> lib_core::result::Result<()> {
+    let trx = db.begin().await.map_err(Error::SeaOrm)?;
+    for perm in permissions.into_iter() {
+        let model = lib_entity::prelude::Permissions::find()
+            .filter(permissions::Column::UserId.eq(claims.subject))
+            .filter(permissions::Column::Action.eq(perm))
+            .filter(permissions::Column::EntityName.eq(table))
+            .one(db)
+            .await
+            .map_err(Error::SeaOrm)?;
+
+        if model.is_none() {
+            continue;
+        }
+
+        let model = model.ok_or(Error::RowNotFound)?.into_active_model();
+
+        _ = model.delete(&trx).await.map_err(Error::SeaOrm)?;
+    }
+
+    trx.commit().await.map_err(Error::SeaOrm)?;
+
+    Ok(())
 }

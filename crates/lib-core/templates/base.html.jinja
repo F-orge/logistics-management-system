@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="corporate">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/assets/out.css" />
+    <script src="/assets/js/index.js" defer></script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"
+            integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+            crossorigin="anonymous"></script>
+    {% block metadata %}
+      <title>Document</title>
+      <meta name="description" content="" />
+      <meta name="keywords" content="" />
+    {% endblock metadata %}
+  </head>
+  <body class="container mx-auto max-w-7xl p-4 min-h-screen h-screen">
+    {% block body %}
+    {% endblock body %}
+  </body>
+</html>

@@ -1,0 +1,15 @@
+[package]
+name = "api-auth"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+lib-entity = { workspace = true }
+lib-core = { workspace = true }
+lib-security = { workspace = true }
+axum = { workspace = true }
+sea-orm = { workspace = true }
+utoipa = { workspace = true }
+utoipa-axum = { workspace = true }
+axum-extra = { workspace = true }
+serde = { workspace = true }

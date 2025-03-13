@@ -7,19 +7,17 @@ authors = [
   "Mhell Francis Bergonio <bergonio.mhell101001@gmail.com>",
 ]
 
-[[bin]]
-name = "backend"
-path = "cmd/backend.rs"
-
 [workspace]
 members = [
-  "crates/lib-proto",
-  "crates/service-human-resource",
-  "crates/service-authentication",
-  "crates/service-storage",
   "crates/lib-core",
   "crates/lib-entity",
   "crates/lib-security",
+  "crates/api-file",
+  "crates/api-auth",
+  "crates/api-human-resource",
+  "crates/api-inventory",
+  "crates/api-chat",
+  "crates/api-sales", "crates/api-mail", "crates/api-notification", "crates/api-monitoring", "crates/api-reports", "crates/api-qr",
 ]
 
 
@@ -28,17 +26,15 @@ members = [
 # Core crates
 lib-core = { path = "crates/lib-core" }
 lib-entity = { path = "crates/lib-entity" }
-lib-proto = { path = "crates/lib-proto" }
 lib-security = { path = "crates/lib-security" }
 
 # Service crates
-service-authentication = { path = "crates/service-authentication" }
-service-human-resource = { path = "crates/service-human-resource" }
-service-storage = { path = "crates/service-storage" }
-
-# Grpc
-prost = "0.13.4"
-tonic = { version = "0.12.3", features = ["router"] }
+api-auth = { path = "crates/api-auth" }
+api-file = { path = "crates/api-file" }
+api-human-resource = { path = "crates/api-human-resource" }
+api-inventory = { path = "crates/api-inventory" }
+api-chat = { path = "crates/api-chat" }
+api-sales = { path = "crates/api-sales" }
 
 # Serializer / Deserializer
 serde = { version = "1.0.215", features = ["derive"] }
@@ -60,17 +56,6 @@ sqlx = { version = "0.8.2", features = [
   "chrono",
   "json",
 ] }
-sea-query = { version = "0.32.2", features = [
-  "thread-safe",
-  "backend-postgres",
-  "postgres-array",
-  "with-uuid",
-] }
-sea-query-binder = { version = "0.7.0", features = [
-  "sqlx-postgres",
-  "postgres-array",
-  "with-uuid",
-] }
 sea-orm = { version = "1.1.6", features = ["sqlx-postgres", "runtime-tokio"] }
 
 # Async Runtime
@@ -87,7 +72,7 @@ tracing-test = "0.2.5"
 
 # Http
 tower = "0.5.2"
-axum = "0.7.9"
+axum = { version = "0.8.1", features = ["macros"] }
 tower-http = { version = "0.6.2", features = [
   "catch-panic",
   "compression-gzip",
@@ -100,10 +85,12 @@ tower-http = { version = "0.6.2", features = [
   "timeout",
   "trace",
 ] }
-askama = "0.12.1"
-askama_axum = "0.4.0"
-axum-extra = { version = "0.9.0", features = ["cookie"] }
+axum-extra = { version = "0.9.0", features = ["cookie", "form"] }
 hyper-util = "0.1.10"
+
+# Templating
+rinja = { version = "0.3.5", features = ["with-axum"] }
+rinja_axum = "0.3.5"
 
 # Validation
 garde = { version = "0.20.0", features = ["derive", "serde", "email"] }
@@ -114,15 +101,33 @@ dotenv = "0.15.0"
 # Utilities
 uuid = { version = "1.15.1", features = ["v4"] }
 
+# Embedded
+rust-embed = "8.6.0"
+include_dir = "0.7.4"
+tower-serve-static = "0.1.1"
+
+# OpenAPI
+utoipa = { version = "5.3.1", features = ["axum_extras", "uuid"] }
+utoipa-scalar = { version = "0.3.0", features = ["axum"] }
+utoipa-axum = "0.2.0"
+
 [dependencies]
-service-storage = { path = "./crates/service-storage" }
-service-authentication = { path = "./crates/service-authentication" }
+api-auth = { workspace = true }
+api-human-resource = { workspace = true }
+api-inventory = { workspace = true }
+api-file = { workspace = true }
+api-chat = { workspace = true }
+api-sales = { workspace = true }
+
 tracing-subscriber = { workspace = true }
 tracing = { workspace = true }
 tokio = { workspace = true }
-tonic = { workspace = true }
 dotenv = { workspace = true }
 axum = { workspace = true }
 sea-orm = { workspace = true }
 hmac = { workspace = true }
 sha2 = { workspace = true }
+utoipa-scalar = { workspace = true }
+utoipa-axum = { workspace = true }
+lib-core = { workspace = true }
+utoipa = { workspace = true }

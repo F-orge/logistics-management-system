@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 sea-orm = { workspace = true }
-lib-proto = { path = "../../crates/lib-proto" }
+serde = { workspace = true }

@@ -1,6 +1,8 @@
+use axum::{Json, response::IntoResponse};
 use derive_more::From;
+use serde::{Deserialize, Serialize};
 use sqlx::types::uuid;
-use tonic::Status;
+use utoipa::ToSchema;
 
 #[derive(From, Debug)]
 pub enum Error {
@@ -9,45 +11,32 @@ pub enum Error {
     // -- Database Error
     SeaOrm(sea_orm::DbErr),
     RowNotFound,
+    // -- Validation
+    Garde(garde::Report),
     // -- File Io
     Io(std::io::Error),
-    // -- Tonic Error
-    Tonic(tonic::Status),
     // -- Validation Error,
     Uuid(uuid::Error),
+    // -- Authentication
+    AuthenticationError,
+    // -- Authorization
+    AuthorizationError,
 }
 
-pub type Result<T> = core::result::Result<T, Error>;
+#[derive(Debug, Serialize, Deserialize, ToSchema)]
+pub struct ErrorResponse {
+    #[schema(example = 400)]
+    code: u16,
+    #[schema(example = "Bad Request")]
+    message: String,
+}
 
-impl From<Error> for Status {
-    fn from(err: Error) -> Self {
-        match err {
-            Error::SeaOrm(err) => {
-                println!("{}", err);
-                match err {
-                    sea_orm::DbErr::RecordNotFound(id) => {
-                        Status::not_found(format!("Row not found {}", id))
-                    }
-                    _ => Status::internal("Internal Database Error"),
-                }
-            }
-            Error::RowNotFound => Status::not_found("Row not found"),
-            Error::Io(err) => {
-                tracing::error!("{}", err);
-                return Status::internal("Internal IO Error");
-            }
-            Error::Tonic(err) => {
-                tracing::error!("{}", err);
-                return err;
-            }
-            Error::Uuid(err) => {
-                tracing::warn!("{}", err);
-                return Status::invalid_argument("Cannot parse Uuid");
-            }
-            Error::Custom(err) => {
-                tracing::error!("{}", err);
-                Status::internal("Internal server error")
-            }
-        }
+impl IntoResponse for Error {
+    fn into_response(self) -> axum::response::Response {
+        Json(ErrorResponse {
+            code: 500,
+            message: "Internal server error".into(),
+        })
+        .into_response()
     }
 }
