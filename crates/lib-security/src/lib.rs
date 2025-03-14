@@ -1,7 +1,7 @@
 use axum::extract::FromRequestParts;
 use jwt::VerifyWithKey;
 use lib_core::{AppState, error::Error};
-use lib_entity::permissions;
+use lib_entity::generated::permissions;
 use sea_orm::ActiveModelBehavior;
 use sea_orm::ActiveModelTrait;
 use sea_orm::ColumnTrait;
@@ -100,7 +100,7 @@ pub async fn verify_permission(
     table: &str,
     permissions: Vec<Permission>,
 ) -> lib_core::result::Result<bool> {
-    Ok(lib_entity::prelude::Permissions::find()
+    Ok(lib_entity::generated::prelude::Permissions::find()
         .filter(permissions::Column::EntityName.eq(table))
         .filter(permissions::Column::UserId.eq(claims.subject))
         .filter(permissions::Column::Action.is_in(permissions))
@@ -118,7 +118,7 @@ pub async fn grant_permission(
 ) -> lib_core::result::Result<()> {
     let trx = db.begin().await.map_err(Error::SeaOrm)?;
     for perm in permissions.into_iter() {
-        let model = lib_entity::prelude::Permissions::find()
+        let model = lib_entity::generated::prelude::Permissions::find()
             .filter(permissions::Column::UserId.eq(claims.subject))
             .filter(permissions::Column::Action.eq(perm.clone()))
             .filter(permissions::Column::EntityName.eq(table))
@@ -150,7 +150,7 @@ pub async fn revoke_permission(
 ) -> lib_core::result::Result<()> {
     let trx = db.begin().await.map_err(Error::SeaOrm)?;
     for perm in permissions.into_iter() {
-        let model = lib_entity::prelude::Permissions::find()
+        let model = lib_entity::generated::prelude::Permissions::find()
             .filter(permissions::Column::UserId.eq(claims.subject))
             .filter(permissions::Column::Action.eq(perm))
             .filter(permissions::Column::EntityName.eq(table))

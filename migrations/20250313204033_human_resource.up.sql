@@ -1,46 +1,65 @@
 -- Add up migration script here
-CREATE TABLE
+create table
   logistics.department (
-    department_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    department_name VARCHAR(255) UNIQUE NOT NULL,
-    manager_id UUID NULL
+    id uuid primary key default gen_random_uuid (),
+    department_name varchar(255) unique not null,
+    manager_id uuid NULL references logistics.users (id),
+    created timestamp not null default current_timestamp,
+    updated timestamp not null default current_timestamp
   );
 
 CREATE TABLE
   logistics.position (
-    position_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    position_name VARCHAR(255) UNIQUE NOT NULL,
-    job_description TEXT NOT NULL
+    id uuid primary key default gen_random_uuid (),
+    position_name VARCHAR(255) UNIQUE not null,
+    job_description TEXT not null,
+    created timestamp not null default current_timestamp,
+    updated timestamp not null default current_timestamp
   );
+
+create type logistics.employee_status as enum('active', 'inactive');
+
+create type logistics.employee_contract_type as enum('full-time', 'part-time');
 
 CREATE TABLE
   logistics.employee (
-    employee_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    phone VARCHAR(20) UNIQUE,
-    address TEXT,
-    hire_date DATE NOT NULL,
-    department_id UUID NOT NULL,
-    position_id UUID NOT NULL,
-    supervisor_id UUID NULL,
-    FOREIGN KEY (department_id) REFERENCES logistics.department (department_id) ON DELETE SET NULL,
-    FOREIGN KEY (position_id) REFERENCES logistics.position (position_id) ON DELETE SET NULL,
-    FOREIGN KEY (supervisor_id) REFERENCES logistics.employee (employee_id) ON DELETE SET NULL
+    id uuid primary key default gen_random_uuid (),
+    first_name varchar(100) not null,
+    last_name varchar(100) not null,
+    email varchar(255) unique not null,
+    phone varchar(20) unique,
+    address text,
+    status logistics.employee_status not null default 'active',
+    cotract_type logistics.employee_contract_type not null,
+    hire_date date not null,
+    department_id uuid not null references logistics.department (id),
+    position_id uuid not null references logistics.position (id),
+    supervisor_id uuid null references logistics.employee (id),
+    created timestamp not null default current_timestamp,
+    updated timestamp not null default current_timestamp
   );
 
 CREATE TABLE
   logistics.task (
-    task_id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
-    task_name VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
-    assigned_by UUID NOT NULL,
-    assigned_to UUID NOT NULL,
-    start_date DATE NOT NULL,
-    due_date DATE NOT NULL CHECK (due_date >= start_date),
-    priority VARCHAR(10) NOT NULL CHECK (priority IN ('Low', 'Medium', 'High')),
-    status VARCHAR(20) NOT NULL CHECK (status IN ('Pending', 'In Progress', 'Completed')),
-    FOREIGN KEY (assigned_by) REFERENCES logistics.employee (employee_id) ON DELETE CASCADE,
-    FOREIGN KEY (assigned_to) REFERENCES logistics.employee (employee_id) ON DELETE CASCADE
+    id uuid primary key default gen_random_uuid (),
+    task_name VARCHAR(255) not null,
+    description TEXT not null,
+    assigned_by uuid not null references logistics.employee (id),
+    assigned_to uuid not null references logistics.employee (id),
+    start_date DATE not null,
+    due_date DATE not null check (due_date >= start_date),
+    priority VARCHAR(10) not null check (priority IN ('Low', 'Medium', 'High')),
+    status VARCHAR(20) not null check (status IN ('Pending', 'In Progress', 'Completed')),
+    created timestamp not null default current_timestamp,
+    updated timestamp not null default current_timestamp
   );
+
+create table
+  logistics.task_messages (
+    id uuid primary key default gen_random_uuid (),
+    message text not null,
+    task_id uuid not null references logistics.task (id),
+    sender_id uuid not null references logistics.employee (id),
+    created timestamp not null default current_timestamp,
+    updated timestamp not null default current_timestamp
+  )

@@ -14,6 +14,6 @@ create table
             and _password ~ '[0-9]'
             and _password ~ '[^a-zA-Z0-9]'
         ),
-        create_at timestamp not null default current_timestamp,
-        updated_at timestamp not null default current_timestamp
+        created timestamp not null default current_timestamp,
+        updated timestamp not null default current_timestamp
     )

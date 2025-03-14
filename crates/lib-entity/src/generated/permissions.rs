@@ -3,25 +3,27 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(schema_name = "logistics", table_name = "file")]
+#[derive(
+    Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize, utoipa :: ToSchema,
+)]
+#[sea_orm(schema_name = "logistics", table_name = "permissions")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub name: String,
+    pub user_id: Uuid,
     #[sea_orm(column_type = "Text")]
-    pub file_path: String,
-    pub is_public: bool,
-    pub owner_id: Uuid,
-    pub created_at: DateTime,
-    pub updated_at: DateTime,
+    pub entity_name: String,
+    #[sea_orm(column_type = "Text")]
+    pub action: String,
+    pub created: DateTime,
+    pub updated: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::users::Entity",
-        from = "Column::OwnerId",
+        from = "Column::UserId",
         to = "super::users::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"

@@ -3,28 +3,38 @@
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(schema_name = "logistics", table_name = "permissions")]
+#[derive(
+    Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize, utoipa :: ToSchema,
+)]
+#[sea_orm(schema_name = "logistics", table_name = "department")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
-    pub user_id: Uuid,
-    #[sea_orm(column_type = "Text")]
-    pub entity_name: String,
-    #[sea_orm(column_type = "Text")]
-    pub action: String,
+    #[sea_orm(unique)]
+    pub department_name: String,
+    pub manager_id: Option<Uuid>,
+    pub created: DateTime,
+    pub updated: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::employee::Entity")]
+    Employee,
     #[sea_orm(
         belongs_to = "super::users::Entity",
-        from = "Column::UserId",
+        from = "Column::ManagerId",
         to = "super::users::Column::Id",
         on_update = "NoAction",
-        on_delete = "Cascade"
+        on_delete = "NoAction"
     )]
     Users,
+}
+
+impl Related<super::employee::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Employee.def()
+    }
 }
 
 impl Related<super::users::Entity> for Entity {

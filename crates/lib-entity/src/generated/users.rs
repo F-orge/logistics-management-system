@@ -4,8 +4,11 @@ use super::sea_orm_active_enums::AuthType;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
+#[derive(
+    Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize, utoipa :: ToSchema,
+)]
 #[sea_orm(schema_name = "logistics", table_name = "users")]
+#[schema(as = FileModel)]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
@@ -15,23 +18,23 @@ pub struct Model {
     #[sea_orm(column_name = "_password")]
     #[serde(skip)]
     pub password: String,
-    pub create_at: DateTime,
-    pub updated_at: DateTime,
+    pub created: DateTime,
+    pub updated: DateTime,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::employee::Entity")]
-    Employee,
+    #[sea_orm(has_many = "super::department::Entity")]
+    Department,
     #[sea_orm(has_many = "super::file::Entity")]
     File,
     #[sea_orm(has_many = "super::permissions::Entity")]
     Permissions,
 }
 
-impl Related<super::employee::Entity> for Entity {
+impl Related<super::department::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Employee.def()
+        Relation::Department.def()
     }
 }
 
