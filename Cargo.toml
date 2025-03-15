@@ -92,19 +92,25 @@ tower-http = { version = "0.6.2", features = [
 ] }
 axum-extra = { version = "0.9.0", features = ["cookie", "form"] }
 hyper-util = "0.1.10"
+axum_typed_multipart = "0.15.1"
+tempfile = "3.19.0"
+
 
 # Templating
 rinja = { version = "0.3.5", features = ["with-axum"] }
 rinja_axum = "0.3.5"
 
 # Validation
-garde = { version = "0.20.0", features = ["derive", "serde", "email"] }
+garde = { version = "0.22.0", features = ["derive", "serde", "email"] }
+axum-valid = { version = "0.23.0", features = ["garde", "basic"] }
 
 # Environment variables
 dotenv = "0.15.0"
 
 # Utilities
-uuid = { version = "1.15.1", features = ["v4"] }
+uuid = { version = "1.15.1", features = ["v4", "v7"] }
+pwhash = "1.0.0"
+chrono = "0.4.40"
 
 # Embedded
 rust-embed = "8.6.0"
@@ -136,3 +142,5 @@ utoipa-scalar = { workspace = true }
 utoipa-axum = { workspace = true }
 lib-core = { workspace = true }
 utoipa = { workspace = true }
+fake = { version = "4", features = ["derive"] }
+lib-entity = { workspace = true }

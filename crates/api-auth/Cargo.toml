@@ -13,3 +13,11 @@ utoipa = { workspace = true }
 utoipa-axum = { workspace = true }
 axum-extra = { workspace = true }
 serde = { workspace = true }
+axum-valid = { workspace = true }
+garde = { workspace = true }
+pwhash = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+sha2 = { workspace = true }
+jwt = { workspace = true }
+hmac = { workspace = true }

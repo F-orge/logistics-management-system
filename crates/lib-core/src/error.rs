@@ -33,10 +33,17 @@ pub struct ErrorResponse {
 
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
-        Json(ErrorResponse {
-            code: 500,
-            message: "Internal server error".into(),
-        })
-        .into_response()
+        println!("{:#?}", self);
+        let response = match self {
+            Error::AuthenticationError => ErrorResponse {
+                code: 401,
+                message: "Authentication Error".into(),
+            },
+            _ => ErrorResponse {
+                code: 500,
+                message: "Internal server error".into(),
+            },
+        };
+        Json(response).into_response()
     }
 }

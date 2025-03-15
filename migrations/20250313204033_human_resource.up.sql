@@ -17,10 +17,6 @@ CREATE TABLE
     updated timestamp not null default current_timestamp
   );
 
-create type logistics.employee_status as enum('active', 'inactive');
-
-create type logistics.employee_contract_type as enum('full-time', 'part-time');
-
 CREATE TABLE
   logistics.employee (
     id uuid primary key default gen_random_uuid (),
@@ -29,8 +25,8 @@ CREATE TABLE
     email varchar(255) unique not null,
     phone varchar(20) unique,
     address text,
-    status logistics.employee_status not null default 'active',
-    cotract_type logistics.employee_contract_type not null,
+    status varchar not null default 'active' check (status in ('active', 'inactive')),
+    contract_type varchar not null check (status in ('full-time', 'part-time')),
     hire_date date not null,
     department_id uuid not null references logistics.department (id),
     position_id uuid not null references logistics.position (id),

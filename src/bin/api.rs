@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use axum::Router;
 use hmac::{Hmac, Mac};
 use lib_core::AppState;
@@ -29,6 +31,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_state(AppState {
             db,
             key: Hmac::new_from_slice(std::env::var("RUST_JWT_ACCESS_KEY")?.as_bytes())?,
+            storage_path: Path::new("./storage").to_path_buf(),
         });
 
     axum::serve(listener, router.into_make_service()).await?;

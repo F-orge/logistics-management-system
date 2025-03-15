@@ -1,4 +1,7 @@
+use axum::RequestPartsExt;
+use axum::extract::FromRef;
 use axum::extract::FromRequestParts;
+use axum::extract::State;
 use jwt::VerifyWithKey;
 use lib_core::{AppState, error::Error};
 use lib_entity::generated::permissions;
@@ -10,11 +13,12 @@ use sea_orm::Set;
 use sea_orm::TransactionTrait;
 use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
 use std::collections::BTreeMap;
+use std::fmt::Debug;
 
 use serde::{Deserialize, Serialize};
 
 // reference: https://auth0.com/docs/secure/tokens/json-web-tokens/json-web-token-claims
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct JWTClaim {
     #[serde(rename = "iss")]
     pub issuer: String,
@@ -36,25 +40,34 @@ pub struct JWTClaim {
 
 impl<S> FromRequestParts<S> for JWTClaim
 where
-    S: Send + Sync,
+    AppState: FromRef<S>,
+    S: Send + Sync + Debug,
 {
     type Rejection = lib_core::error::Error;
 
     async fn from_request_parts(
         parts: &mut axum::http::request::Parts,
-        _: &S,
+        state: &S,
     ) -> Result<Self, Self::Rejection> {
         let state = parts
-            .extensions
-            .get::<AppState>()
-            .ok_or(Error::AuthenticationError)?;
+            .extract_with_state::<AppState, _>(state)
+            .await
+            .map_err(|_| Error::AuthenticationError)?;
 
-        let token = parts
+        let auth_header = parts
             .headers
             .get("Authorization")
             .ok_or(Error::AuthenticationError)?
             .to_str()
             .map_err(|_| Error::AuthenticationError)?;
+
+        let (format, token) = auth_header
+            .split_once(' ')
+            .ok_or(Error::AuthenticationError)?;
+
+        if format.to_lowercase() != "bearer" {
+            return Err(Error::AuthenticationError);
+        }
 
         let claims: JWTClaim = token
             .verify_with_key(&state.key)

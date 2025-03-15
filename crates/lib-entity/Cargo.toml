@@ -7,3 +7,5 @@ edition = "2024"
 sea-orm = { workspace = true }
 serde = { workspace = true }
 utoipa = { workspace = true }
+sha2 = { workspace = true }
+pwhash = { workspace = true }

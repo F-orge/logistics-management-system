@@ -1,12 +1,10 @@
 -- Add up migration script here
-create type logistics.package_type as enum('perishable', 'non-perishable');
-
 CREATE TABLE
   logistics.package (
     id uuid not null primary key default gen_random_uuid (),
     name text not null,
     arrive_time timestamp not null,
-    cargo_type logistics.package_type,
+    cargo_type varchar not null check (cargo_type in ('perishable', 'non-perishable')),
     created timestamp not null default current_timestamp,
     updated timestamp not null default current_timestamp
   );

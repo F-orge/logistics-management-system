@@ -8,7 +8,6 @@ pub mod file;
 pub mod package;
 pub mod permissions;
 pub mod position;
-pub mod sea_orm_active_enums;
 pub mod shipment;
 pub mod task;
 pub mod task_messages;

@@ -12,6 +12,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     pub name: String,
+    pub r#type: String,
     #[sea_orm(column_type = "Text")]
     pub file_path: String,
     pub is_public: bool,

@@ -13,3 +13,8 @@ utoipa = { workspace = true }
 utoipa-axum = { workspace = true }
 axum-extra = { workspace = true }
 serde = { workspace = true }
+axum_typed_multipart = { workspace = true }
+tempfile = { workspace = true }
+axum-valid = { workspace = true }
+tokio = { workspace = true }
+sha2 = { workspace = true }
