@@ -12,4 +12,3 @@ sha2 = { workspace = true }
 axum = { workspace = true }
 lib-core = { workspace = true }
 sea-orm = { workspace = true }
-lib-entity = { workspace = true }

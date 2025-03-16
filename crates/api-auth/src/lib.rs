@@ -1,14 +1,14 @@
 use std::collections::BTreeMap;
 
 use axum::{Form, Json, extract::State};
-use chrono::Local;
+use chrono::{Duration, Local};
 use jwt::SignWithKey;
 use lib_core::{
     AppState,
     error::{Error, ErrorResponse},
     result::Result,
 };
-use lib_entity::generated::users;
+use lib_entity::{extensions::get_all_permissions, generated::users};
 use lib_security::JWTClaim;
 use pwhash::bcrypt;
 use sea_orm::ColumnTrait;
@@ -77,18 +77,22 @@ async fn login(
         return Err(Error::AuthenticationError);
     }
 
-    let claims = JWTClaim {
+    let mut claims = JWTClaim {
         issuer: "sample".into(),
         subject: model.id,
         audience: "logistics".into(),
-        expiration: Local::now().to_utc().to_string(),
-        not_before: Local::now().to_utc().to_string(),
+        expiration: (Local::now().to_utc() + Duration::hours(1)).to_string(),
+        not_before: (Local::now().to_utc() - Duration::seconds(1)).to_string(),
         issued_at: Local::now().to_utc().to_string(),
         jwt_id: Uuid::new_v4(),
-        claims: BTreeMap::new(),
+        claims: get_all_permissions(&db, model.id)
+            .await
+            .map_err(Error::SeaOrm)?,
     };
 
     let access_token = claims.clone().sign_with_key(&key).unwrap();
+
+    claims.expiration = (Local::now().to_utc() + Duration::hours(6)).to_string();
 
     let refresh_token = claims.sign_with_key(&key).unwrap();
 

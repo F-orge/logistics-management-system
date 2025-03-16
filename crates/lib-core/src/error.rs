@@ -33,11 +33,14 @@ pub struct ErrorResponse {
 
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
-        println!("{:#?}", self);
         let response = match self {
             Error::AuthenticationError => ErrorResponse {
                 code: 401,
                 message: "Authentication Error".into(),
+            },
+            Error::AuthorizationError => ErrorResponse {
+                code: 403,
+                message: "Authorization Error".into(),
             },
             _ => ErrorResponse {
                 code: 500,

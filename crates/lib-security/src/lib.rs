@@ -1,17 +1,10 @@
 use axum::RequestPartsExt;
 use axum::extract::FromRef;
 use axum::extract::FromRequestParts;
-use axum::extract::State;
 use jwt::VerifyWithKey;
 use lib_core::{AppState, error::Error};
-use lib_entity::generated::permissions;
-use sea_orm::ActiveModelBehavior;
-use sea_orm::ActiveModelTrait;
-use sea_orm::ColumnTrait;
-use sea_orm::IntoActiveModel;
-use sea_orm::Set;
-use sea_orm::TransactionTrait;
-use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter};
+use sea_orm::prelude::DateTimeUtc;
+use sqlx::types::chrono::Local;
 use std::collections::BTreeMap;
 use std::fmt::Debug;
 
@@ -35,7 +28,7 @@ pub struct JWTClaim {
     #[serde(rename = "jti")]
     pub jwt_id: sqlx::types::Uuid,
     #[serde(rename = "claims")]
-    pub claims: BTreeMap<String, String>,
+    pub claims: BTreeMap<String, Vec<Permission>>,
 }
 
 impl<S> FromRequestParts<S> for JWTClaim
@@ -73,16 +66,35 @@ where
             .verify_with_key(&state.key)
             .map_err(|_| Error::AuthenticationError)?;
 
+        let exp: DateTimeUtc = claims
+            .expiration
+            .parse()
+            .map_err(|_| Error::AuthenticationError)?;
+
+        let nbf: DateTimeUtc = claims
+            .not_before
+            .parse()
+            .map_err(|_| Error::AuthenticationError)?;
+
+        if exp < Local::now() {
+            return Err(Error::AuthenticationError);
+        }
+
+        if nbf > Local::now() {
+            return Err(Error::AuthenticationError);
+        }
+
         Ok(claims)
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub enum Permission {
     Read,
     Write,
     Update,
     Delete,
+    Bypass,
 }
 
 impl Into<sea_orm::Value> for Permission {
@@ -92,6 +104,7 @@ impl Into<sea_orm::Value> for Permission {
             Permission::Write => "write".into(),
             Permission::Update => "update".into(),
             Permission::Delete => "delete".into(),
+            Permission::Bypass => "bypass".into(),
         }
     }
 }
@@ -103,84 +116,35 @@ impl Into<String> for Permission {
             Permission::Write => "write".into(),
             Permission::Update => "update".into(),
             Permission::Delete => "delete".into(),
+            Permission::Bypass => "bypass".into(),
         }
     }
 }
 
-pub async fn verify_permission(
-    db: &DatabaseConnection,
-    claims: &JWTClaim,
-    table: &str,
-    permissions: Vec<Permission>,
-) -> lib_core::result::Result<bool> {
-    Ok(lib_entity::generated::prelude::Permissions::find()
-        .filter(permissions::Column::EntityName.eq(table))
-        .filter(permissions::Column::UserId.eq(claims.subject))
-        .filter(permissions::Column::Action.is_in(permissions))
-        .one(db)
-        .await
-        .map_err(Error::SeaOrm)?
-        .is_some())
-}
-
-pub async fn grant_permission(
-    db: &DatabaseConnection,
-    claims: &JWTClaim,
-    table: &str,
-    permissions: Vec<Permission>,
-) -> lib_core::result::Result<()> {
-    let trx = db.begin().await.map_err(Error::SeaOrm)?;
-    for perm in permissions.into_iter() {
-        let model = lib_entity::generated::prelude::Permissions::find()
-            .filter(permissions::Column::UserId.eq(claims.subject))
-            .filter(permissions::Column::Action.eq(perm.clone()))
-            .filter(permissions::Column::EntityName.eq(table))
-            .one(db)
-            .await
-            .map_err(Error::SeaOrm)?;
-
-        if model.is_some() {
-            continue;
+impl TryInto<Permission> for String {
+    type Error = sea_orm::DbErr;
+    fn try_into(self) -> Result<Permission, Self::Error> {
+        match self.as_str() {
+            "read" => Ok(Permission::Read),
+            "write" => Ok(Permission::Write),
+            "update" => Ok(Permission::Update),
+            "delete" => Ok(Permission::Delete),
+            "bypass" => Ok(Permission::Bypass),
+            _ => Err(sea_orm::DbErr::AttrNotSet("cannot set permission".into())),
         }
-
-        let mut model = permissions::ActiveModel::new();
-        model.entity_name = Set(table.to_string());
-        model.user_id = Set(claims.subject);
-        model.action = Set(perm.into());
-        _ = model.insert(&trx).await.map_err(Error::SeaOrm)?;
     }
-
-    trx.commit().await.map_err(Error::SeaOrm)?;
-
-    Ok(())
 }
 
-pub async fn revoke_permission(
-    db: &DatabaseConnection,
+pub fn verify_permission(
     claims: &JWTClaim,
     table: &str,
     permissions: Vec<Permission>,
 ) -> lib_core::result::Result<()> {
-    let trx = db.begin().await.map_err(Error::SeaOrm)?;
-    for perm in permissions.into_iter() {
-        let model = lib_entity::generated::prelude::Permissions::find()
-            .filter(permissions::Column::UserId.eq(claims.subject))
-            .filter(permissions::Column::Action.eq(perm))
-            .filter(permissions::Column::EntityName.eq(table))
-            .one(db)
-            .await
-            .map_err(Error::SeaOrm)?;
+    let perm_claim: &Vec<Permission> = claims.claims.get(table).ok_or(Error::AuthorizationError)?;
 
-        if model.is_none() {
-            continue;
-        }
-
-        let model = model.ok_or(Error::RowNotFound)?.into_active_model();
-
-        _ = model.delete(&trx).await.map_err(Error::SeaOrm)?;
+    if !perm_claim.iter().any(|perm| permissions.contains(perm)) {
+        return Err(Error::AuthorizationError);
     }
-
-    trx.commit().await.map_err(Error::SeaOrm)?;
 
     Ok(())
 }

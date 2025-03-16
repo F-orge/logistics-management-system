@@ -11,7 +11,7 @@ use lib_core::{
     result::{PaginatedResult, Result},
 };
 use lib_entity::{extensions::file::PatchFileRequest, generated::file};
-use lib_security::JWTClaim;
+use lib_security::{JWTClaim, Permission};
 use models::{PaginateFiles, SearchFiles, UploadFile};
 use sea_orm::{
     ActiveModelBehavior, ActiveModelTrait, ColumnTrait, Condition, EntityTrait, IntoActiveModel,
@@ -40,6 +40,10 @@ async fn upload(
     }): State<AppState>,
     TypedMultipart(UploadFile { file }): TypedMultipart<UploadFile>,
 ) -> Result<String> {
+    println!("{:#?}", jwt);
+
+    _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Write, Permission::Bypass])?;
+
     let metadata = file.metadata.clone();
 
     let mut file = file.contents.into_file();
@@ -117,6 +121,8 @@ async fn download(
     Path(id): Path<Uuid>,
     State(AppState { db, .. }): State<AppState>,
 ) -> Result<([(http::HeaderName, String); 2], Body)> {
+    _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Read, Permission::Bypass])?;
+
     let model = file::Entity::find_by_id(id)
         .filter(
             Condition::any()
@@ -176,6 +182,8 @@ async fn read(
     // get the files that are owned by the user, is public and shared to the subject.
     // note: if file_permission has bypass flag, return all
 
+    _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Read, Permission::Bypass])?;
+
     let mut conditions = Condition::any();
 
     conditions = conditions.add(file::Column::OwnerId.eq(jwt.subject));
@@ -223,6 +231,8 @@ async fn search(
     Query(SearchFiles { limit, page, query }): Query<SearchFiles>,
     State(AppState { db, .. }): State<AppState>,
 ) -> Result<Json<PaginatedResult<Vec<file::Model>>>> {
+    _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Read, Permission::Bypass])?;
+
     let files = file::Entity::find()
         .filter(file::Column::Name.like(format!("%{}%", query)))
         .filter(
@@ -263,6 +273,8 @@ async fn one(
     Path(id): Path<Uuid>,
     State(AppState { db, .. }): State<AppState>,
 ) -> Result<Json<file::Model>> {
+    _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Read, Permission::Bypass])?;
+
     let file = file::Entity::find_by_id(id)
         .filter(
             Condition::any()
@@ -298,8 +310,13 @@ async fn update(
     State(AppState { db, .. }): State<AppState>,
     Json(payload): Json<PatchFileRequest>,
 ) -> Result<Json<file::Model>> {
+    _ = lib_security::verify_permission(
+        &jwt,
+        "file",
+        vec![Permission::Update, Permission::Bypass],
+    )?;
+
     let trx = db.begin().await.map_err(Error::SeaOrm)?;
-    // only the owner can update the file
 
     if file::Entity::find_by_id(id)
         .filter(file::Column::OwnerId.eq(jwt.subject))

@@ -1598,6 +1598,8 @@ dependencies = [
 name = "lib-entity"
 version = "0.1.0"
 dependencies = [
+ "lib-core",
+ "lib-security",
  "pwhash",
  "sea-orm",
  "serde",
@@ -1613,7 +1615,6 @@ dependencies = [
  "hmac 0.12.1",
  "jwt",
  "lib-core",
- "lib-entity",
  "sea-orm",
  "serde",
  "sha2 0.10.8",

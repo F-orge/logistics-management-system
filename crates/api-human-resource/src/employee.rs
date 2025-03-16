@@ -2,8 +2,7 @@ use lib_core::{AppState, error::ErrorResponse};
 use lib_entity::generated::employee;
 use utoipa_axum::{router::OpenApiRouter, routes};
 #[utoipa::path(
-    post, 
-    tag = "Employee Management", 
+    post, tag = "Employee Management", 
     path = "/",
     responses(
         (status = 200, body = employee::Model),
@@ -16,8 +15,7 @@ use utoipa_axum::{router::OpenApiRouter, routes};
 async fn create() {}
 
 #[utoipa::path(
-    get, 
-    tag = "Employee Management", 
+    get, tag = "Employee Management", 
     path = "/",
     responses(
         (status = 200, body = Vec<employee::Model>),
@@ -30,8 +28,7 @@ async fn create() {}
 async fn read() {}
 
 #[utoipa::path(
-    get, 
-    tag = "Employee Management", 
+    get, tag = "Employee Management", 
     path = "/search",
     responses(
         (status = 200, body = Vec<employee::Model>),
@@ -44,8 +41,7 @@ async fn read() {}
 async fn search() {}
 
 #[utoipa::path(
-    get, 
-    tag = "Employee Management", 
+    get, tag = "Employee Management", 
     path = "/{id}",
     responses(
         (status = 200, body = employee::Model),
@@ -59,8 +55,7 @@ async fn search() {}
 async fn one() {}
 
 #[utoipa::path(
-    patch, 
-    tag = "Employee Management", 
+    patch, tag = "Employee Management", 
     path = "/{id}",
     responses(
         (status = 200, body = employee::Model),
@@ -74,8 +69,7 @@ async fn one() {}
 async fn update() {}
 
 #[utoipa::path(
-    delete, 
-    tag = "Employee Management", 
+    delete, tag = "Employee Management", 
     path = "/{id}",
     responses(
         (status = 200, description = "Success" ),
