@@ -1,22 +1,25 @@
 use axum::{
     Json,
-    extract::{Query, State},
+    body::Body,
+    extract::{Path, Query, State},
 };
 use axum_typed_multipart::TypedMultipart;
+use http::header;
 use lib_core::{
     AppState,
     error::{Error, ErrorResponse},
     result::{PaginatedResult, Result},
 };
-use lib_entity::generated::file;
+use lib_entity::{extensions::file::PatchFileRequest, generated::file};
 use lib_security::JWTClaim;
 use models::{PaginateFiles, SearchFiles, UploadFile};
 use sea_orm::{
-    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, Condition, EntityTrait, PaginatorTrait,
-    QueryFilter, Set, TransactionTrait, sea_query::expr,
+    ActiveModelBehavior, ActiveModelTrait, ColumnTrait, Condition, EntityTrait, IntoActiveModel,
+    PaginatorTrait, QueryFilter, Set, TransactionTrait, prelude::Uuid, sea_query::expr,
 };
 use sha2::{Digest, Sha256};
-use std::io::Read;
+use std::{io::Read, path::PathBuf};
+use tokio_util::io::ReaderStream;
 use utoipa_axum::{router::OpenApiRouter, routes};
 pub mod models;
 
@@ -63,12 +66,14 @@ async fn upload(
             .ok_or(Error::SeaOrm(sea_orm::DbErr::AttrNotSet(
                 "file name not found".into(),
             )))?);
+
     active_model.file_path = Set(path
         .to_str()
         .ok_or(Error::SeaOrm(sea_orm::DbErr::AttrNotSet(
             "file path not found".into(),
         )))?
         .to_string());
+
     active_model.owner_id = Set(jwt.subject);
     active_model.shared_to = Set(vec![]);
     active_model.r#type =
@@ -96,7 +101,10 @@ async fn upload(
     get,
     operation_id = "DownloadFile",
     tag = "File Management",
-    path = "/download",
+    path = "/download/{id}",
+    params(
+        ("id" = Uuid, Path)
+    ),
     responses(
         (status = 200, content_type = "application/octet-stream"),
         (status = 400, body = ErrorResponse),
@@ -104,7 +112,42 @@ async fn upload(
         (status = 500, body = ErrorResponse)
     )
 )]
-async fn download() {}
+async fn download(
+    jwt: JWTClaim,
+    Path(id): Path<Uuid>,
+    State(AppState { db, .. }): State<AppState>,
+) -> Result<([(http::HeaderName, String); 2], Body)> {
+    let model = file::Entity::find_by_id(id)
+        .filter(
+            Condition::any()
+                .add(file::Column::OwnerId.eq(jwt.subject))
+                .add(expr::Expr::cust(format!(
+                    r#"'{}'::uuid = ANY({})"#,
+                    jwt.subject, "shared_to"
+                ))),
+        )
+        .one(&db)
+        .await
+        .map_err(Error::SeaOrm)?
+        .ok_or(Error::RowNotFound)?;
+
+    let file = tokio::fs::File::open(model.file_path)
+        .await
+        .map_err(Error::Io)?;
+
+    let stream = ReaderStream::new(file);
+    let body = Body::from_stream(stream);
+
+    let headers: [(http::HeaderName, String); 2] = [
+        (header::CONTENT_TYPE, model.r#type),
+        (
+            header::CONTENT_DISPOSITION,
+            format!(r#"attachment; filename="{}""#, model.name),
+        ),
+    ];
+
+    Ok((headers, body))
+}
 
 #[utoipa::path(
     get, 
@@ -205,6 +248,9 @@ async fn search(
     get, 
     tag = "File Management", 
     path = "/{id}",
+    params(
+        ("id" = Uuid,),
+    ),
     responses(
         (status = 200, body = file::Model),
         (status = 400, body = ErrorResponse),
@@ -212,7 +258,28 @@ async fn search(
         (status = 500, body = ErrorResponse)
     )
 )]
-async fn one() {}
+async fn one(
+    jwt: JWTClaim,
+    Path(id): Path<Uuid>,
+    State(AppState { db, .. }): State<AppState>,
+) -> Result<Json<file::Model>> {
+    let file = file::Entity::find_by_id(id)
+        .filter(
+            Condition::any()
+                .add(file::Column::OwnerId.eq(jwt.subject))
+                .add(file::Column::IsPublic.eq(true))
+                .add(expr::Expr::cust(format!(
+                    r#"'{}'::uuid = ANY({})"#,
+                    jwt.subject, "shared_to"
+                ))),
+        )
+        .one(&db)
+        .await
+        .map_err(Error::SeaOrm)?
+        .ok_or(Error::RowNotFound)?;
+
+    Ok(Json(file))
+}
 
 #[utoipa::path(
     patch, 
@@ -225,14 +292,42 @@ async fn one() {}
         (status = 500, body = ErrorResponse)
     )
 )]
-async fn update() {}
+async fn update(
+    jwt: JWTClaim,
+    Path(id): Path<Uuid>,
+    State(AppState { db, .. }): State<AppState>,
+    Json(payload): Json<PatchFileRequest>,
+) -> Result<Json<file::Model>> {
+    let trx = db.begin().await.map_err(Error::SeaOrm)?;
+    // only the owner can update the file
+
+    if file::Entity::find_by_id(id)
+        .filter(file::Column::OwnerId.eq(jwt.subject))
+        .one(&trx)
+        .await
+        .map_err(Error::SeaOrm)?
+        .is_none()
+    {
+        return Err(Error::AuthorizationError);
+    }
+
+    let mut active_model = payload.into_active_model();
+
+    active_model.id = Set(id);
+
+    let model = active_model.update(&trx).await.map_err(Error::SeaOrm)?;
+
+    _ = trx.commit().await.map_err(Error::SeaOrm)?;
+
+    Ok(Json(model))
+}
 
 #[utoipa::path(
     delete, 
     tag = "File Management", 
     path = "/{id}",
     responses(
-        (status = 204),
+        (status = 204, body = ErrorResponse),
         (status = 400, body = ErrorResponse),
         (status = 404, body = ErrorResponse),
         (status = 500, body = ErrorResponse)

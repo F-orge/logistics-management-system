@@ -73,9 +73,6 @@ async fn login(
         .map_err(lib_core::error::Error::SeaOrm)?
         .ok_or(Error::AuthenticationError)?;
 
-    println!("{} {}", password, model.password);
-    println!("{}", bcrypt::verify("RandomPassword1", &model.password));
-
     if !bcrypt::verify(password, &model.password) {
         return Err(Error::AuthenticationError);
     }

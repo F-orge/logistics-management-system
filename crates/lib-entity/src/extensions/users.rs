@@ -1,7 +1,7 @@
 use pwhash::{bcrypt, sha256_crypt};
 use sea_orm::{
     ActiveModelBehavior, DeriveIntoActiveModel, IntoActiveModel, IntoActiveValue, Set,
-    prelude::async_trait::async_trait,
+    prelude::async_trait::async_trait, sqlx::types::chrono::Local,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -21,11 +21,12 @@ impl ActiveModelBehavior for ActiveModel {
     where
         C: sea_orm::ConnectionTrait,
     {
+        if !insert {
+            self.updated = Set(Local::now().naive_utc());
+        }
         if let Some(sea_orm::Value::String(Some(password))) = self.password.clone().into_value() {
-            println!("{}", *password);
             self.password = Set(bcrypt::hash(*password)
                 .map_err(|_| sea_orm::DbErr::AttrNotSet("cannot hash password".into()))?);
-            println!("{:#?}", self.password);
         }
         Ok(self)
     }
