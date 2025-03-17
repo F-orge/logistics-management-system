@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 
 use axum::{Form, Json, extract::State};
-use chrono::{Duration, Local};
-use jwt::SignWithKey;
+use chrono::{Duration, Local, Utc};
+use jwt::{SignWithKey, VerifyWithKey};
 use lib_core::{
     AppState,
     error::{Error, ErrorResponse},
@@ -11,7 +11,7 @@ use lib_core::{
 use lib_entity::{extensions::get_all_permissions, generated::users};
 use lib_security::JWTClaim;
 use pwhash::bcrypt;
-use sea_orm::ColumnTrait;
+use sea_orm::{ColumnTrait, prelude::DateTimeUtc};
 use sea_orm::{EntityTrait, QueryFilter};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -48,23 +48,18 @@ struct AccessTokenResponse {
 
 #[axum::debug_handler]
 #[utoipa::path(
-    post, 
-    tag = "Authentication", 
+    post, tag = "Authentication", 
     path = "/login",
-    request_body(content = LoginRequest, content_type = "application/x-www-form-urlencoded"),
+    request_body(content = LoginRequest),
     responses(
-        (
-            status = 200, 
-            description = "Successfully Logged In",  
-            body = AccessTokenResponse
-        ),
+        (status = 200, description = "Successfully Logged In", body = AccessTokenResponse),
         (status = 400, description = "Invalid email or password"),
         (status = 500, description = "Internal server error")
     )
 )]
 async fn login(
     State(AppState { db, key, .. }): State<AppState>,
-    Form(LoginRequest { email, password }): Form<LoginRequest>,
+    Json(LoginRequest { email, password }): Json<LoginRequest>,
 ) -> Result<Json<AccessTokenResponse>> {
     let model = users::Entity::find()
         .filter(users::Column::Email.eq(email))
@@ -106,32 +101,65 @@ async fn login(
 }
 
 #[derive(Debug, Deserialize, ToSchema)]
-struct RefreshTokenDTO {
+struct RefreshTokenRequest {
     #[schema(example = "<REFRESH_TOKEN>")]
     refresh_token: String,
 }
 
 #[utoipa::path(
-    post, 
-    tag = "Authentication", 
+    post, tag = "Authentication", 
     path = "/refresh",
-    request_body(content = RefreshTokenDTO, content_type = "application/json"),
+    request_body(content = RefreshTokenRequest, content_type = "application/json"),
     responses(
-        (
-            status = 200, 
-            description = "Successfully Refreshed token",  
-            body = AccessTokenResponse
-        ),
-        (   
-            status = 400, 
-            description = "Invalid refresh token",
-            body = ErrorResponse,
-        ),
-        (
-            status = 500, 
-            description = "Internal server error",
-            body = ErrorResponse,
-        )
+        (status = 200, description = "Successfully Refreshed token", body = AccessTokenResponse),
+        (status = 400, description = "Invalid refresh token", body = ErrorResponse,),
+        (status = 500, description = "Internal server error", body = ErrorResponse,)
     )
 )]
-async fn refresh() {}
+async fn refresh(
+    State(AppState { key, .. }): State<AppState>,
+    Json(RefreshTokenRequest { refresh_token }): Json<RefreshTokenRequest>,
+) -> Result<Json<AccessTokenResponse>> {
+    let claims: JWTClaim = refresh_token
+        .verify_with_key(&key)
+        .map_err(|_| Error::AuthenticationError)?;
+
+    // if refresh token is expired. return error
+
+    let exp: DateTimeUtc = claims
+        .expiration
+        .parse()
+        .map_err(|_| Error::AuthenticationError)?;
+
+    if exp < Utc::now() {
+        return Err(Error::AuthenticationError);
+    }
+
+    let mut access_token_claims = claims.clone();
+
+    access_token_claims.expiration = (Utc::now() + Duration::hours(1)).to_string();
+    access_token_claims.not_before = (Utc::now() - Duration::seconds(1)).to_string();
+    access_token_claims.issued_at = Utc::now().to_string();
+
+    let access_token = access_token_claims
+        .sign_with_key(&key)
+        .map_err(|_| Error::AuthenticationError)?;
+
+    let mut refresh_token_claims = claims.clone();
+
+    refresh_token_claims.expiration = (Utc::now() + Duration::hours(6)).to_string();
+    refresh_token_claims.not_before = (Utc::now() - Duration::seconds(1)).to_string();
+    refresh_token_claims.issued_at = Utc::now().to_string();
+
+    let refresh_token = refresh_token_claims
+        .sign_with_key(&key)
+        .map_err(|_| Error::AuthenticationError)?;
+
+    Ok(Json(AccessTokenResponse {
+        access_token,
+        refresh_token,
+        token_type: "Bearer".into(),
+        exp: 3600,
+        scopes: vec![],
+    }))
+}

@@ -44,8 +44,8 @@ CREATE TABLE
     assigned_to uuid not null references logistics.employee (id),
     start_date DATE not null,
     due_date DATE not null check (due_date >= start_date),
-    priority VARCHAR(10) not null check (priority IN ('Low', 'Medium', 'High')),
-    status VARCHAR(20) not null check (status IN ('Pending', 'In Progress', 'Completed')),
+    priority VARCHAR(10) not null check (priority IN ('low', 'medium', 'high')),
+    status VARCHAR(20) not null check (status IN ('pending', 'in-progress', 'completed')),
     created timestamp not null default current_timestamp,
     updated timestamp not null default current_timestamp
   );

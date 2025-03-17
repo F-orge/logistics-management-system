@@ -1,4 +1,4 @@
-use axum::{Json, response::IntoResponse};
+use axum::{Json, http::StatusCode, response::IntoResponse};
 use derive_more::From;
 use serde::{Deserialize, Serialize};
 use sqlx::types::uuid;
@@ -26,27 +26,49 @@ pub enum Error {
 #[derive(Debug, Serialize, Deserialize, ToSchema)]
 pub struct ErrorResponse {
     #[schema(example = 400)]
-    code: u16,
+    pub code: u16,
     #[schema(example = "Bad Request")]
-    message: String,
+    pub message: String,
 }
 
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
-        let response = match self {
-            Error::AuthenticationError => ErrorResponse {
-                code: 401,
-                message: "Authentication Error".into(),
-            },
-            Error::AuthorizationError => ErrorResponse {
-                code: 403,
-                message: "Authorization Error".into(),
-            },
-            _ => ErrorResponse {
-                code: 500,
-                message: "Internal server error".into(),
-            },
+        println!("{:#?}", self);
+        let (response, status) = match self {
+            Error::AuthenticationError => (
+                ErrorResponse {
+                    code: 401,
+                    message: "Authentication Error".into(),
+                },
+                StatusCode::UNAUTHORIZED,
+            ),
+            Error::AuthorizationError => (
+                ErrorResponse {
+                    code: 403,
+                    message: "Authorization Error".into(),
+                },
+                StatusCode::FORBIDDEN,
+            ),
+            Error::RowNotFound => (
+                ErrorResponse {
+                    code: 404,
+                    message: "Row not found".into(),
+                },
+                StatusCode::NOT_FOUND,
+            ),
+            _ => (
+                ErrorResponse {
+                    code: 500,
+                    message: "Internal server error".into(),
+                },
+                StatusCode::INTERNAL_SERVER_ERROR,
+            ),
         };
-        Json(response).into_response()
+
+        let mut response = Json(response).into_response();
+
+        *response.status_mut() = status;
+
+        response
     }
 }

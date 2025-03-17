@@ -4,7 +4,7 @@ use axum::{
     extract::{Path, Query, State},
 };
 use axum_typed_multipart::TypedMultipart;
-use http::header;
+use http::{StatusCode, header};
 use lib_core::{
     AppState,
     error::{Error, ErrorResponse},
@@ -24,12 +24,20 @@ use utoipa_axum::{router::OpenApiRouter, routes};
 pub mod models;
 
 #[utoipa::path(
-    post,
-    security(
+    post,security(
         ("bearer" = ["file:upload"])
     ),
+    summary = "Upload file",
+    description = "Upload a new file in the system",
     operation_id = "UploadFile",
     request_body(content = models::UploadFileRequest, content_type = "multipart/form-data"),
+    responses(
+        (status = StatusCode::CREATED, body = file::Model, description = "Return new file in json format"),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse, description = "Bad request"),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse, description = "Unauthorized action"),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse, description = "Cannot perform action"),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse, description = "Internal server error"),
+    ),
     tag = "File Management",
     path = "/upload"
 )]
@@ -39,9 +47,7 @@ async fn upload(
         db, storage_path, ..
     }): State<AppState>,
     TypedMultipart(UploadFile { file }): TypedMultipart<UploadFile>,
-) -> Result<String> {
-    println!("{:#?}", jwt);
-
+) -> Result<(StatusCode, Json<file::Model>)> {
     _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Write, Permission::Bypass])?;
 
     let metadata = file.metadata.clone();
@@ -87,33 +93,32 @@ async fn upload(
                 "content type not found".into(),
             )))?);
 
-    _ = active_model.insert(&trx).await.map_err(Error::SeaOrm)?;
+    let model = active_model.insert(&trx).await.map_err(Error::SeaOrm)?;
 
     _ = trx.commit().await.map_err(Error::SeaOrm)?;
 
     if tokio::fs::try_exists(&path).await.map_err(Error::Io)? {
-        return Ok("already exists. skipping".into());
+        return Ok((StatusCode::CREATED, Json(model)));
     }
 
     //  write file to disk
     _ = tokio::fs::write(path, contents).await.map_err(Error::Io)?;
 
-    Ok("sample".into())
+    Ok((StatusCode::CREATED, Json(model)))
 }
 
 #[utoipa::path(
-    get,
-    operation_id = "DownloadFile",
+    get, operation_id = "DownloadFile",
     tag = "File Management",
+    params(("id" = Uuid, Path)),
     path = "/download/{id}",
-    params(
-        ("id" = Uuid, Path)
-    ),
     responses(
-        (status = 200, content_type = "application/octet-stream"),
-        (status = 400, body = ErrorResponse),
-        (status = 404, body = ErrorResponse),
-        (status = 500, body = ErrorResponse)
+        (status = StatusCode::OK, content_type = "application/octet-stream"),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse),
+        (status = StatusCode::NOT_FOUND, body = ErrorResponse),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse),
     )
 )]
 async fn download(
@@ -156,17 +161,18 @@ async fn download(
 }
 
 #[utoipa::path(
-    get, 
-    tag = "File Management", 
+    get, tag = "File Management", 
     security(
         ("bearer" = ["file:read","file:bypass"])
     ),
     params(PaginateFiles),
     path = "/",
     responses(
-        (status = 200, body = PaginatedResult<Vec<file::Model>>),
-        (status = 400, body = ErrorResponse),
-        (status = 500, body = ErrorResponse)
+        (status = StatusCode::OK, body = PaginatedResult<Vec<file::Model>>),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse),
     )
 )]
 async fn read(
@@ -213,17 +219,19 @@ async fn read(
 }
 
 #[utoipa::path(
-    get, 
-    security(
+    get, security(
+        (),
         ("bearer" = ["file:read","file:bypass"])
     ),
     tag = "File Management", 
     path = "/search",
     params(SearchFiles),
     responses(
-        (status = 200, body = PaginatedResult<Vec<file::Model>>),
-        (status = 400, body = ErrorResponse),
-        (status = 500, body = ErrorResponse)
+        (status = StatusCode::OK, body = PaginatedResult<Vec<file::Model>>),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse),
     )
 )]
 async fn search(
@@ -255,24 +263,25 @@ async fn search(
 }
 
 #[utoipa::path(
-    get, 
-    tag = "File Management", 
+    get, tag = "File Management", 
     path = "/{id}",
     params(
         ("id" = Uuid,),
     ),
     responses(
-        (status = 200, body = file::Model),
-        (status = 400, body = ErrorResponse),
-        (status = 404, body = ErrorResponse),
-        (status = 500, body = ErrorResponse)
+        (status = StatusCode::OK, body = file::Model),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse),
+        (status = StatusCode::NOT_FOUND, body = ErrorResponse),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse),
     )
 )]
 async fn one(
     jwt: JWTClaim,
     Path(id): Path<Uuid>,
     State(AppState { db, .. }): State<AppState>,
-) -> Result<Json<file::Model>> {
+) -> Result<(StatusCode, Json<file::Model>)> {
     _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Read, Permission::Bypass])?;
 
     let file = file::Entity::find_by_id(id)
@@ -290,18 +299,19 @@ async fn one(
         .map_err(Error::SeaOrm)?
         .ok_or(Error::RowNotFound)?;
 
-    Ok(Json(file))
+    Ok((StatusCode::OK, Json(file)))
 }
 
 #[utoipa::path(
-    patch, 
-    tag = "File Management", 
+    patch, tag = "File Management", 
     path = "/{id}",
     responses(
-        (status = 200, body = file::Model),
-        (status = 400, body = ErrorResponse),
-        (status = 404, body = ErrorResponse),
-        (status = 500, body = ErrorResponse)
+        (status = StatusCode::OK, body = file::Model),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse),
+        (status = StatusCode::NOT_FOUND, body = ErrorResponse),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse),
     )
 )]
 async fn update(
@@ -309,7 +319,7 @@ async fn update(
     Path(id): Path<Uuid>,
     State(AppState { db, .. }): State<AppState>,
     Json(payload): Json<PatchFileRequest>,
-) -> Result<Json<file::Model>> {
+) -> Result<(StatusCode, Json<file::Model>)> {
     _ = lib_security::verify_permission(
         &jwt,
         "file",
@@ -325,7 +335,7 @@ async fn update(
         .map_err(Error::SeaOrm)?
         .is_none()
     {
-        return Err(Error::AuthorizationError);
+        return Err(Error::RowNotFound);
     }
 
     let mut active_model = payload.into_active_model();
@@ -336,21 +346,58 @@ async fn update(
 
     _ = trx.commit().await.map_err(Error::SeaOrm)?;
 
-    Ok(Json(model))
+    Ok((StatusCode::OK, Json(model)))
 }
 
 #[utoipa::path(
-    delete, 
-    tag = "File Management", 
+    delete, tag = "File Management", 
     path = "/{id}",
     responses(
-        (status = 204, body = ErrorResponse),
-        (status = 400, body = ErrorResponse),
-        (status = 404, body = ErrorResponse),
-        (status = 500, body = ErrorResponse)
+        (status = StatusCode::NO_CONTENT, body = ErrorResponse),
+        (status = StatusCode::BAD_REQUEST, body = ErrorResponse),
+        (status = StatusCode::UNAUTHORIZED, body = ErrorResponse),
+        (status = StatusCode::FORBIDDEN, body = ErrorResponse),
+        (status = StatusCode::NOT_FOUND, body = ErrorResponse),
+        (status = StatusCode::INTERNAL_SERVER_ERROR, body = ErrorResponse),
     )
 )]
-async fn remove() {}
+async fn remove(
+    jwt: JWTClaim,
+    Path(id): Path<Uuid>,
+    State(AppState { db, .. }): State<AppState>,
+) -> Result<(StatusCode, Json<ErrorResponse>)> {
+    _ = lib_security::verify_permission(&jwt, "file", vec![Permission::Delete])?;
+
+    let trx = db.begin().await.map_err(Error::SeaOrm)?;
+
+    let active_model = file::Entity::find_by_id(id)
+        // only the owner can remove the file
+        .filter(file::Column::OwnerId.eq(jwt.subject))
+        .one(&trx)
+        .await
+        .map_err(Error::SeaOrm)?
+        .ok_or(Error::RowNotFound)?
+        .into_active_model();
+
+    let deleted_row = active_model.delete(&trx).await.map_err(Error::SeaOrm)?;
+
+    if deleted_row.rows_affected != 1 {
+        return Err(Error::RowNotFound);
+    }
+
+    // note: this will remove the file from the database but not in the file system.
+    // this can be helpful for recovery if possible, this can be cleaned up properly.
+
+    _ = trx.commit().await.map_err(Error::SeaOrm)?;
+
+    Ok((
+        StatusCode::NO_CONTENT,
+        Json(ErrorResponse {
+            code: 204,
+            message: "file removed successfully".into(),
+        }),
+    ))
+}
 
 pub fn routes() -> OpenApiRouter<AppState> {
     OpenApiRouter::new()
