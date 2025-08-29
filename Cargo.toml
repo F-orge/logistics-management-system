@@ -66,7 +66,7 @@ tokio-util = "0.7.13"
 
 # Logging
 tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+tracing-subscriber = { version = "0.3.20", features = ["env-filter"] }
 test-log = "0.2.16"
 tracing-test = "0.2.5"
 
